@@ -1,0 +1,14 @@
+/Tests/app/cache/*
+/Tests/app/logs/*
+/Test/app/data/*
+/node_modules/
+/vendor/
+/composer.phar
+/composer.lock
+/.sass-cache/
+/phpunit.xml
+*~
+
+# IDEs
+.idea/*
+*.iml

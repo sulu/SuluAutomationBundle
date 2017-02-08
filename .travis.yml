@@ -1,0 +1,24 @@
+sudo: false
+
+language: php
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - downloads
+
+matrix:
+  include:
+    - php: 5.5
+    - php: 7.0
+
+before_script:
+  - phpenv config-rm xdebug.ini
+  - composer self-update
+  - composer install  --prefer-dist --no-interaction
+  - ./Tests/app/console doctrine:database:create
+  - ./Tests/app/console doctrine:schema:create
+
+script:
+  - vendor/bin/phpunit
+
