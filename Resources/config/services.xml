@@ -7,7 +7,7 @@
         <parameter key="sulu_automation.events.update" type="constant">Sulu\Bundle\AutomationBundle\Events\Events::TASK_UPDATE_EVENT</parameter>
         <parameter key="sulu_automation.events.remove" type="constant">Sulu\Bundle\AutomationBundle\Events\Events::TASK_REMOVE_EVENT</parameter>
     </parameters>
-    
+
     <services>
         <service id="sulu_automation.admin" class="Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin">
             <argument>%sulu_admin.name%</argument>
@@ -50,6 +50,20 @@
                  public="false">
             <argument type="service" id="doctrine"/>
             <argument type="service" id="jms_serializer.unserialize_object_constructor"/>
+        </service>
+
+        <service id="sulu_content.automation.publish_handler"
+                 class="Sulu\Bundle\AutomationBundle\Handler\DocumentPublishHandler">
+            <argument type="service" id="sulu_document_manager.document_manager"/>
+
+            <tag name="task.handler"/>
+        </service>
+
+        <service id="sulu_content.automation.unpublish_handler"
+                 class="Sulu\Bundle\AutomationBundle\Handler\DocumentUnpublishHandler">
+            <argument type="service" id="sulu_document_manager.document_manager"/>
+
+            <tag name="task.handler"/>
         </service>
     </services>
 </container>
