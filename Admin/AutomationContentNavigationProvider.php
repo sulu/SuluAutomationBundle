@@ -13,6 +13,7 @@ namespace Sulu\Bundle\AutomationBundle\Admin;
 
 use Sulu\Bundle\AdminBundle\Navigation\ContentNavigationItem;
 use Sulu\Bundle\AdminBundle\Navigation\ContentNavigationProviderInterface;
+use Sulu\Bundle\AdminBundle\Navigation\DisplayCondition;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface;
 use Sulu\Component\Security\Authorization\PermissionTypes;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
@@ -43,21 +44,29 @@ class AutomationContentNavigationProvider implements ContentNavigationProviderIn
     private $position;
 
     /**
+     * @var array
+     */
+    private $displayConditions;
+
+    /**
      * @param SecurityCheckerInterface $securityChecker
      * @param TaskRepositoryInterface $taskRepository
      * @param string $entityClass
      * @param int $position
+     * @param array $displayConditions
      */
     public function __construct(
         SecurityCheckerInterface $securityChecker,
         TaskRepositoryInterface $taskRepository,
         $entityClass,
-        $position = 45
+        $position = 45,
+        array $displayConditions = []
     ) {
         $this->securityChecker = $securityChecker;
         $this->taskRepository = $taskRepository;
         $this->entityClass = $entityClass;
         $this->position = $position;
+        $this->displayConditions = $displayConditions;
     }
 
     /**
@@ -75,6 +84,15 @@ class AutomationContentNavigationProvider implements ContentNavigationProviderIn
         $automation->setAction('automation');
         $automation->setComponent('automation-tab@suluautomation');
         $automation->setDisplay(['edit']);
+        $automation->setDisplayConditions(
+            array_map(function($displayCondition) {
+                return new DisplayCondition(
+                    $displayCondition['property'],
+                    $displayCondition['operator'],
+                    $displayCondition['value']
+                );
+            }, $this->displayConditions)
+        );
 
         $componentOptions = ['entityClass' => $this->entityClass];
         if (array_key_exists('id', $options)) {
