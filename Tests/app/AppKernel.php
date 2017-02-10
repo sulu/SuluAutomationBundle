@@ -17,6 +17,16 @@ use Symfony\Component\Config\Loader\LoaderInterface;
  */
 class AppKernel extends SuluTestKernel
 {
+    public function registerBundles()
+    {
+        $bundles = parent::registerBundles();
+
+        $bundles[] = new \Task\TaskBundle\TaskBundle();
+        $bundles[] = new \Sulu\Bundle\AutomationBundle\SuluAutomationBundle();
+
+        return $bundles;
+    }
+
     /**
      * {@inheritdoc}
      */

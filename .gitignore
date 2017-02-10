@@ -1,6 +1,6 @@
 /Tests/app/cache/*
 /Tests/app/logs/*
-/Test/app/data/*
+/Tests/app/data/*
 /node_modules/
 /vendor/
 /composer.phar
