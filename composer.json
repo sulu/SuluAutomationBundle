@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "sulu/sulu": "1.5.*@RC",
+        "sulu/sulu": "dev-develop",
         "php-task/task-bundle": "^1.0@RC",
         "willdurand/hateoas-bundle": "^1.2",
         "jms/serializer-bundle": "^1.1",
