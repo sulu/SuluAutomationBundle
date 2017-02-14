@@ -11,6 +11,7 @@
 
 namespace Functional\Controller;
 
+use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Tests\Handler\FirstHandler;
 use Sulu\Bundle\AutomationBundle\Tests\Handler\SecondHandler;
 use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
@@ -332,6 +333,30 @@ class TaskControllerTest extends SuluTestCase
         $this->assertEquals($postData['handlerClass'], $responseData['handlerClass']);
         $this->assertEquals($postData['schedule'], $responseData['schedule']);
         $this->assertEquals($postData['locale'], $responseData['locale']);
+    }
+
+    public function testGetWithoutCreator()
+    {
+        $task = new Task();
+        $task->setEntityClass(Task::class);
+        $task->setEntityId(1);
+        $task->setLocale('de');
+        $task->setHandlerClass(FirstHandler::class);
+        $task->setSchedule(new \DateTime());
+
+        $taskManager = $this->getContainer()->get('sulu_automation.tasks.manager');
+        $taskManager->create($task);
+        $this->getEntityManager()->flush();
+
+        $client = $this->createAuthenticatedClient();
+        $client->request('GET', '/api/tasks/' . $task->getId());
+        $this->assertHttpStatusCode(200, $client->getResponse());
+
+        $responseData = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertEquals($task->getId(), $responseData['id']);
+        $this->assertEquals('', $responseData['creator']);
+        $this->assertEquals('', $responseData['changer']);
     }
 
     public function testDelete()

@@ -215,7 +215,12 @@ class Task implements TaskInterface
      */
     public function getCreatorFullName()
     {
-        return $this->getCreator()->getFullName();
+        $creator = $this->getCreator();
+        if (!$creator) {
+            return '';
+        }
+
+        return $creator->getFullName();
     }
 
     /**
@@ -223,6 +228,11 @@ class Task implements TaskInterface
      */
     public function getChangerFullName()
     {
-        return $this->getChanger()->getFullName();
+        $changer = $this->getChanger();
+        if (!$changer) {
+            return '';
+        }
+
+        return $changer->getFullName();
     }
 }
