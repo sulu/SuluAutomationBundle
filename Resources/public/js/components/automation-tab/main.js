@@ -91,6 +91,11 @@ define([
 
                 this.$el.find('#task-history-container').removeClass('hidden');
             }.bind(this));
+
+            this.sandbox.once('husky.datagrid.tasks.loaded', function(data) {
+                this.notificationBadge = data.total;
+                this.updateNotification(this.notificationBadge);
+            }.bind(this));
         },
 
         startTasksComponents: function() {
@@ -226,7 +231,7 @@ define([
         deleteTasks: function(ids) {
             return manager.deleteItems(ids).then(function() {
                 _.each(ids, function(id) {
-                    --this.notificationBadge;
+                    this.decrementNotificationBadge();
                     this.sandbox.emit('husky.datagrid.tasks.record.remove', id);
                     this.sandbox.emit('sulu.automation.task.remove', id);
                 }.bind(this));
@@ -237,7 +242,7 @@ define([
         deleteTask: function(id) {
             return manager.deleteItem(id).then(function() {
                 this.sandbox.emit('husky.datagrid.tasks.record.remove', id);
-                this.updateNotification(--this.notificationBadge);
+                this.updateNotification(this.decrementNotificationBadge());
             }.bind(this));
         },
 
@@ -263,9 +268,21 @@ define([
                 );
 
                 if (!data.id) {
-                    this.updateNotification(++this.notificationBadge);
+                    this.updateNotification(this.incrementNotificationBadge());
                 }
             }.bind(this));
+        },
+
+        incrementNotificationBadge: function() {
+            return ++this.notificationBadge;
+        },
+
+        decrementNotificationBadge: function() {
+            if (this.notificationBadge === 0) {
+                return 0;
+            }
+
+            return --this.notificationBadge;
         },
 
         updateNotification: function(notificationBadge) {
