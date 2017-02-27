@@ -278,7 +278,7 @@ define([
         },
 
         decrementNotificationBadge: function() {
-            if (this.notificationBadge === 0) {
+            if (this.notificationBadge <= 0) {
                 return 0;
             }
 
