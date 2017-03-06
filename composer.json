@@ -11,13 +11,13 @@
         }
     ],
     "require": {
-        "sulu/sulu": "1.5.*@RC",
-        "php-task/task-bundle": "^1.0@RC",
+        "sulu/sulu": "1.5.*",
+        "php-task/task-bundle": "^1.0",
         "willdurand/hateoas-bundle": "^1.2",
         "jms/serializer-bundle": "^1.1",
 
-        "sulu/document-manager": "^0.9@RC",
-        "php-task/php-task": "^1.0@RC"
+        "sulu/document-manager": "^0.9",
+        "php-task/php-task": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.8 || ~5.0",
