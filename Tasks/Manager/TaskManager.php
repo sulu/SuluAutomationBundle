@@ -88,7 +88,8 @@ class TaskManager implements TaskManagerInterface
      */
     public function update(TaskInterface $task)
     {
-        $event = $this->eventDispatcher->dispatch(Events::TASK_UPDATE_EVENT, new TaskUpdateEvent($task));
+        $event = new TaskUpdateEvent($task);
+        $this->eventDispatcher->dispatch(Events::TASK_UPDATE_EVENT, $event);
         $this->scheduler->reschedule($task);
 
         if ($event->isCanceled()) {
@@ -106,7 +107,8 @@ class TaskManager implements TaskManagerInterface
         $task = $this->findById($id);
         $this->scheduler->remove($task);
 
-        $event = $this->eventDispatcher->dispatch(Events::TASK_REMOVE_EVENT, new TaskRemoveEvent($task));
+        $event = new TaskRemoveEvent($task);
+        $this->eventDispatcher->dispatch(Events::TASK_REMOVE_EVENT, $event);
         if ($event->isCanceled()) {
             return;
         }
