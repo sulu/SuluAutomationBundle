@@ -5,17 +5,20 @@ language: php
 cache:
   directories:
     - $HOME/.composer/cache
-    - downloads
 
 matrix:
   include:
     - php: 5.5
+      env:
+          - COMPOSER_FLAGS="--prefer-lowest --prefer-dist --no-interaction"
     - php: 7.0
+      env:
+          - COMPOSER_FLAGS="--prefer-dist --no-interaction"
 
 before_script:
   - phpenv config-rm xdebug.ini
   - composer self-update
-  - composer install  --prefer-dist --no-interaction
+  - composer update $COMPOSER_FLAGS
   - ./Tests/app/console doctrine:database:create
   - ./Tests/app/console doctrine:schema:create
 
