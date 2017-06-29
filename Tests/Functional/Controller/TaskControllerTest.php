@@ -343,6 +343,8 @@ class TaskControllerTest extends SuluTestCase
         $task->setLocale('de');
         $task->setHandlerClass(FirstHandler::class);
         $task->setSchedule(new \DateTime());
+        $task->setScheme('http');
+        $task->setHost('sulu.io');
 
         $taskManager = $this->getContainer()->get('sulu_automation.tasks.manager');
         $taskManager->create($task);

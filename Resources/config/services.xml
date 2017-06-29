@@ -39,6 +39,13 @@
             <tag name="jms_serializer.event_subscriber"/>
         </service>
 
+        <service id="sulu_automation.task.event_subscriber" class="Sulu\Bundle\AutomationBundle\EventSubscriber\PHPTaskEventSubscriber">
+            <argument type="service" id="request_stack"/>
+            <argument type="service" id="sulu.repository.task"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <!-- FIXME hack to enable doctrine object constructor -->
         <!--
           could be fixed in serializer by changing JMS\SerializerBundle\DependencyInjection\Compiler\DoctrinePass:49

@@ -65,10 +65,9 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
      */
     public function configureOptionsResolver(OptionsResolver $optionsResolver)
     {
-        return $optionsResolver->setRequired(['id', 'locale'])->setAllowedTypes('id', 'string')->setAllowedTypes(
-            'locale',
-            'string'
-        );
+        return $optionsResolver->setRequired(['id', 'locale'])
+            ->setAllowedTypes('id', 'string')
+            ->setAllowedTypes('locale', 'string');
     }
 
     /**

@@ -14,6 +14,9 @@
         <field name="schedule" type="datetime" column="schedule"/>
         <field name="locale" type="string" column="locale" length="5"/>
 
+        <field name="scheme" type="string" column="scheme" length="5"/>
+        <field name="host" type="string" column="host"/>
+
         <field name="taskId" type="guid" nullable="true">
             <options>
                 <option name="references">
