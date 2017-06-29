@@ -206,9 +206,17 @@ class TaskController extends RestController implements ClassResourceInterface, S
      */
     public function postAction(Request $request)
     {
+        $data = array_merge(
+            [
+                'scheme' => $request->getScheme(),
+                'host' => $request->getHost(),
+            ],
+            array_filter($request->request->all())
+        );
+
         $manager = $this->getTaskManager();
         $task = $this->get('serializer')->deserialize(
-            json_encode(array_filter($request->request->all())),
+            json_encode($data),
             Task::class,
             'json',
             DeserializationContext::create()->setGroups(['api'])
@@ -230,8 +238,17 @@ class TaskController extends RestController implements ClassResourceInterface, S
      */
     public function putAction($id, Request $request)
     {
+        $data = array_merge(
+            [
+                'id' => $id,
+                'scheme' => $request->getScheme(),
+                'host' => $request->getHost(),
+            ],
+            array_filter($request->request->all())
+        );
+
         $task = $this->get('serializer')->deserialize(
-            json_encode(array_merge(['id' => $id], $request->request->all())),
+            json_encode($data),
             Task::class,
             'json',
             DeserializationContext::create()->setGroups(['api'])

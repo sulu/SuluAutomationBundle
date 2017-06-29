@@ -86,6 +86,20 @@ interface TaskInterface extends AuditableInterface
     public function setTaskId($taskId);
 
     /**
+     * Returns host.
+     *
+     * @return string
+     */
+    public function getHost();
+
+    /**
+     * Returns scheme.
+     *
+     * @return string
+     */
+    public function getScheme();
+
+    /**
      * Returns creator full-name.
      *
      * @return string

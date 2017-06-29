@@ -59,6 +59,14 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
     /**
      * {@inheritdoc}
      */
+    public function findByTaskId($id)
+    {
+        return $this->findOneBy(['taskId' => $id]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function countFutureTasks($entityClass, $entityId, $locale = null)
     {
         $queryBuilder = $this->createQueryBuilder('task')

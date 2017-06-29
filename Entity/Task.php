@@ -57,6 +57,16 @@ class Task implements TaskInterface
     private $taskId;
 
     /**
+     * @var string
+     */
+    private $host;
+
+    /**
+     * @var string
+     */
+    private $scheme;
+
+    /**
      * {@inheritdoc}
      */
     public function getId()
@@ -206,6 +216,50 @@ class Task implements TaskInterface
     public function setTaskId($taskId)
     {
         $this->taskId = $taskId;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
+
+    /**
+     * Set host.
+     *
+     * @param string $host
+     *
+     * @return $this
+     */
+    public function setHost($host)
+    {
+        $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getScheme()
+    {
+        return $this->scheme;
+    }
+
+    /**
+     * Set scheme.
+     *
+     * @param string $scheme
+     *
+     * @return $this
+     */
+    public function setScheme($scheme)
+    {
+        $this->scheme = $scheme;
 
         return $this;
     }
