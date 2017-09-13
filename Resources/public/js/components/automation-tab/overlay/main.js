@@ -11,6 +11,11 @@ define(['services/suluautomation/task-manager', 'text!./form.html'], function(ma
 
     'use strict';
 
+    var constants = {
+        longDate: "yyyy'-'MM'-'dd'T'HH':'mm':'ss",
+        dateFormatWithTimezone: "yyyy'-'MM'-'dd'T'HH':'mm':'sszz'00'",
+    };
+
     return {
 
         defaults: {
@@ -99,21 +104,26 @@ define(['services/suluautomation/task-manager', 'text!./form.html'], function(ma
         },
 
         decodeData: function(data) {
-            var date = !!data.schedule ? new Date(data.schedule) : null;
+            var date = !!data.schedule ?
+                Globalize.parseDate(data.schedule, constants.dateFormatWithTimezone) :
+                null;
 
             return {
                 handlerClass: data.handlerClass,
                 date: !!date ? Globalize.format(date, "yyyy'-'MM'-'dd") : '',
                 time: !!date ? Globalize.format(date, "HH':'mm':'ss") : ''
-            }
+            };
         },
 
         encodeData: function(data) {
             return {
                 id: this.options.id,
                 handlerClass: data.handlerClass,
-                schedule: Globalize.format(new Date(data.date + ' ' + data.time), "yyyy'-'MM'-'dd'T'HH':'mm':'ssz'00'")
-            }
+                schedule: Globalize.format(
+                    Globalize.parseDate(data.date + 'T' + data.time, constants.dateFormat),
+                    constants.dateFormatWithTimezone
+                )
+            };
         },
 
         removeTask: function() {

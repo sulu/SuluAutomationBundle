@@ -17,6 +17,7 @@ matrix:
 
 before_script:
   - phpenv config-rm xdebug.ini
+  - phpenv config-add Tests/travis.php.ini
   - composer self-update
   - composer update $COMPOSER_FLAGS
   - ./Tests/app/console doctrine:database:create
