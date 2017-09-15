@@ -1,7 +1,7 @@
 # SuluAutomationBundle
 
 [![Build Status](https://travis-ci.org/sulu/SuluAutomationBundle.svg)](https://travis-ci.org/sulu/SuluAutomationBundle)
-[![StyleCI](https://styleci.io/repos/61883398/shield)](https://styleci.io/repos/61883398)
+[![StyleCI](https://styleci.io/repos/81314407/shield)](https://styleci.io/repos/81314407)
 
 The SuluAutomationBundle provides a way to manages future tasks which can be scheduled for entities in the Sulu-Admin.
 For example schedule the publishing of a page to a specific datetime in the future.
