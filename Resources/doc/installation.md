@@ -78,3 +78,7 @@ should run the `task:run` command.
 ```console
 bin/adminconsole task:run
 ```
+
+## Step 7: Modify user roles
+
+Admins won't automatically start seeing automation tab. You need to modify your user roles and grant permissions to automations in order for that to work.
