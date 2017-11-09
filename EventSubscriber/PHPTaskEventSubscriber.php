@@ -65,7 +65,7 @@ class PHPTaskEventSubscriber implements EventSubscriberInterface
             ['_task_id' => $event->getTask()->getUuid()],
             [],
             [],
-            ['SERVER_NAME' => $task->getHost(), 'HTTPS' => $task->getScheme() === 'http' ? 'off' : 'on']
+            ['SERVER_NAME' => $task->getHost(), 'HTTPS' => 'http' === $task->getScheme() ? 'off' : 'on']
         );
 
         $this->requestStack->push($request);
