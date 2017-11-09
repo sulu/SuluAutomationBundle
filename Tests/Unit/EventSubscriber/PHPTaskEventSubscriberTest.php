@@ -75,8 +75,8 @@ class PHPTaskEventSubscriberTest extends \PHPUnit_Framework_TestCase
         $this->requestStack->push(
             Argument::that(
                 function (Request $request) use ($event) {
-                    return $request->getScheme() === 'http'
-                           && $request->getHost() === 'sulu.io'
+                    return 'http' === $request->getScheme()
+                           && 'sulu.io' === $request->getHost()
                            && $request->attributes->get('_task_id') === $event->getTask()->getUuid();
                 }
             )
@@ -97,8 +97,8 @@ class PHPTaskEventSubscriberTest extends \PHPUnit_Framework_TestCase
         $this->requestStack->push(
             Argument::that(
                 function (Request $request) use ($event) {
-                    return $request->getScheme() === 'https'
-                           && $request->getHost() === 'sulu.io'
+                    return 'https' === $request->getScheme()
+                           && 'sulu.io' === $request->getHost()
                            && $request->attributes->get('_task_id') === $event->getTask()->getUuid();
                 }
             )
