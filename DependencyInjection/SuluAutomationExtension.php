@@ -38,6 +38,7 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
                     'metadata' => [
                         'directories' => [
                             [
+                                'name' => 'sulu_automation',
                                 'path' => __DIR__ . '/../Resources/config/serializer',
                                 'namespace_prefix' => 'Sulu\Bundle\AutomationBundle\Entity',
                             ],
