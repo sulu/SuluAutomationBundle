@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "sulu/sulu": "^1.5",
+        "sulu/sulu": "^2.0",
         "php-task/task-bundle": "^1.0",
         "willdurand/hateoas-bundle": "^1.2",
         "jms/serializer-bundle": "^1.1 || ^2.0"
@@ -25,6 +25,12 @@
     "autoload": {
         "psr-4": {
             "Sulu\\Bundle\\AutomationBundle\\": ""
+        }
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-aliases": {
+            "dev-develop": "2.0-dev"
         }
     }
 }
