@@ -11,6 +11,7 @@
         }
     ],
     "require": {
+        "php": "^7.1",
         "sulu/sulu": "^2.0",
         "php-task/task-bundle": "^1.0",
         "willdurand/hateoas-bundle": "^1.2",
