@@ -11,6 +11,7 @@
 
 namespace Sulu\Bundle\AutomationBundle\Tests\Unit\EventSubscriber;
 
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Sulu\Bundle\AutomationBundle\EventSubscriber\PHPTaskEventSubscriber;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
@@ -19,11 +20,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Task\Event\Events;
 use Task\Event\TaskEvent;
-use Task\TaskInterface as PHPTaskInterface;
-
 /**
  * Unit tests for php-task event-subscriber.
- */use PHPUnit\Framework\TestCase;
+ */use Task\TaskInterface as PHPTaskInterface;
 
 class PHPTaskEventSubscriberTest extends TestCase
 {

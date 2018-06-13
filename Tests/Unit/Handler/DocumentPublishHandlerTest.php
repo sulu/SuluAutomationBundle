@@ -11,17 +11,16 @@
 
 namespace Sulu\Bundle\AutomationBundle\Tests\Unit\Handler;
 
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Sulu\Bundle\AutomationBundle\Handler\DocumentPublishHandler;
 use Sulu\Bundle\ContentBundle\Document\HomeDocument;
 use Sulu\Bundle\ContentBundle\Document\PageDocument;
 use Sulu\Component\Content\Document\Behavior\WorkflowStageBehavior;
 use Sulu\Component\DocumentManager\DocumentManagerInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-
 /**
  * Unit tests for publish handler.
- */use PHPUnit\Framework\TestCase;
+ */use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DocumentPublishHandlerTest extends TestCase
 {
