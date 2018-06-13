@@ -7,7 +7,7 @@
             <orm:field-name>%sulu.model.task.class%.creator</orm:field-name>
         </orm:join>
         <orm:join>
-            <orm:entity-name>%sulu_contact.contact.entity%</orm:entity-name>
+            <orm:entity-name>%sulu.model.contact.class%</orm:entity-name>
             <orm:field-name>%sulu.model.user.class%.contact</orm:field-name>
         </orm:join>
     </orm:joins>
@@ -17,7 +17,7 @@
             <orm:field-name>%sulu.model.task.class%.changer</orm:field-name>
         </orm:join>
         <orm:join>
-            <orm:entity-name>%sulu_contact.contact.entity%</orm:entity-name>
+            <orm:entity-name>%sulu.model.contact.class%</orm:entity-name>
             <orm:field-name>%sulu.model.user.class%.contact</orm:field-name>
         </orm:join>
     </orm:joins>
@@ -68,13 +68,13 @@
                                 list:translation="sulu_automation.list.creator" list:sortable="false">
             <orm:field>
                 <orm:field-name>firstName</orm:field-name>
-                <orm:entity-name>%sulu_contact.contact.entity%</orm:entity-name>
+                <orm:entity-name>%sulu.model.contact.class%</orm:entity-name>
 
                 <orm:joins ref="creator"/>
             </orm:field>
             <orm:field>
                 <orm:field-name>lastName</orm:field-name>
-                <orm:entity-name>%sulu_contact.contact.entity%</orm:entity-name>
+                <orm:entity-name>%sulu.model.contact.class%</orm:entity-name>
 
                 <orm:joins ref="creator"/>
             </orm:field>
@@ -84,13 +84,13 @@
                                 list:sortable="false">
             <orm:field>
                 <orm:field-name>firstName</orm:field-name>
-                <orm:entity-name>%sulu_contact.contact.entity%</orm:entity-name>
+                <orm:entity-name>%sulu.model.contact.class%</orm:entity-name>
 
                 <orm:joins ref="changer"/>
             </orm:field>
             <orm:field>
                 <orm:field-name>lastName</orm:field-name>
-                <orm:entity-name>%sulu_contact.contact.entity%</orm:entity-name>
+                <orm:entity-name>%sulu.model.contact.class%</orm:entity-name>
 
                 <orm:joins ref="changer"/>
             </orm:field>

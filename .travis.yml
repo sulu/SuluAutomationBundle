@@ -8,10 +8,10 @@ cache:
 
 matrix:
   include:
-    - php: 5.5
+    - php: 7.1
       env:
-          - COMPOSER_FLAGS="--prefer-lowest --prefer-dist --no-interaction"
-    - php: 7.0
+          - COMPOSER_FLAGS="--prefer-lowest --prefer-stable --prefer-dist --no-interaction"
+    - php: 7.2
       env:
           - COMPOSER_FLAGS="--prefer-dist --no-interaction"
 
@@ -25,4 +25,3 @@ before_script:
 
 script:
   - vendor/bin/phpunit
-

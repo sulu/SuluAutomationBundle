@@ -1,5 +1,14 @@
 # Upgrade
 
+## 2.0.0 (unreleased)
+
+Following dependencies are updated and have new minimum requirements:
+
+ - sulu/sulu: ^1.6 -> ^2.0
+ - php-task/task-bundle: ^1.2 -> ^2.0
+ - jms/serializer-bundle: ^1.1 -> ^2.0
+ - friendsofsymfony/rest-bundle: ^1.6 -> ^2.0
+
 ## 1.2.0
 
 ### Fake-Request for task handlers

@@ -270,7 +270,7 @@ class TaskControllerTest extends SuluTestCase
         $locale = 'de'
     ) {
         $date = new \DateTime($schedule);
-        $scheduleDate = $date->format('Y-m-d\TH:i:sO');
+        $scheduleDate = $date->format('c');
 
         $client = $this->createAuthenticatedClient();
         $client->request(
@@ -301,7 +301,7 @@ class TaskControllerTest extends SuluTestCase
         $postData = $this->testPost();
 
         $date = new \DateTime($schedule);
-        $scheduleDate = $date->format('Y-m-d\TH:i:sO');
+        $scheduleDate = $date->format('c');
 
         $client = $this->createAuthenticatedClient();
         $client->request(

@@ -11,6 +11,7 @@
 
 namespace Sulu\Bundle\AutomationBundle\Tests\Unit\EventSubscriber;
 
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Sulu\Bundle\AutomationBundle\EventSubscriber\PHPTaskEventSubscriber;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
@@ -24,7 +25,7 @@ use Task\TaskInterface as PHPTaskInterface;
 /**
  * Unit tests for php-task event-subscriber.
  */
-class PHPTaskEventSubscriberTest extends \PHPUnit_Framework_TestCase
+class PHPTaskEventSubscriberTest extends TestCase
 {
     /**
      * @var RequestStack

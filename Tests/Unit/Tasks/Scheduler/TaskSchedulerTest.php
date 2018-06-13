@@ -11,6 +11,7 @@
 
 namespace Sulu\Bundle\AutomationBundle\Tests\Unit\Scheduler;
 
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
@@ -28,7 +29,7 @@ use Task\TaskStatus;
 /**
  * Tests for class task-event-listener.
  */
-class TaskSchedulerTest extends \PHPUnit_Framework_TestCase
+class TaskSchedulerTest extends TestCase
 {
     /**
      * @var TaskRepositoryInterface

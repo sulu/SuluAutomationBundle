@@ -11,6 +11,7 @@
 
 namespace Sulu\Bundle\AutomationBundle\Tests\Unit\Tasks\Manager;
 
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Sulu\Bundle\AutomationBundle\Events\Events;
 use Sulu\Bundle\AutomationBundle\Events\TaskEvent;
@@ -24,7 +25,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 /**
  * Tests for task-manager.
  */
-class TaskManagerTest extends \PHPUnit_Framework_TestCase
+class TaskManagerTest extends TestCase
 {
     /**
      * @var TaskRepositoryInterface
