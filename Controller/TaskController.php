@@ -215,7 +215,7 @@ class TaskController extends RestController implements ClassResourceInterface, S
         );
 
         $manager = $this->getTaskManager();
-        $task = $this->get('jms.serializer')->deserialize(
+        $task = $this->get('jms_serializer')->deserialize(
             json_encode($data),
             Task::class,
             'json',
@@ -247,7 +247,7 @@ class TaskController extends RestController implements ClassResourceInterface, S
             array_filter($request->request->all())
         );
 
-        $task = $this->get('jms.serializer')->deserialize(
+        $task = $this->get('jms_serializer')->deserialize(
             json_encode($data),
             Task::class,
             'json',
