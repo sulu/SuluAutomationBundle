@@ -38,7 +38,7 @@
     },
     "minimum-stability": "dev",
     "extra": {
-        "branch-aliases": {
+        "branch-alias": {
             "dev-develop": "2.0-dev"
         }
     }
