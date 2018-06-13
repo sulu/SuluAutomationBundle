@@ -23,8 +23,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Tests for task-manager.
- */
-class TaskManagerTest extends \PHPUnit_Framework_TestCase
+ */use PHPUnit\Framework\TestCase;
+
+class TaskManagerTest extends TestCase
 {
     /**
      * @var TaskRepositoryInterface

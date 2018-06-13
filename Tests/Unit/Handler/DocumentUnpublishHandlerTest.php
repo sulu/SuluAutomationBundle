@@ -21,8 +21,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Unit tests for unpublish handler.
- */
-class DocumentUnpublishHandlerTest extends \PHPUnit_Framework_TestCase
+ */use PHPUnit\Framework\TestCase;
+
+class DocumentUnpublishHandlerTest extends TestCase
 {
     /**
      * @var DocumentManagerInterface

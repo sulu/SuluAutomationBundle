@@ -27,8 +27,9 @@ use Task\TaskStatus;
 
 /**
  * Tests for class task-event-listener.
- */
-class TaskSchedulerTest extends \PHPUnit_Framework_TestCase
+ */use PHPUnit\Framework\TestCase;
+
+class TaskSchedulerTest extends TestCase
 {
     /**
      * @var TaskRepositoryInterface

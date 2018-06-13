@@ -21,8 +21,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Unit tests for publish handler.
- */
-class DocumentPublishHandlerTest extends \PHPUnit_Framework_TestCase
+ */use PHPUnit\Framework\TestCase;
+
+class DocumentPublishHandlerTest extends TestCase
 {
     /**
      * @var DocumentManagerInterface

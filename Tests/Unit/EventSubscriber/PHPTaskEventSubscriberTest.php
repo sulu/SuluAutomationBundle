@@ -23,8 +23,9 @@ use Task\TaskInterface as PHPTaskInterface;
 
 /**
  * Unit tests for php-task event-subscriber.
- */
-class PHPTaskEventSubscriberTest extends \PHPUnit_Framework_TestCase
+ */use PHPUnit\Framework\TestCase;
+
+class PHPTaskEventSubscriberTest extends TestCase
 {
     /**
      * @var RequestStack
