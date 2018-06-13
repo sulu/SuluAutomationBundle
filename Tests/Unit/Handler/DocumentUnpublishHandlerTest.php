@@ -18,10 +18,11 @@ use Sulu\Bundle\ContentBundle\Document\HomeDocument;
 use Sulu\Bundle\ContentBundle\Document\PageDocument;
 use Sulu\Component\Content\Document\Behavior\WorkflowStageBehavior;
 use Sulu\Component\DocumentManager\DocumentManagerInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
 /**
  * Unit tests for unpublish handler.
- */use Symfony\Component\OptionsResolver\OptionsResolver;
-
+ */
 class DocumentUnpublishHandlerTest extends TestCase
 {
     /**

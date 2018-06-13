@@ -24,10 +24,11 @@ use Task\Handler\TaskHandlerFactoryInterface;
 use Task\Scheduler\TaskSchedulerInterface;
 use Task\Storage\TaskExecutionRepositoryInterface;
 use Task\Storage\TaskRepositoryInterface;
+use Task\TaskStatus;
+
 /**
  * Tests for class task-event-listener.
- */use Task\TaskStatus;
-
+ */
 class TaskSchedulerTest extends TestCase
 {
     /**

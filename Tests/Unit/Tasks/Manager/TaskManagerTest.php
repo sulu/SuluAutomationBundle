@@ -20,10 +20,11 @@ use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Scheduler\TaskSchedulerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
 /**
  * Tests for task-manager.
- */use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-
+ */
 class TaskManagerTest extends TestCase
 {
     /**
