@@ -12,8 +12,6 @@
 namespace Sulu\Bundle\AutomationBundle\Admin;
 
 use Sulu\Bundle\AdminBundle\Admin\Admin;
-use Sulu\Bundle\AdminBundle\Navigation\Navigation;
-use Sulu\Bundle\AdminBundle\Navigation\NavigationItem;
 use Sulu\Component\Security\Authorization\PermissionTypes;
 
 /**
@@ -24,11 +22,16 @@ class AutomationAdmin extends Admin
     const TASK_SECURITY_CONTEXT = 'sulu.automation.tasks';
 
     /**
+     * @var string
+     */
+    protected $title;
+
+    /**
      * @param string $title
      */
     public function __construct($title)
     {
-        $this->setNavigation(new Navigation(new NavigationItem($title)));
+        $this->title = $title;
     }
 
     /**
