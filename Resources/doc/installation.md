@@ -70,7 +70,13 @@ This bundle also includes a few translations, which must be exported:
 bin/console sulu:translate:export
 ```
 
-## Step 6: Configure a cronjob
+## Step 6: Install Assets
+
+```console
+bin/adminconsole assets:install
+```
+
+## Step 7: Configure a cronjob
 
 The php-task library requires a cronjob to run the scheduled tasks. The cronjob
 should run the `task:run` command.
@@ -79,6 +85,6 @@ should run the `task:run` command.
 bin/adminconsole task:run
 ```
 
-## Step 7: Modify user roles
+## Step 8: Modify user roles
 
 Admins won't automatically start seeing automation tab. You need to modify your user roles and grant permissions to automations in order for that to work.
