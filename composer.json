@@ -17,7 +17,7 @@
         "symfony/dependency-injection": "^3.4",
         "symfony/http-foundation": "^3.4",
         "symfony/http-kernel": "^3.4",
-        "symfony/force-lowest": "^3.4",
+        "symfony/force-lowest": "^3.4 || ^4.0",
         "sulu/sulu": "^2.0",
         "php-task/task-bundle": "^2.0",
         "willdurand/hateoas-bundle": "^1.2",
