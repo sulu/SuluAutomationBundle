@@ -19,7 +19,7 @@
         "symfony/http-kernel": "^3.4",
         "symfony/force-lowest": "^3.4 || ^4.0",
         "sulu/sulu": "^2.0",
-        "php-task/task-bundle": "^2.0",
+        "php-task/task-bundle": "^1.3",
         "willdurand/hateoas-bundle": "^1.2",
         "jms/serializer-bundle": "^2.0"
     },
