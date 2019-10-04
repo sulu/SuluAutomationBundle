@@ -20,7 +20,6 @@
         "symfony/force-lowest": "^4.0",
         "sulu/sulu": "^2.0",
         "php-task/task-bundle": "^1.3",
-        "willdurand/hateoas-bundle": "^1.2",
         "jms/serializer-bundle": "^3.0"
     },
     "require-dev": {
