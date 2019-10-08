@@ -9,7 +9,29 @@
     </parameters>
 
     <services>
+        <service id="sulu_automation.task_controller"
+                 class="Sulu\Bundle\AutomationBundle\Controller\TaskController"
+                 public="true">
+            <argument type="service" id="fos_rest.view_handler.default"/>
+            <argument type="service" id="security.token_storage"/>
+            <argument type="service" id="sulu_core.doctrine_list_builder_factory"/>
+            <argument type="service" id="task.handler.factory"/>
+            <argument type="service" id="task.repository.task"/>
+            <argument type="service" id="task.repository.task_execution"/>
+            <argument type="service" id="sulu_core.doctrine_rest_helper"/>
+            <argument type="service" id="sulu_automation.tasks.manager"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument type="service" id="jms_serializer"/>
+            <argument type="service" id="sulu_core.list_builder.field_descriptor_factory"/>
+        </service>
+
+        <service id="sulu_automation.handler_provider" class="Sulu\Bundle\AutomationBundle\Handler\AutomationProviderHandler" public="true">
+            <argument type="service" id="task.handler.factory"/>
+        </service>
+
         <service id="sulu_automation.admin" class="Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin">
+            <argument type="service" id="sulu_admin.view_builder_factory"/>
+            <argument type="service" id="sulu_core.webspace.webspace_manager"/>
             <argument>%sulu_admin.name%</argument>
 
             <tag name="sulu.admin"/>
@@ -62,6 +84,7 @@
         <service id="sulu_content.automation.publish_handler"
                  class="Sulu\Bundle\AutomationBundle\Handler\DocumentPublishHandler">
             <argument type="service" id="sulu_document_manager.document_manager"/>
+            <argument type="service" id="translator"/>
 
             <tag name="task.handler"/>
         </service>
@@ -69,6 +92,7 @@
         <service id="sulu_content.automation.unpublish_handler"
                  class="Sulu\Bundle\AutomationBundle\Handler\DocumentUnpublishHandler">
             <argument type="service" id="sulu_document_manager.document_manager"/>
+            <argument type="service" id="translator"/>
 
             <tag name="task.handler"/>
         </service>

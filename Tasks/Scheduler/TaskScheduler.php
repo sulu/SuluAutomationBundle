@@ -59,7 +59,8 @@ class TaskScheduler implements TaskSchedulerInterface
         TaskExecutionRepositoryInterface $phpTaskExecutionRepository,
         TaskHandlerFactoryInterface $taskHandlerFactory,
         PHPTaskSchedulerInterface $taskScheduler
-    ) {
+    )
+    {
         $this->taskRepository = $phpTaskRepository;
         $this->taskExecutionRepository = $phpTaskExecutionRepository;
         $this->taskHandlerFactory = $taskHandlerFactory;
@@ -95,6 +96,11 @@ class TaskScheduler implements TaskSchedulerInterface
         // cannot update finished tasks
         if (TaskStatus::PLANNED !== $executions[0]->getStatus()) {
             throw new TaskExpiredException($task);
+        }
+
+        // TODO doctrine exception on edit
+        foreach ($executions as $execution) {
+            $this->taskExecutionRepository->remove($execution);
         }
 
         $this->taskRepository->remove($phpTask);

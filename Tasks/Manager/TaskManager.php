@@ -78,7 +78,7 @@ class TaskManager implements TaskManagerInterface
         $task->setId(Uuid::uuid4()->toString());
         $this->scheduler->schedule($task);
 
-        $this->eventDispatcher->dispatch(Events::TASK_CREATE_EVENT, new TaskCreateEvent($task));
+        $this->eventDispatcher->dispatch(new TaskCreateEvent($task), Events::TASK_CREATE_EVENT);
 
         return $this->repository->save($task);
     }
@@ -89,7 +89,7 @@ class TaskManager implements TaskManagerInterface
     public function update(TaskInterface $task)
     {
         $event = new TaskUpdateEvent($task);
-        $this->eventDispatcher->dispatch(Events::TASK_UPDATE_EVENT, $event);
+        $this->eventDispatcher->dispatch($event, Events::TASK_UPDATE_EVENT);
         $this->scheduler->reschedule($task);
 
         if ($event->isCanceled()) {
@@ -108,7 +108,7 @@ class TaskManager implements TaskManagerInterface
         $this->scheduler->remove($task);
 
         $event = new TaskRemoveEvent($task);
-        $this->eventDispatcher->dispatch(Events::TASK_REMOVE_EVENT, $event);
+        $this->eventDispatcher->dispatch($event, Events::TASK_REMOVE_EVENT);
         if ($event->isCanceled()) {
             return;
         }

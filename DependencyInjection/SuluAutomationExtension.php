@@ -47,6 +47,32 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
             );
         }
 
+        if ($container->hasExtension('sulu_admin')) {
+            $container->prependExtensionConfig(
+                'sulu_admin',
+                [
+                    'lists' => [
+                        'directories' => [
+                            __DIR__ . '/../Resources/config/lists',
+                        ],
+                    ],
+                    'forms' => [
+                        'directories' => [
+                            __DIR__ . '/../Resources/config/forms',
+                        ],
+                    ],
+                    'resources' => [
+                        'tasks' => [
+                            'routes' => [
+                                'list' => 'sulu_automation.get_tasks',
+                                'detail' => 'sulu_automation.get_task',
+                            ],
+                        ],
+                    ],
+                ]
+            );
+        }
+
         if ($container->hasExtension('fos_rest')) {
             $container->prependExtensionConfig(
                 'fos_rest',

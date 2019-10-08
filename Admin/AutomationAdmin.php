@@ -12,31 +12,68 @@
 namespace Sulu\Bundle\AutomationBundle\Admin;
 
 use Sulu\Bundle\AdminBundle\Admin\Admin;
-use Sulu\Bundle\AdminBundle\Navigation\Navigation;
-use Sulu\Bundle\AdminBundle\Navigation\NavigationItem;
+use Sulu\Bundle\AdminBundle\Admin\View\ToolbarAction;
+use Sulu\Bundle\AdminBundle\Admin\View\ViewBuilderFactoryInterface;
+use Sulu\Bundle\AdminBundle\Admin\View\ViewCollection;
+use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilder;
+use Sulu\Bundle\AutomationBundle\Entity\Task;
+use Sulu\Bundle\AutomationBundle\Handler\DocumentPublishHandler;
+use Sulu\Bundle\AutomationBundle\Handler\DocumentUnpublishHandler;
+use Sulu\Bundle\PageBundle\Admin\PageAdmin;
+use Sulu\Bundle\PageBundle\Document\BasePageDocument;
 use Sulu\Component\Security\Authorization\PermissionTypes;
+use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
+use Sulu\Component\Webspace\Manager\WebspaceManagerInterface;
 
 /**
  * Admin integration of the bundle.
  */
 class AutomationAdmin extends Admin
 {
-    const TASK_SECURITY_CONTEXT = 'sulu.automation.tasks';
+    const SECURITY_CONTEXT = 'sulu_automation.automation.tasks';
+
+    const LIST_VIEW = 'sulu_automation.list';
+
+    const ADD_FORM_VIEW = 'sulu_automation.add_form';
+    const EDIT_FORM_VIEW = 'sulu_automation.edit_form';
+    const DELETE_FORM_VIEW = 'sulu_automation.delete_form';
 
     /**
-     * @param string $title
+     * @var ViewBuilderFactoryInterface
      */
-    public function __construct($title)
+    protected $viewBuilderFactory;
+
+    /**
+     * @var string
+     */
+    protected $title;
+
+    /**
+     * @var WebspaceManagerInterface
+     */
+    protected $webspaceManager;
+
+    public function __construct(
+        ViewBuilderFactoryInterface $viewBuilderFactory,
+        WebspaceManagerInterface $webspaceManager,
+        string $title
+    )
     {
-        $this->setNavigation(new Navigation(new NavigationItem($title)));
+        $this->title = $title;
+        $this->viewBuilderFactory = $viewBuilderFactory;
+        $this->webspaceManager = $webspaceManager;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getJsBundleName()
+    public function configureViews(ViewCollection $viewCollection): void
     {
-        return 'suluautomation';
+        $automationViewBuilder = new AutomationViewBuilder(static::LIST_VIEW, '/automation');
+        $automationViewBuilder
+            ->setEntityClass(BasePageDocument::class)
+            ->addHandlerClass(DocumentUnpublishHandler::class)
+            ->addHandlerClass(DocumentPublishHandler::class)
+            ->setParent(PageAdmin::EDIT_FORM_VIEW);
+
+        $viewCollection->add($automationViewBuilder);
     }
 
     /**
@@ -47,7 +84,7 @@ class AutomationAdmin extends Admin
         return [
             'Sulu' => [
                 'Automation' => [
-                    self::TASK_SECURITY_CONTEXT => [
+                    self::SECURITY_CONTEXT => [
                         PermissionTypes::VIEW,
                         PermissionTypes::ADD,
                         PermissionTypes::EDIT,

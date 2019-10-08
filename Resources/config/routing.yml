@@ -1,0 +1,5 @@
+sulu_automation.import:
+    path: /task-handler
+    defaults: { _controller: SuluAutomationBundle:TaskHandler:get }
+
+#TODO

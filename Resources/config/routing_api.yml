@@ -1,0 +1,6 @@
+sulu_automation.tasks:
+    type: rest
+    name_prefix: sulu_automation.
+    resource: sulu_automation.task_controller
+    options:
+        expose: true

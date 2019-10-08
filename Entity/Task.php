@@ -11,6 +11,7 @@
 
 namespace Sulu\Bundle\AutomationBundle\Entity;
 
+use JMS\Serializer\Annotation as Serializer;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Component\Persistence\Model\AuditableTrait;
 
@@ -19,7 +20,10 @@ use Sulu\Component\Persistence\Model\AuditableTrait;
  */
 class Task implements TaskInterface
 {
+    const RESOURCE_KEY = 'tasks';
+
     use AuditableTrait;
+
 
     /**
      * @var string
@@ -65,6 +69,7 @@ class Task implements TaskInterface
      * @var string
      */
     private $scheme;
+
 
     /**
      * {@inheritdoc}
@@ -288,5 +293,15 @@ class Task implements TaskInterface
         }
 
         return $changer->getFullName();
+    }
+
+    public function getTime()
+    {
+        return $this->getSchedule()->format('H:i:s');
+    }
+
+    public function getDate()
+    {
+        return $this->getSchedule()->format('Y-m-d');
     }
 }
