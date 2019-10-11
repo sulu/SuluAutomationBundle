@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of Sulu.
+ *
+ * (c) Sulu GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Sulu\Bundle\AutomationBundle\Metadata;
 
@@ -9,7 +17,6 @@ use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\FormMetadataLoaderInterface;
 use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\OptionMetadata;
 use Sulu\Bundle\AdminBundle\Metadata\MetadataInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
-use Sulu\Bundle\PageBundle\Document\BasePageDocument;
 use Symfony\Component\Translation\TranslatorInterface;
 use Task\Handler\TaskHandlerFactoryInterface;
 
@@ -28,16 +35,14 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
     public function __construct(
         TranslatorInterface $translator,
         TaskHandlerFactoryInterface $taskHandlerFactory
-    )
-    {
+    ) {
         $this->translator = $translator;
         $this->taskHandlerFactory = $taskHandlerFactory;
     }
 
-
     public function getMetadata(string $key, string $locale, array $metadataOptions): ?MetadataInterface
     {
-        if (strcmp('task_details', $key) !== 0) {
+        if (0 !== strcmp('task_details', $key)) {
             return null;
         }
 

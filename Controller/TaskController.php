@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -22,21 +22,21 @@ use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
-use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
-use Sulu\Component\Rest\RestHelperInterface;
-use \Task\Storage\TaskRepositoryInterface;
 use Sulu\Component\Rest\AbstractRestController;
 use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactoryInterface;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptorInterface;
 use Sulu\Component\Rest\ListBuilder\FieldDescriptorInterface;
 use Sulu\Component\Rest\ListBuilder\ListBuilderInterface;
 use Sulu\Component\Rest\ListBuilder\ListRepresentation;
+use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
+use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Component\Security\SecuredControllerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Task\Handler\TaskHandlerFactoryInterface;
 use Task\Storage\TaskExecutionRepositoryInterface;
+use Task\Storage\TaskRepositoryInterface;
 
 /**
  * Provides api for tasks.
@@ -105,8 +105,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer,
         FieldDescriptorFactoryInterface $fieldDescriptorFactory
-    )
-    {
+    ) {
         parent::__construct($viewHandler, $tokenStorage);
         $this->doctrineListBuilderFactory = $doctrineListBuilderFactory;
         $this->taskHandlerFactory = $taskHandlerFactory;

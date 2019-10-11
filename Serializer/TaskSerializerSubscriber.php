@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -42,8 +42,7 @@ class TaskSerializerSubscriber implements EventSubscriberInterface
     public function __construct(
         TaskHandlerFactoryInterface $handlerFactory,
         TaskExecutionRepositoryInterface $taskExecutionRepository
-    )
-    {
+    ) {
         $this->handlerFactory = $handlerFactory;
         $this->taskExecutionRepository = $taskExecutionRepository;
     }

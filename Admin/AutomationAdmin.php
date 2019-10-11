@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -15,8 +15,6 @@ use Sulu\Bundle\AdminBundle\Admin\Admin;
 use Sulu\Bundle\AdminBundle\Admin\View\ViewBuilderFactoryInterface;
 use Sulu\Bundle\AdminBundle\Admin\View\ViewCollection;
 use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilder;
-use Sulu\Bundle\AutomationBundle\Handler\DocumentPublishHandler;
-use Sulu\Bundle\AutomationBundle\Handler\DocumentUnpublishHandler;
 use Sulu\Bundle\PageBundle\Admin\PageAdmin;
 use Sulu\Bundle\PageBundle\Document\BasePageDocument;
 use Sulu\Component\Security\Authorization\PermissionTypes;
@@ -51,8 +49,7 @@ class AutomationAdmin extends Admin
         ViewBuilderFactoryInterface $viewBuilderFactory,
         WebspaceManagerInterface $webspaceManager,
         string $title
-    )
-    {
+    ) {
         $this->title = $title;
         $this->viewBuilderFactory = $viewBuilderFactory;
         $this->webspaceManager = $webspaceManager;
