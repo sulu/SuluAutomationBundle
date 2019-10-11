@@ -12,17 +12,14 @@
 namespace Sulu\Bundle\AutomationBundle\Admin;
 
 use Sulu\Bundle\AdminBundle\Admin\Admin;
-use Sulu\Bundle\AdminBundle\Admin\View\ToolbarAction;
 use Sulu\Bundle\AdminBundle\Admin\View\ViewBuilderFactoryInterface;
 use Sulu\Bundle\AdminBundle\Admin\View\ViewCollection;
 use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilder;
-use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Handler\DocumentPublishHandler;
 use Sulu\Bundle\AutomationBundle\Handler\DocumentUnpublishHandler;
 use Sulu\Bundle\PageBundle\Admin\PageAdmin;
 use Sulu\Bundle\PageBundle\Document\BasePageDocument;
 use Sulu\Component\Security\Authorization\PermissionTypes;
-use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 use Sulu\Component\Webspace\Manager\WebspaceManagerInterface;
 
 /**
@@ -33,10 +30,7 @@ class AutomationAdmin extends Admin
     const SECURITY_CONTEXT = 'sulu_automation.automation.tasks';
 
     const LIST_VIEW = 'sulu_automation.list';
-
-    const ADD_FORM_VIEW = 'sulu_automation.add_form';
     const EDIT_FORM_VIEW = 'sulu_automation.edit_form';
-    const DELETE_FORM_VIEW = 'sulu_automation.delete_form';
 
     /**
      * @var ViewBuilderFactoryInterface
@@ -69,8 +63,6 @@ class AutomationAdmin extends Admin
         $automationViewBuilder = new AutomationViewBuilder(static::LIST_VIEW, '/automation');
         $automationViewBuilder
             ->setEntityClass(BasePageDocument::class)
-            ->addHandlerClass(DocumentUnpublishHandler::class)
-            ->addHandlerClass(DocumentPublishHandler::class)
             ->setParent(PageAdmin::EDIT_FORM_VIEW);
 
         $viewCollection->add($automationViewBuilder);

@@ -23,10 +23,15 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="jms_serializer"/>
             <argument type="service" id="sulu_core.list_builder.field_descriptor_factory"/>
+
+            <tag name="sulu.context" context="admin"/>
         </service>
 
-        <service id="sulu_automation.handler_provider" class="Sulu\Bundle\AutomationBundle\Handler\AutomationProviderHandler" public="true">
+        <service id="sulu_automation.metadata.form_metadata_loader" class="Sulu\Bundle\AutomationBundle\Metadata\FormMetadataLoader">
+            <argument type="service" id="translator"/>
             <argument type="service" id="task.handler.factory"/>
+
+            <tag name="sulu_admin.form_metadata_loader"/>
         </service>
 
         <service id="sulu_automation.admin" class="Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin">
