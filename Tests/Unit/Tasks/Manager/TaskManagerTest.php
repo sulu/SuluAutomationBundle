@@ -107,12 +107,12 @@ class TaskManagerTest extends TestCase
     private function assertEventDispatched($eventName, $task)
     {
         $this->eventDispatcher->dispatch(
-            $eventName,
             Argument::that(
                 function(TaskEvent $event) use ($task) {
                     return $task == $event->getTask();
                 }
-            )
+            ),
+            $eventName
         )->willReturnArgument(1);
     }
 }
