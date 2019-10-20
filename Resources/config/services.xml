@@ -27,6 +27,12 @@
             <tag name="sulu.context" context="admin"/>
         </service>
 
+        <service id="sulu_automation.task_handler_controller"
+                 class="Sulu\Bundle\AutomationBundle\Controller\TaskHandlerController"
+                 public="true">
+            <argument type="service" id="task.handler.factory"/>
+        </service>
+
         <service id="sulu_automation.metadata.form_metadata_loader" class="Sulu\Bundle\AutomationBundle\Metadata\FormMetadataLoader">
             <argument type="service" id="translator"/>
             <argument type="service" id="task.handler.factory"/>
