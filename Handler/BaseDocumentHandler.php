@@ -45,12 +45,14 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function handle(array $workload): array
+    public function handle($workload)
     {
-        /** @var WorkflowStageBehavior $document */
-        $document = $this->documentManager->find($workload['id'], $workload['locale']);
-        $this->handleDocument($document, $workload['locale']);
-        $this->documentManager->flush();
+        if (is_array($workload)) {
+            /** @var WorkflowStageBehavior $document */
+            $document = $this->documentManager->find($workload['id'], $workload['locale']);
+            $this->handleDocument($document, $workload['locale']);
+            $this->documentManager->flush();
+        }
     }
 
     /**

@@ -91,16 +91,6 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
         $dateField->setColSpan(6);
         $dateField->setLabel($this->translator->trans('sulu_automation.task.schedule.date', [], 'admin', $locale));
 
-        $displayOption = new OptionMetadata();
-        $displayOption->setName('display_options');
-        $displayOption->setType('collection');
-
-        $formatOption = new OptionMetadata();
-        $formatOption->setName('format');
-        $formatOption->setValue('yyyy-mm-dd');
-        $displayOption->addValueOption($formatOption);
-
-        $dateField->addOption($displayOption);
         $form->addItem($dateField);
 
         return $form;

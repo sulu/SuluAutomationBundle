@@ -42,7 +42,7 @@ class AutomationViewBuilder extends FormOverlayListViewBuilder implements Automa
     public function setEntityClass(string $entityClass): AutomationViewBuilderInterface
     {
         $this->addRequestParameter('entity-class', $entityClass);
-        $this->addFormMetadata(['entity-class' => $entityClass]);
+        $this->addMetadataRequestParameters(['entity-class' => $entityClass]);
 
         return $this;
     }
