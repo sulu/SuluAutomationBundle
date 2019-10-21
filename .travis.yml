@@ -20,8 +20,7 @@ matrix:
           - CODE_COVERAGE="--coverage-clover=coverage.clover"
           - PHPSTAN=true
 
-before_script:
-  - phpenv config-rm xdebug.ini
+before_install:
   - phpenv config-add Tests/travis.php.ini
   - composer self-update
 

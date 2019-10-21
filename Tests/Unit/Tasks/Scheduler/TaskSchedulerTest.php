@@ -98,7 +98,7 @@ class TaskSchedulerTest extends TestCase
         $task->getSchedule()->willReturn(new \DateTime('1 day'));
         $phpTaskExecution->getStatus()->willReturn(TaskStatus::PLANNED);
 
-//        $this->taskRepository->remove($phpTask)->shouldBeCalled();
+        $this->taskRepository->remove($phpTask)->shouldBeCalled();
 
         $this->prepareCreateWorkload($task);
         $this->prepareScheduleTask($task);
