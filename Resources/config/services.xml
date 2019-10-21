@@ -49,7 +49,7 @@
             <tag name="sulu.context" context="admin"/>
         </service>
 
-        <service id="sulu_automation.tasks.manager" class="Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManager">
+        <service id="sulu_automation.tasks.manager" class="Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManager" public="true">
             <argument type="service" id="sulu.repository.task"/>
             <argument type="service" id="sulu_automation.tasks.scheduler"/>
             <argument type="service" id="event_dispatcher"/>

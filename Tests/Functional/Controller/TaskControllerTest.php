@@ -270,7 +270,6 @@ class TaskControllerTest extends SuluTestCase
         $locale = 'de'
     ) {
         $date = new \DateTime($schedule);
-        $scheduleDate = $date->format('c');
 
         $client = $this->createAuthenticatedClient();
         $client->request(
@@ -278,9 +277,10 @@ class TaskControllerTest extends SuluTestCase
             '/api/tasks',
             [
                 'handlerClass' => $handlerClass,
-                'schedule' => $scheduleDate,
-                'entityClass' => $entityClass,
-                'entityId' => $entityId,
+                'date' => $date->format('Y-m-d'),
+                'time' => $date->format('H:i:s'),
+                'entity-class' => $entityClass,
+                'entity-id' => $entityId,
                 'locale' => $locale,
             ]
         );
@@ -290,24 +290,34 @@ class TaskControllerTest extends SuluTestCase
 
         $this->assertArrayHasKey('id', $responseData);
         $this->assertEquals($handlerClass, $responseData['handlerClass']);
-        $this->assertEquals($scheduleDate, $responseData['schedule']);
+        $this->assertEquals($date->format('Y-m-d\TH:i:s'), $responseData['schedule']);
         $this->assertEquals($locale, $responseData['locale']);
 
         return $responseData;
     }
 
-    public function testPut($handlerClass = FirstHandler::class, $schedule = '+2 day')
-    {
+    public function testPut(
+        $handlerClass = FirstHandler::class,
+        $schedule = '+2 day',
+        $entityClass = 'ThisClass',
+        $locale = 'de'
+    ) {
         $postData = $this->testPost();
 
         $date = new \DateTime($schedule);
-        $scheduleDate = $date->format('c');
 
         $client = $this->createAuthenticatedClient();
         $client->request(
             'PUT',
             '/api/tasks/' . $postData['id'],
-            ['handlerClass' => $handlerClass, 'schedule' => $scheduleDate]
+            [
+                'handlerClass' => $handlerClass,
+                'entity-id' => $postData['id'],
+                'entity-class' => $entityClass,
+                'locale' => $locale,
+                'date' => $date->format('Y-m-d'),
+                'time' => $date->format('H:i:s'),
+            ]
         );
         $this->assertHttpStatusCode(200, $client->getResponse());
 
@@ -315,7 +325,7 @@ class TaskControllerTest extends SuluTestCase
 
         $this->assertEquals($postData['id'], $responseData['id']);
         $this->assertEquals($handlerClass, $responseData['handlerClass']);
-        $this->assertEquals($scheduleDate, $responseData['schedule']);
+        $this->assertEquals($date->format('Y-m-d\TH:i:s'), $responseData['schedule']);
         $this->assertEquals(FirstHandler::TITLE, $responseData['taskName']);
     }
 

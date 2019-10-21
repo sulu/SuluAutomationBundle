@@ -93,6 +93,7 @@ class TaskSchedulerTest extends TestCase
         $this->taskRepository->findByUuid('123-312-123')->willReturn($phpTask->reveal());
         $phpTaskExecution = $this->prophesize(TaskExecutionInterface::class);
         $this->taskExecutionRepository->findByTask($phpTask->reveal())->willReturn([$phpTaskExecution->reveal()]);
+        $this->taskExecutionRepository->remove($phpTaskExecution->reveal())->shouldBeCalled();
 
         $phpTask->getFirstExecution()->willReturn(new \DateTime('-1 day'));
         $task->getSchedule()->willReturn(new \DateTime('1 day'));

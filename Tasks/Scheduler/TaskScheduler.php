@@ -97,7 +97,7 @@ class TaskScheduler implements TaskSchedulerInterface
             throw new TaskExpiredException($task);
         }
 
-        // TODO doctrine exception on edit
+        // remove executions for the scheduled task
         foreach ($executions as $execution) {
             $this->taskExecutionRepository->remove($execution);
         }
