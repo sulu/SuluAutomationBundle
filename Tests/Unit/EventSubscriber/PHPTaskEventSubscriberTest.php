@@ -42,7 +42,7 @@ class PHPTaskEventSubscriberTest extends TestCase
      */
     private $eventSubscriber;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->requestStack = $this->prophesize(RequestStack::class);
         $this->taskRepository = $this->prophesize(TaskRepositoryInterface::class);

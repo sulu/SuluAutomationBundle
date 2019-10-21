@@ -47,7 +47,7 @@ class TaskManagerTest extends TestCase
      */
     private $taskManager;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->taskRepository = $this->prophesize(TaskRepositoryInterface::class);
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="./Tests/bootstrap.php" colors="true">
+<phpunit bootstrap="Tests/bootstrap.php" colors="true">
     <testsuites>
         <testsuite name="SuluAutomationBundle Test Suite">
-            <directory suffix="Test.php">./Tests</directory>
+            <directory>./Tests</directory>
         </testsuite>
     </testsuites>
 
@@ -10,15 +10,14 @@
         <whitelist>
             <directory>./</directory>
             <exclude>
-                <directory>./Tests</directory>
-                <directory>./vendor</directory>
+                <directory>Resources/</directory>
+                <directory>Tests/</directory>
+                <directory>vendor/</directory>
             </exclude>
         </whitelist>
     </filter>
 
     <php>
-        <server name="KERNEL_DIR" value="Tests/app"/>
-        <var name="APP_DB" value="mysql"/>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+        <env name="KERNEL_CLASS" value="Sulu\Bundle\AutomationBundle\Tests\Application\Kernel"/>
     </php>
 </phpunit>
