@@ -9,20 +9,24 @@
  * with this source code in the file LICENSE.
  */
 
+namespace Sulu\Bundle\AutomationBundle\Tests\Application;
+
+use Sulu\Bundle\AutomationBundle\SuluAutomationBundle;
 use Sulu\Bundle\TestBundle\Kernel\SuluTestKernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Task\TaskBundle\TaskBundle;
 
 /**
  * Test kernel.
  */
-class AppKernel extends SuluTestKernel
+class Kernel extends SuluTestKernel
 {
     public function registerBundles()
     {
         $bundles = parent::registerBundles();
 
-        $bundles[] = new \Task\TaskBundle\TaskBundle();
-        $bundles[] = new \Sulu\Bundle\AutomationBundle\SuluAutomationBundle();
+        $bundles[] = new TaskBundle();
+        $bundles[] = new SuluAutomationBundle();
 
         return $bundles;
     }
@@ -34,6 +38,7 @@ class AppKernel extends SuluTestKernel
     {
         parent::registerContainerConfiguration($loader);
 
+        $context = $this->getContext();
         $loader->load(__DIR__ . '/config/config.yml');
     }
 }

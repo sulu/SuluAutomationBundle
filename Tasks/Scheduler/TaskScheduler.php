@@ -69,7 +69,7 @@ class TaskScheduler implements TaskSchedulerInterface
     /**
      * {@inheritdoc}
      */
-    public function schedule(TaskInterface $task)
+    public function schedule(TaskInterface $task): void
     {
         $workload = $this->createWorkload($task);
         $task->setTaskId($this->scheduleTask($task, $workload)->getUuid());
@@ -78,16 +78,16 @@ class TaskScheduler implements TaskSchedulerInterface
     /**
      * {@inheritdoc}
      */
-    public function reschedule(TaskInterface $task)
+    public function reschedule(TaskInterface $task): void
     {
         $workload = $this->createWorkload($task);
 
         $phpTask = $this->taskRepository->findByUuid($task->getTaskId());
         $executions = $this->taskExecutionRepository->findByTask($phpTask);
 
-        if ($task->getSchedule() === $phpTask->getFirstExecution()
-            && $task->getHandlerClass() === $phpTask->getHandlerClass()
-            && $workload === $phpTask->getWorkload()
+        if ($task->getSchedule() == $phpTask->getFirstExecution()
+            && $task->getHandlerClass() == $phpTask->getHandlerClass()
+            && $workload == $phpTask->getWorkload()
         ) {
             return;
         }
@@ -109,7 +109,7 @@ class TaskScheduler implements TaskSchedulerInterface
     /**
      * {@inheritdoc}
      */
-    public function remove(TaskInterface $task)
+    public function remove(TaskInterface $task): void
     {
         $phpTask = $this->taskRepository->findByUuid($task->getTaskId());
         $this->taskRepository->remove($phpTask);
@@ -119,11 +119,11 @@ class TaskScheduler implements TaskSchedulerInterface
      * Schedule php-task.
      *
      * @param TaskInterface $task
-     * @param array $workload
+     * @param string[] $workload
      *
      * @return PHPTaskInterface
      */
-    private function scheduleTask(TaskInterface $task, array $workload)
+    private function scheduleTask(TaskInterface $task, array $workload): PHPTaskInterface
     {
         return $this->taskScheduler->createTask($task->getHandlerClass(), $workload)
             ->executeAt($task->getSchedule())
@@ -135,11 +135,12 @@ class TaskScheduler implements TaskSchedulerInterface
      *
      * @param TaskInterface $task
      *
-     * @return array
+     * @return string[]
      *
      * @throws TaskHandlerNotSupportedException
+     * @throws \Task\Handler\TaskHandlerNotExistsException
      */
-    private function createWorkload(TaskInterface $task)
+    private function createWorkload(TaskInterface $task): array
     {
         // TODO get from additional form of handler
         $workload = [];

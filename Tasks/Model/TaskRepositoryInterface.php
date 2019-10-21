@@ -21,7 +21,7 @@ interface TaskRepositoryInterface
      *
      * @return TaskInterface
      */
-    public function create();
+    public function create(): TaskInterface;
 
     /**
      * Save given task-entity.
@@ -30,49 +30,52 @@ interface TaskRepositoryInterface
      *
      * @return TaskInterface
      */
-    public function save(TaskInterface $task);
+    public function save(TaskInterface $task): TaskInterface;
 
     /**
      * Remove task-entity with given id.
      *
      * @param TaskInterface $task
+     *
+     * @return TaskInterface
      */
-    public function remove(TaskInterface $task);
+    public function remove(TaskInterface $task): TaskInterface;
 
     /**
      * Find task-entity with given id.
      *
      * @param int $id
      *
-     * @return TaskInterface
+     * @return TaskInterface|null
      */
-    public function findById($id);
+    public function findById(int $id): ?TaskInterface;
 
     /**
      * Find task-entity with given php-task id.
      *
      * @param int $id
      *
-     * @return TaskInterface
+     * @return TaskInterface|null
      */
-    public function findByTaskId($id);
+    public function findByTaskId(int $id): ?TaskInterface;
 
     /**
      * Count tasks which will be called in the future in given entity.
      *
      * @param string $entityClass
      * @param string $entityId
+     * @param null $locale
      *
      * @return int
      */
-    public function countFutureTasks($entityClass, $entityId, $locale = null);
+    public function countFutureTasks(string $entityClass, string $entityId, $locale = null): int;
 
     /**
      * Revert given task-entity.
      *
-     * @param $task
+     * @param TaskInterface $task
      *
      * @return TaskInterface
      */
-    public function revert(TaskInterface $task);
+    public function revert(TaskInterface $task): TaskInterface;
 }

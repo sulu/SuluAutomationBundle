@@ -23,7 +23,7 @@ class TaskHandlerConfiguration
      *
      * @return static
      */
-    public static function create($title)
+    public static function create(string $title)
     {
         return new self($title);
     }
@@ -36,7 +36,7 @@ class TaskHandlerConfiguration
     /**
      * @param string $title
      */
-    private function __construct($title)
+    private function __construct(string $title)
     {
         $this->title = $title;
     }
@@ -46,7 +46,7 @@ class TaskHandlerConfiguration
      *
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }

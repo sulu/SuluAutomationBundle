@@ -24,7 +24,7 @@ interface TaskSchedulerInterface
      *
      * @param TaskInterface $task
      */
-    public function schedule(TaskInterface $task);
+    public function schedule(TaskInterface $task): void;
 
     /**
      * Reschedule given task.
@@ -33,12 +33,12 @@ interface TaskSchedulerInterface
      *
      * @throws TaskExpiredException
      */
-    public function reschedule(TaskInterface $task);
+    public function reschedule(TaskInterface $task): void;
 
     /**
      * Unschedules given task.
      *
      * @param TaskInterface $task
      */
-    public function remove(TaskInterface $task);
+    public function remove(TaskInterface $task): void;
 }

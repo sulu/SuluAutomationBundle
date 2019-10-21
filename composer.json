@@ -13,22 +13,32 @@
     "require": {
         "php": "^7.2",
         "friendsofsymfony/rest-bundle": "^2.5",
+        "jms/serializer-bundle": "^3.0",
+        "php-task/task-bundle": "^1.3",
+        "sulu/sulu": "^2.0",
         "symfony/config": "^4.3",
         "symfony/dependency-injection": "^4.3",
-        "symfony/http-foundation": "^4.3",
-        "symfony/http-kernel": "^4.3",
         "symfony/force-lowest": "^4.0",
-        "sulu/sulu": "^2.0",
-        "php-task/task-bundle": "^1.3",
-        "jms/serializer-bundle": "^3.0"
+        "symfony/http-foundation": "^4.3",
+        "symfony/http-kernel": "^4.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^8.0",
         "symfony/stopwatch": "^4.3",
         "symfony/browser-kit": "^4.3",
+        "symfony/dotenv": "^4.3",
         "symfony/monolog-bundle": "^3.1",
+        "symfony/templating": "^4.3",
+        "symfony/security-bundle": "4.3.5",
+        "php-ffmpeg/php-ffmpeg": "^0.14.0",
         "jackalope/jackalope-doctrine-dbal": "^1.3.0",
-        "zendframework/zendsearch": "^2.0.0rc6"
+        "zendframework/zendsearch": "@dev",
+        "phpstan/phpstan": "^0.11.12",
+        "phpstan/phpstan-doctrine": "^0.11.5",
+        "phpstan/phpstan-phpunit": "^0.11.2",
+        "phpstan/phpstan-symfony": "^0.11.6",
+        "thecodingmachine/phpstan-strict-rules": "^0.11.2",
+        "jangregor/phpstan-prophecy": "^0.4.1"
     },
     "autoload": {
         "psr-4": {
@@ -40,5 +50,21 @@
         "branch-alias": {
             "dev-develop": "2.0-dev"
         }
+    },
+    "scripts": {
+        "phpstan": [
+            "Tests/Application/bin/console cache:warmup --env dev",
+            "vendor/bin/phpstan analyse"
+        ],
+        "bootstrap-test-env": [
+            "Tests/Application/bin/console doctrine:database:create --if-not-exists",
+            "Tests/Application/bin/console doctrine:schema:update --force"
+        ],
+        "phpunit": [
+            "vendor/bin/phpunit"
+        ]
+    },
+    "config": {
+        "sort-packages": true
     }
 }

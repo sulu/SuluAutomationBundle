@@ -1,16 +1,29 @@
-/Tests/app/cache/*
-/Tests/app/logs/*
-/Tests/app/data/*
+/Tests/Application/cache/*
+/Tests/Application/logs/*
+/Tests/Application/data/*
 /node_modules/
-/vendor/
+/.sass-cache/
+
+# PHPUnit
+/app/phpunit.xml
+/phpunit.xml
+.phpunit.result.cache
+
+# composer
 /composer.phar
 /composer.lock
-/.sass-cache/
-/phpunit.xml
-*~
+/auth.json
+/vendor
 
 # IDEs
 .idea/*
 *.iml
+*~
 
-\.php_cs\.cache
+# tests
+Tests/Application/var
+Tests/Application/.env.test.local
+
+# php-cs-fixer
+.php_cs.cache
+php-cs-fixer

@@ -51,7 +51,8 @@ class TaskManager implements TaskManagerInterface
         TaskRepositoryInterface $repository,
         TaskSchedulerInterface $scheduler,
         EventDispatcherInterface $eventDispatcher
-    ) {
+    )
+    {
         $this->repository = $repository;
         $this->scheduler = $scheduler;
         $this->eventDispatcher = $eventDispatcher;
@@ -60,11 +61,11 @@ class TaskManager implements TaskManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function findById($id)
+    public function findById(int $id): TaskInterface
     {
         $task = $this->repository->findById($id);
         if (!$task) {
-            throw new TaskNotFoundException($id);
+            throw new TaskNotFoundException((string)$id);
         }
 
         return $task;
@@ -73,7 +74,7 @@ class TaskManager implements TaskManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function create(TaskInterface $task)
+    public function create(TaskInterface $task): TaskInterface
     {
         $task->setId(Uuid::uuid4()->toString());
         $this->scheduler->schedule($task);
@@ -86,7 +87,7 @@ class TaskManager implements TaskManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function update(TaskInterface $task)
+    public function update(TaskInterface $task): TaskInterface
     {
         $event = new TaskUpdateEvent($task);
         $this->eventDispatcher->dispatch($event, Events::TASK_UPDATE_EVENT);
@@ -102,7 +103,7 @@ class TaskManager implements TaskManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function remove($id)
+    public function remove(int $id): void
     {
         $task = $this->findById($id);
         $this->scheduler->remove($task);

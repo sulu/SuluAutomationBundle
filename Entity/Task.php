@@ -71,7 +71,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
@@ -79,7 +79,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function setId($id)
+    public function setId(string $id): TaskInterface
     {
         $this->id = $id;
 
@@ -89,7 +89,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getHandlerClass()
+    public function getHandlerClass(): string
     {
         return $this->handlerClass;
     }
@@ -101,7 +101,7 @@ class Task implements TaskInterface
      *
      * @return $this
      */
-    public function setHandlerClass($handlerClass)
+    public function setHandlerClass($handlerClass): self
     {
         $this->handlerClass = $handlerClass;
 
@@ -111,7 +111,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getSchedule()
+    public function getSchedule(): \DateTime
     {
         return $this->schedule;
     }
@@ -123,7 +123,7 @@ class Task implements TaskInterface
      *
      * @return $this
      */
-    public function setSchedule($schedule)
+    public function setSchedule(\DateTime $schedule): self
     {
         $this->schedule = $schedule;
 
@@ -135,7 +135,7 @@ class Task implements TaskInterface
      *
      * @return string
      */
-    public function getLocale()
+    public function getLocale(): string
     {
         return $this->locale;
     }
@@ -147,7 +147,7 @@ class Task implements TaskInterface
      *
      * @return $this
      */
-    public function setLocale($locale)
+    public function setLocale(string $locale): self
     {
         $this->locale = $locale;
 
@@ -157,7 +157,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getEntityClass()
+    public function getEntityClass(): string
     {
         return $this->entityClass;
     }
@@ -169,7 +169,7 @@ class Task implements TaskInterface
      *
      * @return $this
      */
-    public function setEntityClass($entityClass)
+    public function setEntityClass(string $entityClass): self
     {
         $this->entityClass = $entityClass;
 
@@ -179,7 +179,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getEntityId()
+    public function getEntityId(): string
     {
         return $this->entityId;
     }
@@ -191,7 +191,7 @@ class Task implements TaskInterface
      *
      * @return $this
      */
-    public function setEntityId($entityId)
+    public function setEntityId(string $entityId): self
     {
         $this->entityId = $entityId;
 
@@ -203,7 +203,7 @@ class Task implements TaskInterface
      *
      * @return string
      */
-    public function getTaskId()
+    public function getTaskId(): string
     {
         return $this->taskId;
     }
@@ -215,7 +215,7 @@ class Task implements TaskInterface
      *
      * @return $this
      */
-    public function setTaskId($taskId)
+    public function setTaskId(string $taskId): TaskInterface
     {
         $this->taskId = $taskId;
 
@@ -225,7 +225,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getHost()
+    public function getHost(): string
     {
         return $this->host;
     }
@@ -237,7 +237,7 @@ class Task implements TaskInterface
      *
      * @return $this
      */
-    public function setHost($host)
+    public function setHost(string $host): self
     {
         $this->host = $host;
 
@@ -247,7 +247,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getScheme()
+    public function getScheme(): string
     {
         return $this->scheme;
     }
@@ -259,7 +259,7 @@ class Task implements TaskInterface
      *
      * @return $this
      */
-    public function setScheme($scheme)
+    public function setScheme(string $scheme): self
     {
         $this->scheme = $scheme;
 
@@ -269,7 +269,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getCreatorFullName()
+    public function getCreatorFullName(): string
     {
         $creator = $this->getCreator();
         if (!$creator) {
@@ -282,7 +282,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getChangerFullName()
+    public function getChangerFullName(): string
     {
         $changer = $this->getChanger();
         if (!$changer) {

@@ -25,7 +25,7 @@ interface TaskManagerInterface
      *
      * @return TaskInterface
      */
-    public function create(TaskInterface $task);
+    public function create(TaskInterface $task): TaskInterface;
 
     /**
      * Update given task-entity.
@@ -34,14 +34,14 @@ interface TaskManagerInterface
      *
      * @return TaskInterface
      */
-    public function update(TaskInterface $task);
+    public function update(TaskInterface $task): TaskInterface;
 
     /**
      * Removes given task-entity.
      *
      * @param int $id
      */
-    public function remove($id);
+    public function remove(int $id): void;
 
     /**
      * Find task identified by given id.
@@ -50,5 +50,5 @@ interface TaskManagerInterface
      *
      * @return TaskInterface
      */
-    public function findById($id);
+    public function findById(int $id): TaskInterface;
 }
