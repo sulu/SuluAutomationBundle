@@ -36,7 +36,7 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
      * @param string $title
      * @param DocumentManagerInterface $documentManager
      */
-    public function __construct($title, DocumentManagerInterface $documentManager)
+    public function __construct(string $title, DocumentManagerInterface $documentManager)
     {
         $this->title = $title;
         $this->documentManager = $documentManager;
@@ -47,6 +47,7 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
      */
     public function handle($workload)
     {
+        /** @var WorkflowStageBehavior $document */
         $document = $this->documentManager->find($workload['id'], $workload['locale']);
         $this->handleDocument($document, $workload['locale']);
         $this->documentManager->flush();
@@ -58,12 +59,12 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
      * @param WorkflowStageBehavior $document
      * @param string $locale
      */
-    abstract protected function handleDocument(WorkflowStageBehavior $document, $locale);
+    abstract protected function handleDocument(WorkflowStageBehavior $document, string $locale): void;
 
     /**
      * {@inheritdoc}
      */
-    public function configureOptionsResolver(OptionsResolver $optionsResolver)
+    public function configureOptionsResolver(OptionsResolver $optionsResolver): OptionsResolver
     {
         return $optionsResolver->setRequired(['id', 'locale'])
             ->setAllowedTypes('id', 'string')
@@ -73,7 +74,7 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function supports($entityClass)
+    public function supports(string $entityClass): bool
     {
         return is_subclass_of($entityClass, WorkflowStageBehavior::class);
     }
@@ -81,7 +82,7 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration()
+    public function getConfiguration(): TaskHandlerConfiguration
     {
         return TaskHandlerConfiguration::create($this->title);
     }

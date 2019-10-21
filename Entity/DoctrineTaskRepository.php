@@ -46,12 +46,14 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
     public function remove(TaskInterface $task): TaskInterface
     {
         $this->_em->remove($task);
+
+        return $task;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findById(int $id): ?TaskInterface
+    public function findById(string $id): ?TaskInterface
     {
         /** @var TaskInterface $task */
         $task = $this->find($id);
@@ -62,7 +64,7 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
     /**
      * {@inheritdoc}
      */
-    public function findByTaskId(int $id): ?TaskInterface
+    public function findByTaskId(string $id): ?TaskInterface
     {
         /** @var TaskInterface $task */
         $task = $this->findOneBy(['taskId' => $id]);
@@ -84,7 +86,7 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
             ->setParameter('entityId', $entityId)
             ->setParameter('schedule', new \DateTime());
 
-        if ($locale) {
+        if (null != $locale) {
             $queryBuilder->andWhere('task.locale = :locale')
                 ->setParameter('locale', $locale);
         }

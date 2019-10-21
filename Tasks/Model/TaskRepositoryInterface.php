@@ -44,20 +44,20 @@ interface TaskRepositoryInterface
     /**
      * Find task-entity with given id.
      *
-     * @param int $id
+     * @param string $id
      *
      * @return TaskInterface|null
      */
-    public function findById(int $id): ?TaskInterface;
+    public function findById(string $id): ?TaskInterface;
 
     /**
      * Find task-entity with given php-task id.
      *
-     * @param int $id
+     * @param string $id
      *
      * @return TaskInterface|null
      */
-    public function findByTaskId(int $id): ?TaskInterface;
+    public function findByTaskId(string $id): ?TaskInterface;
 
     /**
      * Count tasks which will be called in the future in given entity.

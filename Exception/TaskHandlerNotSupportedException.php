@@ -46,7 +46,7 @@ class TaskHandlerNotSupportedException extends \Exception
      *
      * @return TaskHandlerInterface
      */
-    public function getTaskHandler()
+    public function getTaskHandler(): TaskHandlerInterface
     {
         return $this->taskHandler;
     }
@@ -56,7 +56,7 @@ class TaskHandlerNotSupportedException extends \Exception
      *
      * @return TaskInterface
      */
-    public function getTask()
+    public function getTask(): TaskInterface
     {
         return $this->task;
     }

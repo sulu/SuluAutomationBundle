@@ -31,7 +31,7 @@ class DocumentUnpublishHandler extends BaseDocumentHandler
     /**
      * {@inheritdoc}
      */
-    protected function handleDocument(WorkflowStageBehavior $document, $locale)
+    protected function handleDocument(WorkflowStageBehavior $document, $locale): void
     {
         $this->documentManager->unpublish($document, $locale);
     }

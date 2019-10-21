@@ -46,7 +46,7 @@ class PHPTaskEventSubscriber implements EventSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             Events::TASK_BEFORE => ['pushRequest'],
@@ -59,7 +59,7 @@ class PHPTaskEventSubscriber implements EventSubscriberInterface
      *
      * @param TaskEvent $event
      */
-    public function pushRequest(TaskEvent $event)
+    public function pushRequest(TaskEvent $event): void
     {
         $task = $this->taskRepository->findByTaskId($event->getTask()->getUuid());
         if (!$task) {
@@ -85,7 +85,7 @@ class PHPTaskEventSubscriber implements EventSubscriberInterface
      *
      * @param TaskEvent $event
      */
-    public function popRequest(TaskEvent $event)
+    public function popRequest(TaskEvent $event): void
     {
         $request = $this->requestStack->getCurrentRequest();
         if (!$request || $request->attributes->get('_task_id') !== $event->getTask()->getUuid()) {

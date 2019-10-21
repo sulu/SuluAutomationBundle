@@ -16,6 +16,7 @@ use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializerInterface;
+use Nette\Utils\DateTime;
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
 use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
@@ -49,7 +50,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     ];
 
     /**
-     * @var ListBuilderInterface
+     * @var DoctrineListBuilderFactoryInterface
      */
     protected $doctrineListBuilderFactory;
 
@@ -123,7 +124,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      *
      * @return Response
      */
-    public function cgetFieldsAction()
+    public function cgetFieldsAction(): Response
     {
         return $this->handleView($this->view(array_values($this->getFieldDescriptors())));
     }
@@ -135,7 +136,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      *
      * @return Response
      */
-    public function cgetAction(Request $request)
+    public function cgetAction(Request $request): Response
     {
         $fieldDescriptors = $this->getFieldDescriptors(DoctrineFieldDescriptorInterface::class);
 
@@ -164,11 +165,13 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     /**
      * Extends response item with task-name and status.
      *
-     * @param array $item
+     * @param string[] $item
      *
-     * @return array
+     * @return string[]
+     *
+     * @throws \Task\Handler\TaskHandlerNotExistsException
      */
-    private function extendResponseItem($item)
+    private function extendResponseItem(array $item): array
     {
         $handlerFactory = $this->taskHandlerFactory;
         $handler = $handlerFactory->create($item['handlerClass']);
@@ -197,7 +200,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      *
      * @return ListBuilderInterface
      */
-    private function prepareListBuilder(array $fieldDescriptors, Request $request, ListBuilderInterface $listBuilder)
+    private function prepareListBuilder(array $fieldDescriptors, Request $request, ListBuilderInterface $listBuilder): ListBuilderInterface
     {
         $this->restHelper->initializeListBuilder($listBuilder, $fieldDescriptors);
         $listBuilder->addSelectField($fieldDescriptors['handlerClass']);
@@ -225,7 +228,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         if (null !== ($schedule = $request->get('schedule'))
             && in_array($schedule, array_keys(self::$scheduleComparators))
         ) {
-            $listBuilder->where($fieldDescriptors['schedule'], new \DateTime(), self::$scheduleComparators[$schedule]);
+            $listBuilder->where($fieldDescriptors['schedule'], strval(new \DateTime()), self::$scheduleComparators[$schedule]);
         }
 
         return $listBuilder;
@@ -238,9 +241,9 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      * @param Request $request
      * @param ListBuilderInterface $listBuilder
      *
-     * @return array
+     * @return mixed[]
      */
-    private function executeListBuilder(array $fieldDescriptors, Request $request, ListBuilderInterface $listBuilder)
+    private function executeListBuilder(array $fieldDescriptors, Request $request, ListBuilderInterface $listBuilder): array
     {
         if (null === ($idsParameter = $request->get('ids'))) {
             return $listBuilder->execute();
@@ -262,13 +265,13 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     /**
      * Returns task for given id.
      *
-     * @param int $id
+     * @param string $id
      *
      * @return Response
      *
      * @throws TaskNotFoundException
      */
-    public function getAction($id)
+    public function getAction(string $id): Response
     {
         return $this->handleView($this->view($this->taskManager->findById($id)));
     }
@@ -280,7 +283,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      *
      * @return Response
      */
-    public function postAction(Request $request)
+    public function postAction(Request $request): Response
     {
         $data = array_merge(
             [
@@ -293,15 +296,21 @@ class TaskController extends AbstractRestController implements ClassResourceInte
             array_filter($request->request->all())
         );
 
+        $context = DeserializationContext::create();
+        $context->setGroups(['api']);
+
         /** @var TaskInterface $task */
         $task = $this->serializer->deserialize(
-            json_encode($data),
+            (string) json_encode($data),
             Task::class,
             'json',
-            DeserializationContext::create()->setGroups(['api'])
+            $context
         );
 
-        $task->setSchedule(date_create_from_format('Y-m-d:H:i:s', $data['date'] . ':' . $data['time']));
+        /** @var DateTime $date */
+        $date = date_create_from_format('Y-m-d:H:i:s', $data['date'] . ':' . $data['time']);
+
+        $task->setSchedule($date);
         $this->taskManager->create($task);
 
         $this->entityManager->flush();
@@ -312,12 +321,12 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     /**
      * Update task with given id.
      *
-     * @param int $id
+     * @param string $id
      * @param Request $request
      *
      * @return Response
      */
-    public function putAction($id, Request $request)
+    public function putAction(string $id, Request $request): Response
     {
         $data = array_merge(
             [
@@ -330,11 +339,14 @@ class TaskController extends AbstractRestController implements ClassResourceInte
             array_filter($request->request->all())
         );
 
+        $context = DeserializationContext::create();
+        $context->setGroups(['api']);
+
         $task = $this->serializer->deserialize(
-            json_encode($data),
+            (string) json_encode($data),
             Task::class,
             'json',
-            DeserializationContext::create()->setGroups(['api'])
+            $context
         );
 
         $task->setSchedule(date_create_from_format('Y-m-d:H:i:s', $data['date'] . ':' . $data['time']));
@@ -348,11 +360,11 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     /**
      * Removes task with given id.
      *
-     * @param int $id
+     * @param string $id
      *
      * @return Response
      */
-    public function deleteAction($id)
+    public function deleteAction(string $id): Response
     {
         $manager = $this->taskManager;
         $manager->remove($id);
@@ -369,7 +381,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      *
      * @return Response
      */
-    public function cdeleteAction(Request $request)
+    public function cdeleteAction(Request $request): Response
     {
         $ids = array_filter(explode(',', $request->get('ids')));
         foreach ($ids as $id) {
@@ -388,9 +400,14 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      *
      * @return FieldDescriptorInterface[]
      */
-    private function getFieldDescriptors($type = null)
+    private function getFieldDescriptors(string $type = null): array
     {
-        return $this->fieldDescriptorFactory->getFieldDescriptors(Task::RESOURCE_KEY);
+        $fieldDescriptors = $this->fieldDescriptorFactory->getFieldDescriptors(Task::RESOURCE_KEY);
+        if (!$fieldDescriptors) {
+            return [];
+        }
+
+        return $fieldDescriptors;
     }
 
     /**

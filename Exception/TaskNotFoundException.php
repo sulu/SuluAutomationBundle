@@ -36,7 +36,7 @@ class TaskNotFoundException extends \Exception
      *
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }

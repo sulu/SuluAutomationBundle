@@ -40,7 +40,7 @@ class TaskHandlerController
      *
      * @return Response
      */
-    public function getAction(Request $request)
+    public function getAction(Request $request): Response
     {
         $entityClass = $this->getRequestParameter($request, 'entity-class', true);
 

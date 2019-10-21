@@ -24,19 +24,17 @@ trait CancelTrait
     /**
      * Returns canceled.
      *
-     * @return bool
+     * @return null|bool
      */
-    public function isCanceled()
+    public function isCanceled(): ?bool
     {
         return $this->canceled;
     }
 
     /**
      * Cancel Event.
-     *
-     * @return $this
      */
-    public function cancel()
+    public function cancel(): self
     {
         $this->canceled = true;
         $this->stopPropagation();

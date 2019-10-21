@@ -25,7 +25,7 @@ class FirstHandler implements AutomationTaskHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function configureOptionsResolver(OptionsResolver $optionsResolver)
+    public function configureOptionsResolver(OptionsResolver $optionsResolver): OptionsResolver
     {
         return $optionsResolver;
     }
@@ -33,7 +33,7 @@ class FirstHandler implements AutomationTaskHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function supports($entityClass)
+    public function supports(string $entityClass): bool
     {
         return true;
     }
@@ -41,7 +41,7 @@ class FirstHandler implements AutomationTaskHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration()
+    public function getConfiguration(): TaskHandlerConfiguration
     {
         return TaskHandlerConfiguration::create(self::TITLE);
     }

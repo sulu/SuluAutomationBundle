@@ -99,9 +99,9 @@ class Task implements TaskInterface
      *
      * @param string $handlerClass
      *
-     * @return $this
+     * @return Task
      */
-    public function setHandlerClass($handlerClass): self
+    public function setHandlerClass(string $handlerClass): self
     {
         $this->handlerClass = $handlerClass;
 
@@ -121,9 +121,9 @@ class Task implements TaskInterface
      *
      * @param \DateTime $schedule
      *
-     * @return $this
+     * @return TaskInterface
      */
-    public function setSchedule(\DateTime $schedule): self
+    public function setSchedule(\DateTime $schedule): TaskInterface
     {
         $this->schedule = $schedule;
 
@@ -145,7 +145,7 @@ class Task implements TaskInterface
      *
      * @param string $locale
      *
-     * @return $this
+     * @return Task
      */
     public function setLocale(string $locale): self
     {
@@ -167,7 +167,7 @@ class Task implements TaskInterface
      *
      * @param string $entityClass
      *
-     * @return $this
+     * @return Task
      */
     public function setEntityClass(string $entityClass): self
     {
@@ -187,9 +187,9 @@ class Task implements TaskInterface
     /**
      * Set entity-id.
      *
-     * @param mixed $entityId
+     * @param string $entityId
      *
-     * @return $this
+     * @return Task
      */
     public function setEntityId(string $entityId): self
     {
@@ -213,7 +213,7 @@ class Task implements TaskInterface
      *
      * @param string $taskId
      *
-     * @return $this
+     * @return TaskInterface
      */
     public function setTaskId(string $taskId): TaskInterface
     {
@@ -235,7 +235,7 @@ class Task implements TaskInterface
      *
      * @param string $host
      *
-     * @return $this
+     * @return Task
      */
     public function setHost(string $host): self
     {
@@ -257,7 +257,7 @@ class Task implements TaskInterface
      *
      * @param string $scheme
      *
-     * @return $this
+     * @return Task
      */
     public function setScheme(string $scheme): self
     {
@@ -292,12 +292,12 @@ class Task implements TaskInterface
         return $changer->getFullName();
     }
 
-    public function getTime()
+    public function getTime(): string
     {
         return $this->getSchedule()->format('H:i:s');
     }
 
-    public function getDate()
+    public function getDate(): string
     {
         return $this->getSchedule()->format('Y-m-d');
     }

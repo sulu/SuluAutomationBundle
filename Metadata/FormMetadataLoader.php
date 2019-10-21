@@ -48,9 +48,6 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
 
         /** @var FormMetaData $form */
         $form = new FormMetadata();
-        if (!$form) {
-            return null;
-        }
 
         // Single Select
         $singleSelectHandler = new FieldMetadata('handlerClass');

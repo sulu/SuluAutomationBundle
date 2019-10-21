@@ -47,7 +47,7 @@ class AutomationViewBuilder extends FormOverlayListViewBuilder implements Automa
         return $this;
     }
 
-    private function addRequestParameter(string $key, string $value)
+    private function addRequestParameter(string $key, string $value): void
     {
         $oldRequestParameters = $this->getView()->getOption('requestParameters');
         $newRequestParameters = $oldRequestParameters

@@ -39,16 +39,16 @@ interface TaskManagerInterface
     /**
      * Removes given task-entity.
      *
-     * @param int $id
+     * @param string $id
      */
-    public function remove(int $id): void;
+    public function remove(string $id): void;
 
     /**
      * Find task identified by given id.
      *
-     * @param int $id
+     * @param string $id
      *
      * @return TaskInterface
      */
-    public function findById(int $id): TaskInterface;
+    public function findById(string $id): TaskInterface;
 }

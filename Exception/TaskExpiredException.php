@@ -28,7 +28,7 @@ class TaskExpiredException extends \Exception
      */
     public function __construct(TaskInterface $task)
     {
-        parent::__construct(sprintf('Task "%s" is already expired.', $task->getUuid()));
+        parent::__construct(sprintf('Task "%s" is already expired.', $task->getId()));
 
         $this->task = $task;
     }
@@ -38,7 +38,7 @@ class TaskExpiredException extends \Exception
      *
      * @return TaskInterface
      */
-    public function getTask()
+    public function getTask(): TaskInterface
     {
         return $this->task;
     }

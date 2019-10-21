@@ -15,6 +15,7 @@ use JMS\Serializer\EventDispatcher\Events;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\Metadata\StaticPropertyMetadata;
+use JMS\Serializer\Visitor\SerializationVisitorInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Task\Handler\TaskHandlerFactoryInterface;
@@ -65,8 +66,10 @@ class TaskSerializerSubscriber implements EventSubscriberInterface
      * Append task-name to task-serialization.
      *
      * @param ObjectEvent $event
+     *
+     * @throws \Task\Handler\TaskHandlerNotExistsException
      */
-    public function onTaskSerialize(ObjectEvent $event)
+    public function onTaskSerialize(ObjectEvent $event): void
     {
         $object = $event->getObject();
         if (!$object instanceof TaskInterface) {
@@ -75,7 +78,9 @@ class TaskSerializerSubscriber implements EventSubscriberInterface
 
         $handler = $this->handlerFactory->create($object->getHandlerClass());
         if ($handler instanceof AutomationTaskHandlerInterface) {
-            $event->getVisitor()->visitProperty(
+            /** @var SerializationVisitorInterface $serializationVisitor */
+            $serializationVisitor = $event->getVisitor();
+            $serializationVisitor->visitProperty(
                 new StaticPropertyMetadata('', 'taskName', $handler->getConfiguration()->getTitle()),
                 $handler->getConfiguration()->getTitle()
             );
@@ -83,7 +88,9 @@ class TaskSerializerSubscriber implements EventSubscriberInterface
 
         $executions = $this->taskExecutionRepository->findByTaskUuid($object->getTaskId());
         if (0 < count($executions)) {
-            $event->getVisitor()->visitProperty(
+            /** @var SerializationVisitorInterface $serializationVisitor */
+            $serializationVisitor = $event->getVisitor();
+            $serializationVisitor->visitProperty(
                 new StaticPropertyMetadata('', 'status', $executions[0]->getStatus()),
                 $executions[0]->getStatus()
             );
