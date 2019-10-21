@@ -228,7 +228,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         if (null !== ($schedule = $request->get('schedule'))
             && in_array($schedule, array_keys(self::$scheduleComparators))
         ) {
-            $listBuilder->where($fieldDescriptors['schedule'], new \DateTime(), self::$scheduleComparators[$schedule]);
+            $listBuilder->where($fieldDescriptors['schedule'], (new \DateTime())->format('Y-m-d\TH:i:s'), self::$scheduleComparators[$schedule]);
         }
 
         return $listBuilder;

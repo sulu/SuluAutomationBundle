@@ -49,7 +49,7 @@ class FirstHandler implements AutomationTaskHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function handle($workload)
+    public function handle(array $workload): array
     {
         // do nothing
     }
