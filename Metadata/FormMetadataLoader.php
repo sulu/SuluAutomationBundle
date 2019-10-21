@@ -18,7 +18,7 @@ use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\OptionMetadata;
 use Sulu\Bundle\AdminBundle\Metadata\MetadataInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
-use Task\Handler\TaskHandlerFactoryInterface;
+use Task\TaskBundle\Handler\TaskHandlerFactory;
 
 class FormMetadataLoader implements FormMetadataLoaderInterface
 {
@@ -28,13 +28,13 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
     private $translator;
 
     /**
-     * @var TaskHandlerFactoryInterface
+     * @var TaskHandlerFactory
      */
     private $taskHandlerFactory;
 
     public function __construct(
         TranslatorInterface $translator,
-        TaskHandlerFactoryInterface $taskHandlerFactory
+        TaskHandlerFactory $taskHandlerFactory
     ) {
         $this->translator = $translator;
         $this->taskHandlerFactory = $taskHandlerFactory;
