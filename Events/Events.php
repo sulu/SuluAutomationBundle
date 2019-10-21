@@ -17,7 +17,9 @@ namespace Sulu\Bundle\AutomationBundle\Events;
 final class Events
 {
     const TASK_CREATE_EVENT = 'sulu_automation.task.create';
+
     const TASK_UPDATE_EVENT = 'sulu_automation.task.update';
+
     const TASK_REMOVE_EVENT = 'sulu_automation.task.remove';
 
     private function __construct()

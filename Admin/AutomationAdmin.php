@@ -28,6 +28,7 @@ class AutomationAdmin extends Admin
     const SECURITY_CONTEXT = 'sulu_automation.automation.tasks';
 
     const LIST_VIEW = 'sulu_automation.list';
+
     const EDIT_FORM_VIEW = 'sulu_automation.edit_form';
 
     /**
