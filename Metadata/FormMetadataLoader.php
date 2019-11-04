@@ -42,7 +42,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
 
     public function getMetadata(string $key, string $locale, array $metadataOptions): ?MetadataInterface
     {
-        if (0 !== strcmp('task_details', $key)) {
+        if ('task_details' !== $key) {
             return null;
         }
 
@@ -55,17 +55,12 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
         $singleSelectHandler->setLabel($this->translator->trans('sulu_automation.task.name', [], 'admin', $locale));
         $singleSelectHandler->setRequired(true);
 
-        $defaultValueOption = new OptionMetadata();
-        $defaultValueOption->setName('default_value');
-        $defaultValueOption->setValue('');
-        $singleSelectHandler->addOption($defaultValueOption);
-
         $valuesOption = new OptionMetadata();
         $valuesOption->setName('values');
 
         foreach ($this->taskHandlerFactory->getHandlers() as $handler) {
             if ($handler instanceof AutomationTaskHandlerInterface
-                && isset($metadataOptions['entity-class']) && $handler->supports($metadataOptions['entity-class'])) {
+                && isset($metadataOptions['entityClass']) && $handler->supports($metadataOptions['entityClass'])) {
                 $configuration = $handler->getConfiguration();
 
                 $handlerOption = new OptionMetadata();

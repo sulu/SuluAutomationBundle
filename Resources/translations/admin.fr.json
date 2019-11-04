@@ -11,6 +11,5 @@
   "sulu_automation.list.changer": "Modifié by",
   "sulu_automation.task-history": "Historique des tâches",
   "sulu_automation.info.scheduled": "Planifié",
-  "sulu_automation.info.set-by": "Créé par",
-  "sulu_automation.info.goto": "<![CDATA[Aller dans la planification<br/> pour modifier les paramètres]]>"
+  "sulu_automation.info.set-by": "Créé par"
 }

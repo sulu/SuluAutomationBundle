@@ -64,11 +64,11 @@ interface TaskRepositoryInterface
      *
      * @param string $entityClass
      * @param string $entityId
-     * @param null $locale
+     * @param string|null $locale
      *
      * @return int
      */
-    public function countFutureTasks(string $entityClass, string $entityId, $locale = null): int;
+    public function countFutureTasks(string $entityClass, string $entityId, string $locale = null): int;
 
     /**
      * Revert given task-entity.

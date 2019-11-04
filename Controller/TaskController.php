@@ -206,11 +206,11 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $listBuilder->addSelectField($fieldDescriptors['handlerClass']);
         $listBuilder->addSelectField($fieldDescriptors['taskId']);
 
-        if ($entityClass = $request->get('entity-class')) {
+        if ($entityClass = $request->get('entityClass')) {
             $listBuilder->where($fieldDescriptors['entityClass'], $entityClass);
         }
 
-        if ($entityId = $request->get('entity-id')) {
+        if ($entityId = $request->get('entityId')) {
             $listBuilder->where($fieldDescriptors['entityId'], $entityId);
         }
 
@@ -218,7 +218,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
             $listBuilder->where($fieldDescriptors['locale'], $locale);
         }
 
-        if ($handlerClasses = $request->get('handler-class')) {
+        if ($handlerClasses = $request->get('handlerClass')) {
             $handlerClassList = explode(',', $handlerClasses);
             if (0 < count($handlerClassList)) {
                 $listBuilder->in($fieldDescriptors['handlerClass'], $handlerClassList);
@@ -289,8 +289,8 @@ class TaskController extends AbstractRestController implements ClassResourceInte
             [
                 'scheme' => $request->getScheme(),
                 'host' => $request->getHost(),
-                'entityId' => $request->get('entity-id'),
-                'entityClass' => $request->get('entity-class'),
+                'entityId' => $request->get('entityId'),
+                'entityClass' => $request->get('entityClass'),
                 'locale' => $request->get('locale'),
             ],
             array_filter($request->request->all())
@@ -333,8 +333,8 @@ class TaskController extends AbstractRestController implements ClassResourceInte
                 'id' => $id,
                 'scheme' => $request->getScheme(),
                 'host' => $request->getHost(),
-                'entityId' => $request->get('entity-id'),
-                'entityClass' => $request->get('entity-class'),
+                'entityId' => $request->get('entityId'),
+                'entityClass' => $request->get('entityClass'),
                 'locale' => $request->get('locale'),
             ],
             array_filter($request->request->all())

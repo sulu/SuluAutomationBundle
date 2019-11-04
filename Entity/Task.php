@@ -94,13 +94,6 @@ class Task implements TaskInterface
         return $this->handlerClass;
     }
 
-    /**
-     * Set task.
-     *
-     * @param string $handlerClass
-     *
-     * @return Task
-     */
     public function setHandlerClass(string $handlerClass): self
     {
         $this->handlerClass = $handlerClass;
@@ -116,13 +109,6 @@ class Task implements TaskInterface
         return $this->schedule;
     }
 
-    /**
-     * Set schedule.
-     *
-     * @param \DateTime $schedule
-     *
-     * @return TaskInterface
-     */
     public function setSchedule(\DateTime $schedule): TaskInterface
     {
         $this->schedule = $schedule;
@@ -130,23 +116,11 @@ class Task implements TaskInterface
         return $this;
     }
 
-    /**
-     * Returns locale.
-     *
-     * @return string
-     */
     public function getLocale(): string
     {
         return $this->locale;
     }
 
-    /**
-     * Set locale.
-     *
-     * @param string $locale
-     *
-     * @return Task
-     */
     public function setLocale(string $locale): self
     {
         $this->locale = $locale;
@@ -162,13 +136,6 @@ class Task implements TaskInterface
         return $this->entityClass;
     }
 
-    /**
-     * Set entity-class.
-     *
-     * @param string $entityClass
-     *
-     * @return Task
-     */
     public function setEntityClass(string $entityClass): self
     {
         $this->entityClass = $entityClass;
@@ -184,13 +151,6 @@ class Task implements TaskInterface
         return $this->entityId;
     }
 
-    /**
-     * Set entity-id.
-     *
-     * @param string $entityId
-     *
-     * @return Task
-     */
     public function setEntityId(string $entityId): self
     {
         $this->entityId = $entityId;
@@ -198,23 +158,11 @@ class Task implements TaskInterface
         return $this;
     }
 
-    /**
-     * Returns taskId.
-     *
-     * @return string
-     */
     public function getTaskId(): string
     {
         return $this->taskId;
     }
 
-    /**
-     * Set taskId.
-     *
-     * @param string $taskId
-     *
-     * @return TaskInterface
-     */
     public function setTaskId(string $taskId): TaskInterface
     {
         $this->taskId = $taskId;
@@ -230,13 +178,6 @@ class Task implements TaskInterface
         return $this->host;
     }
 
-    /**
-     * Set host.
-     *
-     * @param string $host
-     *
-     * @return Task
-     */
     public function setHost(string $host): self
     {
         $this->host = $host;
@@ -252,13 +193,6 @@ class Task implements TaskInterface
         return $this->scheme;
     }
 
-    /**
-     * Set scheme.
-     *
-     * @param string $scheme
-     *
-     * @return Task
-     */
     public function setScheme(string $scheme): self
     {
         $this->scheme = $scheme;

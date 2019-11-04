@@ -14,7 +14,6 @@ namespace Sulu\Bundle\AutomationBundle\Admin\View;
 use Sulu\Bundle\AdminBundle\Admin\View\FormOverlayListViewBuilder;
 use Sulu\Bundle\AdminBundle\Admin\View\ToolbarAction;
 use Sulu\Bundle\AutomationBundle\Entity\Task;
-use Sulu\Bundle\PageBundle\Admin\PageAdmin;
 
 class AutomationViewBuilder extends FormOverlayListViewBuilder implements AutomationViewBuilderInterface
 {
@@ -34,15 +33,14 @@ class AutomationViewBuilder extends FormOverlayListViewBuilder implements Automa
             ->addToolbarActions($listToolbarActions)
             ->addListAdapters(['table'])
             ->setTabOrder(4096)
-            ->addRouterAttributesToFormRequest(['id' => 'entity-id'])
-            ->addRouterAttributesToListRequest(['id' => 'entity-id'])
-            ->setParent(PageAdmin::EDIT_FORM_VIEW);
+            ->addRouterAttributesToFormRequest(['id' => 'entityId'])
+            ->addRouterAttributesToListRequest(['id' => 'entityId']);
     }
 
     public function setEntityClass(string $entityClass): AutomationViewBuilderInterface
     {
-        $this->addRequestParameter('entity-class', $entityClass);
-        $this->addMetadataRequestParameters(['entity-class' => $entityClass]);
+        $this->addRequestParameter('entityClass', $entityClass);
+        $this->addMetadataRequestParameters(['entityClass' => $entityClass]);
 
         return $this;
     }

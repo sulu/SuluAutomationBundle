@@ -29,7 +29,6 @@ Add the required routes to the `config/routes/sulu_admin.yaml` configuration fil
 ```yaml
 # ...
 sulu_automation_api:
-    type: rest
     resource: '@SuluAutomationBundle/Resources/config/routing_api.yml'
     prefix: /admin/api
 

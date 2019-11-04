@@ -125,7 +125,7 @@ class TaskControllerTest extends SuluTestCase
         ];
 
         $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/api/tasks?entity-class=ThisClass&entity-id=1');
+        $client->request('GET', '/api/tasks?entityClass=ThisClass&entityId=1');
         $this->assertHttpStatusCode(200, $client->getResponse());
 
         $responseData = json_decode($client->getResponse()->getContent(), true);
@@ -211,7 +211,7 @@ class TaskControllerTest extends SuluTestCase
         $client = $this->createAuthenticatedClient();
         $client->request(
             'GET',
-            '/api/tasks?fields=id,schedule,handlerClass,taskName&handler-class=' . FirstHandler::class
+            '/api/tasks?fields=id,schedule,handlerClass,taskName&handlerClass=' . FirstHandler::class
         );
         $this->assertHttpStatusCode(200, $client->getResponse());
 
@@ -236,7 +236,7 @@ class TaskControllerTest extends SuluTestCase
 
         $client->request(
             'GET',
-            '/api/tasks?fields=id,schedule,handlerClass,taskName&handler-class='
+            '/api/tasks?fields=id,schedule,handlerClass,taskName&handlerClass='
             . FirstHandler::class
             . ','
             . SecondHandler::class
@@ -279,8 +279,8 @@ class TaskControllerTest extends SuluTestCase
                 'handlerClass' => $handlerClass,
                 'date' => $date->format('Y-m-d'),
                 'time' => $date->format('H:i:s'),
-                'entity-class' => $entityClass,
-                'entity-id' => $entityId,
+                'entityClass' => $entityClass,
+                'entityId' => $entityId,
                 'locale' => $locale,
             ]
         );
@@ -312,8 +312,8 @@ class TaskControllerTest extends SuluTestCase
             '/api/tasks/' . $postData['id'],
             [
                 'handlerClass' => $handlerClass,
-                'entity-id' => $postData['id'],
-                'entity-class' => $entityClass,
+                'entityId' => $postData['id'],
+                'entityClass' => $entityClass,
                 'locale' => $locale,
                 'date' => $date->format('Y-m-d'),
                 'time' => $date->format('H:i:s'),

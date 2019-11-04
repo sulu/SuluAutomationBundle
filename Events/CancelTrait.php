@@ -19,14 +19,14 @@ trait CancelTrait
     /**
      * @var bool
      */
-    private $canceled;
+    private $canceled = false;
 
     /**
      * Returns canceled.
      *
-     * @return null|bool
+     * @return bool
      */
-    public function isCanceled(): ?bool
+    public function isCanceled(): bool
     {
         return $this->canceled;
     }

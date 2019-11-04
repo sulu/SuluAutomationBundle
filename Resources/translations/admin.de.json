@@ -12,7 +12,6 @@
   "sulu_automation.task-history": "Vergangene Aufgaben",
   "sulu_automation.info.scheduled": "Geplant",
   "sulu_automation.info.set-by": "Erstellt durch",
-  "sulu_automation.info.goto": "<![CDATA[Wechsle zu <b>Automatisierung</b><br/> um die Einstellungen zu ändern]]>",
   "sulu_content.task_handler.publish": "Veröffentlichen",
   "sulu_content.task_handler.unpublish": "Unveröffentlichen"
 }

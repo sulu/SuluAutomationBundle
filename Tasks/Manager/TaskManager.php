@@ -64,7 +64,7 @@ class TaskManager implements TaskManagerInterface
     {
         $task = $this->repository->findById($id);
         if (!$task) {
-            throw new TaskNotFoundException((string) $id);
+            throw new TaskNotFoundException($id);
         }
 
         return $task;

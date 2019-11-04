@@ -42,7 +42,7 @@ class TaskHandlerController
      */
     public function getAction(Request $request): Response
     {
-        $entityClass = $this->getRequestParameter($request, 'entity-class', true);
+        $entityClass = $this->getRequestParameter($request, 'entityClass', true);
 
         $handlers = [];
         foreach ($this->taskHandlerFactory->getHandlers() as $handler) {
