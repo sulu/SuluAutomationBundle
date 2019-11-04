@@ -32,10 +32,6 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
      */
     protected $documentManager;
 
-    /**
-     * @param string $title
-     * @param DocumentManagerInterface $documentManager
-     */
     public function __construct(string $title, DocumentManagerInterface $documentManager)
     {
         $this->title = $title;

@@ -42,11 +42,6 @@ class TaskManager implements TaskManagerInterface
      */
     private $eventDispatcher;
 
-    /**
-     * @param TaskRepositoryInterface $repository
-     * @param TaskSchedulerInterface $scheduler
-     * @param EventDispatcherInterface $eventDispatcher
-     */
     public function __construct(
         TaskRepositoryInterface $repository,
         TaskSchedulerInterface $scheduler,

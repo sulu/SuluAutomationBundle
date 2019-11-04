@@ -33,19 +33,11 @@ class TaskHandlerConfiguration
      */
     private $title;
 
-    /**
-     * @param string $title
-     */
     private function __construct(string $title)
     {
         $this->title = $title;
     }
 
-    /**
-     * Returns title.
-     *
-     * @return string
-     */
     public function getTitle(): string
     {
         return $this->title;

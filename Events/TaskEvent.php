@@ -24,19 +24,11 @@ abstract class TaskEvent extends Event
      */
     private $task;
 
-    /**
-     * @param TaskInterface $task
-     */
     public function __construct(TaskInterface $task)
     {
         $this->task = $task;
     }
 
-    /**
-     * Returns task.
-     *
-     * @return TaskInterface
-     */
     public function getTask(): TaskInterface
     {
         return $this->task;

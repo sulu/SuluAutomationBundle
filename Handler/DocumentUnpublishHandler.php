@@ -20,9 +20,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class DocumentUnpublishHandler extends BaseDocumentHandler
 {
-    /**
-     * @param DocumentManagerInterface $documentManager
-     */
     public function __construct(DocumentManagerInterface $documentManager, TranslatorInterface $translator)
     {
         parent::__construct($translator->trans('sulu_content.task_handler.unpublish', [], 'admin'), $documentManager);

@@ -21,21 +21,13 @@ class TaskNotFoundException extends \Exception
      */
     private $id;
 
-    /**
-     * @param string $id
-     */
-    public function __construct($id)
+    public function __construct(string $id)
     {
         parent::__construct(sprintf('Task with id "%s" was not found', $id));
 
         $this->id = $id;
     }
 
-    /**
-     * Returns id.
-     *
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;
