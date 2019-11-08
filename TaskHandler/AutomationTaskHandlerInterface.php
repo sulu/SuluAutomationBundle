@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -26,7 +26,7 @@ interface AutomationTaskHandlerInterface extends TaskHandlerInterface
      *
      * @return OptionsResolver
      */
-    public function configureOptionsResolver(OptionsResolver $optionsResolver);
+    public function configureOptionsResolver(OptionsResolver $optionsResolver): OptionsResolver;
 
     /**
      * Returns true if handler supports given class.
@@ -35,12 +35,12 @@ interface AutomationTaskHandlerInterface extends TaskHandlerInterface
      *
      * @return bool
      */
-    public function supports($entityClass);
+    public function supports(string $entityClass): bool;
 
     /**
      * Returns configuration for this task-handler.
      *
      * @return TaskHandlerConfiguration
      */
-    public function getConfiguration();
+    public function getConfiguration(): TaskHandlerConfiguration;
 }

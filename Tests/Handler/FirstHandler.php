@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -25,7 +25,7 @@ class FirstHandler implements AutomationTaskHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function configureOptionsResolver(OptionsResolver $optionsResolver)
+    public function configureOptionsResolver(OptionsResolver $optionsResolver): OptionsResolver
     {
         return $optionsResolver;
     }
@@ -33,7 +33,7 @@ class FirstHandler implements AutomationTaskHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function supports($entityClass)
+    public function supports(string $entityClass): bool
     {
         return true;
     }
@@ -41,7 +41,7 @@ class FirstHandler implements AutomationTaskHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration()
+    public function getConfiguration(): TaskHandlerConfiguration
     {
         return TaskHandlerConfiguration::create(self::TITLE);
     }

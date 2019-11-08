@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -32,11 +32,7 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
      */
     protected $documentManager;
 
-    /**
-     * @param string $title
-     * @param DocumentManagerInterface $documentManager
-     */
-    public function __construct($title, DocumentManagerInterface $documentManager)
+    public function __construct(string $title, DocumentManagerInterface $documentManager)
     {
         $this->title = $title;
         $this->documentManager = $documentManager;
@@ -47,9 +43,12 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
      */
     public function handle($workload)
     {
-        $document = $this->documentManager->find($workload['id'], $workload['locale']);
-        $this->handleDocument($document, $workload['locale']);
-        $this->documentManager->flush();
+        if (is_array($workload)) {
+            /** @var WorkflowStageBehavior $document */
+            $document = $this->documentManager->find($workload['id'], $workload['locale']);
+            $this->handleDocument($document, $workload['locale']);
+            $this->documentManager->flush();
+        }
     }
 
     /**
@@ -58,12 +57,12 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
      * @param WorkflowStageBehavior $document
      * @param string $locale
      */
-    abstract protected function handleDocument(WorkflowStageBehavior $document, $locale);
+    abstract protected function handleDocument(WorkflowStageBehavior $document, string $locale): void;
 
     /**
      * {@inheritdoc}
      */
-    public function configureOptionsResolver(OptionsResolver $optionsResolver)
+    public function configureOptionsResolver(OptionsResolver $optionsResolver): OptionsResolver
     {
         return $optionsResolver->setRequired(['id', 'locale'])
             ->setAllowedTypes('id', 'string')
@@ -73,7 +72,7 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function supports($entityClass)
+    public function supports(string $entityClass): bool
     {
         return is_subclass_of($entityClass, WorkflowStageBehavior::class);
     }
@@ -81,7 +80,7 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfiguration()
+    public function getConfiguration(): TaskHandlerConfiguration
     {
         return TaskHandlerConfiguration::create($this->title);
     }

@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -19,6 +19,8 @@ use Sulu\Component\Persistence\Model\AuditableTrait;
  */
 class Task implements TaskInterface
 {
+    const RESOURCE_KEY = 'tasks';
+
     use AuditableTrait;
 
     /**
@@ -69,7 +71,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
@@ -77,7 +79,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function setId($id)
+    public function setId(string $id): TaskInterface
     {
         $this->id = $id;
 
@@ -87,19 +89,12 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getHandlerClass()
+    public function getHandlerClass(): string
     {
         return $this->handlerClass;
     }
 
-    /**
-     * Set task.
-     *
-     * @param string $handlerClass
-     *
-     * @return $this
-     */
-    public function setHandlerClass($handlerClass)
+    public function setHandlerClass(string $handlerClass): self
     {
         $this->handlerClass = $handlerClass;
 
@@ -109,43 +104,24 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getSchedule()
+    public function getSchedule(): \DateTime
     {
         return $this->schedule;
     }
 
-    /**
-     * Set schedule.
-     *
-     * @param \DateTime $schedule
-     *
-     * @return $this
-     */
-    public function setSchedule($schedule)
+    public function setSchedule(\DateTime $schedule): TaskInterface
     {
         $this->schedule = $schedule;
 
         return $this;
     }
 
-    /**
-     * Returns locale.
-     *
-     * @return string
-     */
-    public function getLocale()
+    public function getLocale(): string
     {
         return $this->locale;
     }
 
-    /**
-     * Set locale.
-     *
-     * @param string $locale
-     *
-     * @return $this
-     */
-    public function setLocale($locale)
+    public function setLocale(string $locale): self
     {
         $this->locale = $locale;
 
@@ -155,19 +131,12 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getEntityClass()
+    public function getEntityClass(): string
     {
         return $this->entityClass;
     }
 
-    /**
-     * Set entity-class.
-     *
-     * @param string $entityClass
-     *
-     * @return $this
-     */
-    public function setEntityClass($entityClass)
+    public function setEntityClass(string $entityClass): self
     {
         $this->entityClass = $entityClass;
 
@@ -177,43 +146,24 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getEntityId()
+    public function getEntityId(): string
     {
         return $this->entityId;
     }
 
-    /**
-     * Set entity-id.
-     *
-     * @param mixed $entityId
-     *
-     * @return $this
-     */
-    public function setEntityId($entityId)
+    public function setEntityId(string $entityId): self
     {
         $this->entityId = $entityId;
 
         return $this;
     }
 
-    /**
-     * Returns taskId.
-     *
-     * @return string
-     */
-    public function getTaskId()
+    public function getTaskId(): string
     {
         return $this->taskId;
     }
 
-    /**
-     * Set taskId.
-     *
-     * @param string $taskId
-     *
-     * @return $this
-     */
-    public function setTaskId($taskId)
+    public function setTaskId(string $taskId): TaskInterface
     {
         $this->taskId = $taskId;
 
@@ -223,19 +173,12 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getHost()
+    public function getHost(): string
     {
         return $this->host;
     }
 
-    /**
-     * Set host.
-     *
-     * @param string $host
-     *
-     * @return $this
-     */
-    public function setHost($host)
+    public function setHost(string $host): self
     {
         $this->host = $host;
 
@@ -245,19 +188,12 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getScheme()
+    public function getScheme(): string
     {
         return $this->scheme;
     }
 
-    /**
-     * Set scheme.
-     *
-     * @param string $scheme
-     *
-     * @return $this
-     */
-    public function setScheme($scheme)
+    public function setScheme(string $scheme): self
     {
         $this->scheme = $scheme;
 
@@ -267,7 +203,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getCreatorFullName()
+    public function getCreatorFullName(): string
     {
         $creator = $this->getCreator();
         if (!$creator) {
@@ -280,7 +216,7 @@ class Task implements TaskInterface
     /**
      * {@inheritdoc}
      */
-    public function getChangerFullName()
+    public function getChangerFullName(): string
     {
         $changer = $this->getChanger();
         if (!$changer) {
@@ -288,5 +224,15 @@ class Task implements TaskInterface
         }
 
         return $changer->getFullName();
+    }
+
+    public function getTime(): string
+    {
+        return $this->getSchedule()->format('H:i:s');
+    }
+
+    public function getDate(): string
+    {
+        return $this->getSchedule()->format('Y-m-d');
     }
 }

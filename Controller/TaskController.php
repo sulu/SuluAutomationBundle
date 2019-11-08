@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -13,25 +13,36 @@ namespace Sulu\Bundle\AutomationBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Routing\ClassResourceInterface;
+use FOS\RestBundle\View\ViewHandlerInterface;
 use JMS\Serializer\DeserializationContext;
+use JMS\Serializer\SerializerInterface;
+use Nette\Utils\DateTime;
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
 use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
+use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
+use Sulu\Component\Rest\AbstractRestController;
+use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactoryInterface;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptorInterface;
 use Sulu\Component\Rest\ListBuilder\FieldDescriptorInterface;
 use Sulu\Component\Rest\ListBuilder\ListBuilderInterface;
 use Sulu\Component\Rest\ListBuilder\ListRepresentation;
-use Sulu\Component\Rest\RestController;
+use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
+use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Component\Security\SecuredControllerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Task\Handler\TaskHandlerFactoryInterface;
+use Task\Storage\TaskExecutionRepositoryInterface;
+use Task\Storage\TaskRepositoryInterface;
 
 /**
  * Provides api for tasks.
  */
-class TaskController extends RestController implements ClassResourceInterface, SecuredControllerInterface
+class TaskController extends AbstractRestController implements ClassResourceInterface, SecuredControllerInterface
 {
     private static $scheduleComparators = [
         'future' => ListBuilderInterface::WHERE_COMPARATOR_GREATER_THAN,
@@ -39,11 +50,81 @@ class TaskController extends RestController implements ClassResourceInterface, S
     ];
 
     /**
+     * @var DoctrineListBuilderFactoryInterface
+     */
+    protected $doctrineListBuilderFactory;
+
+    /**
+     * @var TaskHandlerFactoryInterface
+     */
+    protected $taskHandlerFactory;
+
+    /**
+     * @var TaskRepositoryInterface
+     */
+    protected $taskRepository;
+
+    /**
+     * @var TaskExecutionRepositoryInterface
+     */
+    protected $taskExecutionRepository;
+
+    /**
+     * @var RestHelperInterface
+     */
+    protected $restHelper;
+
+    /**
+     * @var TaskManagerInterface
+     */
+    protected $taskManager;
+
+    /**
+     * @var EntityManagerInterface
+     */
+    protected $entityManager;
+
+    /**
+     * @var SerializerInterface
+     */
+    protected $serializer;
+
+    /**
+     * @var FieldDescriptorFactoryInterface
+     */
+    protected $fieldDescriptorFactory;
+
+    public function __construct(
+        ViewHandlerInterface $viewHandler,
+        TokenStorageInterface $tokenStorage,
+        DoctrineListBuilderFactoryInterface $doctrineListBuilderFactory,
+        TaskHandlerFactoryInterface $taskHandlerFactory,
+        TaskRepositoryInterface $taskRepository,
+        TaskExecutionRepositoryInterface $taskExecutionRepository,
+        RestHelperInterface $doctrineRestHelper,
+        TaskManagerInterface $taskManager,
+        EntityManagerInterface $entityManager,
+        SerializerInterface $serializer,
+        FieldDescriptorFactoryInterface $fieldDescriptorFactory
+    ) {
+        parent::__construct($viewHandler, $tokenStorage);
+        $this->doctrineListBuilderFactory = $doctrineListBuilderFactory;
+        $this->taskHandlerFactory = $taskHandlerFactory;
+        $this->taskRepository = $taskRepository;
+        $this->taskExecutionRepository = $taskExecutionRepository;
+        $this->restHelper = $doctrineRestHelper;
+        $this->taskManager = $taskManager;
+        $this->entityManager = $entityManager;
+        $this->serializer = $serializer;
+        $this->fieldDescriptorFactory = $fieldDescriptorFactory;
+    }
+
+    /**
      * Returns fields for tasks.
      *
      * @return Response
      */
-    public function cgetFieldsAction()
+    public function cgetFieldsAction(): Response
     {
         return $this->handleView($this->view(array_values($this->getFieldDescriptors())));
     }
@@ -55,12 +136,11 @@ class TaskController extends RestController implements ClassResourceInterface, S
      *
      * @return Response
      */
-    public function cgetAction(Request $request)
+    public function cgetAction(Request $request): Response
     {
         $fieldDescriptors = $this->getFieldDescriptors(DoctrineFieldDescriptorInterface::class);
-        $factory = $this->get('sulu_core.doctrine_list_builder_factory');
 
-        $listBuilder = $this->prepareListBuilder($fieldDescriptors, $request, $factory->create(Task::class));
+        $listBuilder = $this->prepareListBuilder($fieldDescriptors, $request, $this->doctrineListBuilderFactory->create(Task::class));
         $result = $this->executeListBuilder($fieldDescriptors, $request, $listBuilder);
 
         for ($i = 0; $i < count($result); ++$i) {
@@ -85,21 +165,23 @@ class TaskController extends RestController implements ClassResourceInterface, S
     /**
      * Extends response item with task-name and status.
      *
-     * @param array $item
+     * @param string[] $item
      *
-     * @return array
+     * @return string[]
+     *
+     * @throws \Task\Handler\TaskHandlerNotExistsException
      */
-    private function extendResponseItem($item)
+    private function extendResponseItem(array $item): array
     {
-        $handlerFactory = $this->get('task.handler.factory');
+        $handlerFactory = $this->taskHandlerFactory;
         $handler = $handlerFactory->create($item['handlerClass']);
 
         if ($handler instanceof AutomationTaskHandlerInterface) {
             $item['taskName'] = $handler->getConfiguration()->getTitle();
         }
 
-        $task = $this->get('task.repository.task')->findByUuid($item['taskId']);
-        $executions = $this->get('task.repository.task_execution')->findByTask($task);
+        $task = $this->taskRepository->findByUuid($item['taskId']);
+        $executions = $this->taskExecutionRepository->findByTask($task);
         if (0 < count($executions)) {
             $item['status'] = $executions[0]->getStatus();
         }
@@ -118,18 +200,17 @@ class TaskController extends RestController implements ClassResourceInterface, S
      *
      * @return ListBuilderInterface
      */
-    private function prepareListBuilder(array $fieldDescriptors, Request $request, ListBuilderInterface $listBuilder)
+    private function prepareListBuilder(array $fieldDescriptors, Request $request, ListBuilderInterface $listBuilder): ListBuilderInterface
     {
-        $restHelper = $this->get('sulu_core.doctrine_rest_helper');
-        $restHelper->initializeListBuilder($listBuilder, $fieldDescriptors);
+        $this->restHelper->initializeListBuilder($listBuilder, $fieldDescriptors);
         $listBuilder->addSelectField($fieldDescriptors['handlerClass']);
         $listBuilder->addSelectField($fieldDescriptors['taskId']);
 
-        if ($entityClass = $request->get('entity-class')) {
+        if ($entityClass = $request->get('entityClass')) {
             $listBuilder->where($fieldDescriptors['entityClass'], $entityClass);
         }
 
-        if ($entityId = $request->get('entity-id')) {
+        if ($entityId = $request->get('entityId')) {
             $listBuilder->where($fieldDescriptors['entityId'], $entityId);
         }
 
@@ -137,7 +218,7 @@ class TaskController extends RestController implements ClassResourceInterface, S
             $listBuilder->where($fieldDescriptors['locale'], $locale);
         }
 
-        if ($handlerClasses = $request->get('handler-class')) {
+        if ($handlerClasses = $request->get('handlerClass')) {
             $handlerClassList = explode(',', $handlerClasses);
             if (0 < count($handlerClassList)) {
                 $listBuilder->in($fieldDescriptors['handlerClass'], $handlerClassList);
@@ -147,7 +228,7 @@ class TaskController extends RestController implements ClassResourceInterface, S
         if (null !== ($schedule = $request->get('schedule'))
             && in_array($schedule, array_keys(self::$scheduleComparators))
         ) {
-            $listBuilder->where($fieldDescriptors['schedule'], new \DateTime(), self::$scheduleComparators[$schedule]);
+            $listBuilder->where($fieldDescriptors['schedule'], (new \DateTime())->format('Y-m-d\TH:i:s'), self::$scheduleComparators[$schedule]);
         }
 
         return $listBuilder;
@@ -160,9 +241,9 @@ class TaskController extends RestController implements ClassResourceInterface, S
      * @param Request $request
      * @param ListBuilderInterface $listBuilder
      *
-     * @return array
+     * @return mixed[]
      */
-    private function executeListBuilder(array $fieldDescriptors, Request $request, ListBuilderInterface $listBuilder)
+    private function executeListBuilder(array $fieldDescriptors, Request $request, ListBuilderInterface $listBuilder): array
     {
         if (null === ($idsParameter = $request->get('ids'))) {
             return $listBuilder->execute();
@@ -184,17 +265,15 @@ class TaskController extends RestController implements ClassResourceInterface, S
     /**
      * Returns task for given id.
      *
-     * @param int $id
+     * @param string $id
      *
      * @return Response
      *
      * @throws TaskNotFoundException
      */
-    public function getAction($id)
+    public function getAction(string $id): Response
     {
-        $manager = $this->getTaskManager();
-
-        return $this->handleView($this->view($manager->findById($id)));
+        return $this->handleView($this->view($this->taskManager->findById($id)));
     }
 
     /**
@@ -204,26 +283,37 @@ class TaskController extends RestController implements ClassResourceInterface, S
      *
      * @return Response
      */
-    public function postAction(Request $request)
+    public function postAction(Request $request): Response
     {
         $data = array_merge(
             [
                 'scheme' => $request->getScheme(),
                 'host' => $request->getHost(),
+                'entityId' => $request->get('entityId'),
+                'entityClass' => $request->get('entityClass'),
+                'locale' => $request->get('locale'),
             ],
             array_filter($request->request->all())
         );
 
-        $manager = $this->getTaskManager();
-        $task = $this->get('jms_serializer')->deserialize(
-            json_encode($data),
+        $context = DeserializationContext::create();
+        $context->setGroups(['api']);
+
+        /** @var TaskInterface $task */
+        $task = $this->serializer->deserialize(
+            (string) json_encode($data),
             Task::class,
             'json',
-            DeserializationContext::create()->setGroups(['api'])
+            $context
         );
-        $task = $manager->create($task);
 
-        $this->getEntityManager()->flush($task);
+        /** @var DateTime $date */
+        $date = date_create_from_format('Y-m-d:H:i:s', $data['date'] . ':' . $data['time']);
+
+        $task->setSchedule($date);
+        $this->taskManager->create($task);
+
+        $this->entityManager->flush();
 
         return $this->handleView($this->view($task));
     }
@@ -231,33 +321,39 @@ class TaskController extends RestController implements ClassResourceInterface, S
     /**
      * Update task with given id.
      *
-     * @param int $id
+     * @param string $id
      * @param Request $request
      *
      * @return Response
      */
-    public function putAction($id, Request $request)
+    public function putAction(string $id, Request $request): Response
     {
         $data = array_merge(
             [
                 'id' => $id,
                 'scheme' => $request->getScheme(),
                 'host' => $request->getHost(),
+                'entityId' => $request->get('entityId'),
+                'entityClass' => $request->get('entityClass'),
+                'locale' => $request->get('locale'),
             ],
             array_filter($request->request->all())
         );
 
-        $task = $this->get('jms_serializer')->deserialize(
-            json_encode($data),
+        $context = DeserializationContext::create();
+        $context->setGroups(['api']);
+
+        $task = $this->serializer->deserialize(
+            (string) json_encode($data),
             Task::class,
             'json',
-            DeserializationContext::create()->setGroups(['api'])
+            $context
         );
 
-        $manager = $this->getTaskManager();
-        $task = $manager->update($task);
+        $task->setSchedule(date_create_from_format('Y-m-d:H:i:s', $data['date'] . ':' . $data['time']));
+        $task = $this->taskManager->update($task);
 
-        $this->getEntityManager()->flush($task);
+        $this->entityManager->flush();
 
         return $this->handleView($this->view($task));
     }
@@ -265,16 +361,16 @@ class TaskController extends RestController implements ClassResourceInterface, S
     /**
      * Removes task with given id.
      *
-     * @param int $id
+     * @param string $id
      *
      * @return Response
      */
-    public function deleteAction($id)
+    public function deleteAction(string $id): Response
     {
-        $manager = $this->getTaskManager();
+        $manager = $this->taskManager;
         $manager->remove($id);
 
-        $this->getEntityManager()->flush();
+        $this->entityManager->flush();
 
         return $this->handleView($this->view());
     }
@@ -286,16 +382,14 @@ class TaskController extends RestController implements ClassResourceInterface, S
      *
      * @return Response
      */
-    public function cdeleteAction(Request $request)
+    public function cdeleteAction(Request $request): Response
     {
-        $manager = $this->getTaskManager();
-
         $ids = array_filter(explode(',', $request->get('ids')));
         foreach ($ids as $id) {
-            $manager->remove($id);
+            $this->taskManager->remove($id);
         }
 
-        $this->getEntityManager()->flush();
+        $this->entityManager->flush();
 
         return $this->handleView($this->view());
     }
@@ -307,30 +401,14 @@ class TaskController extends RestController implements ClassResourceInterface, S
      *
      * @return FieldDescriptorInterface[]
      */
-    private function getFieldDescriptors($type = null)
+    private function getFieldDescriptors(string $type = null): array
     {
-        return $this->get('sulu_core.list_builder.field_descriptor_factory')
-            ->getFieldDescriptorForClass(Task::class, [], $type);
-    }
+        $fieldDescriptors = $this->fieldDescriptorFactory->getFieldDescriptors(Task::RESOURCE_KEY);
+        if (!$fieldDescriptors) {
+            return [];
+        }
 
-    /**
-     * Returns task-manager.
-     *
-     * @return TaskManagerInterface
-     */
-    private function getTaskManager()
-    {
-        return $this->get('sulu_automation.tasks.manager');
-    }
-
-    /**
-     * Returns entity-manager.
-     *
-     * @return EntityManagerInterface
-     */
-    private function getEntityManager()
-    {
-        return $this->get('doctrine.orm.entity_manager');
+        return $fieldDescriptors;
     }
 
     /**
@@ -338,6 +416,6 @@ class TaskController extends RestController implements ClassResourceInterface, S
      */
     public function getSecurityContext()
     {
-        return AutomationAdmin::TASK_SECURITY_CONTEXT;
+        return AutomationAdmin::SECURITY_CONTEXT;
     }
 }

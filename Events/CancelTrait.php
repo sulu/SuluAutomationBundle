@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -19,24 +19,22 @@ trait CancelTrait
     /**
      * @var bool
      */
-    private $canceled;
+    private $canceled = false;
 
     /**
      * Returns canceled.
      *
      * @return bool
      */
-    public function isCanceled()
+    public function isCanceled(): bool
     {
         return $this->canceled;
     }
 
     /**
      * Cancel Event.
-     *
-     * @return $this
      */
-    public function cancel()
+    public function cancel(): self
     {
         $this->canceled = true;
         $this->stopPropagation();

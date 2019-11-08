@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -24,20 +24,12 @@ abstract class TaskEvent extends Event
      */
     private $task;
 
-    /**
-     * @param TaskInterface $task
-     */
     public function __construct(TaskInterface $task)
     {
         $this->task = $task;
     }
 
-    /**
-     * Returns task.
-     *
-     * @return TaskInterface
-     */
-    public function getTask()
+    public function getTask(): TaskInterface
     {
         return $this->task;
     }

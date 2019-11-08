@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -23,22 +23,14 @@ class TaskExpiredException extends \Exception
      */
     private $task;
 
-    /**
-     * @param TaskInterface $task
-     */
     public function __construct(TaskInterface $task)
     {
-        parent::__construct(sprintf('Task "%s" is already expired.', $task->getUuid()));
+        parent::__construct(sprintf('Task "%s" is already expired.', $task->getId()));
 
         $this->task = $task;
     }
 
-    /**
-     * Returns task.
-     *
-     * @return TaskInterface
-     */
-    public function getTask()
+    public function getTask(): TaskInterface
     {
         return $this->task;
     }

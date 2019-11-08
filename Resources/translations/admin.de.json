@@ -1,0 +1,17 @@
+{
+  "sulu_automation.automation": "Automatisierung",
+  "sulu_automation.tasks": "Aufgaben",
+  "sulu_automation.task": "Aufgabe",
+  "sulu_automation.task.name": "Aufgabe",
+  "sulu_automation.task.schedule": "Zeitplan",
+  "sulu_automation.task.schedule.time": "Zeit",
+  "sulu_automation.task.schedule.date": "Datum",
+  "sulu_automation.task.choose": "Bitte wählen ...",
+  "sulu_automation.list.creator": "Erstellt von",
+  "sulu_automation.list.changer": "Bearbeitet von",
+  "sulu_automation.task-history": "Vergangene Aufgaben",
+  "sulu_automation.info.scheduled": "Geplant",
+  "sulu_automation.info.set-by": "Erstellt durch",
+  "sulu_content.task_handler.publish": "Veröffentlichen",
+  "sulu_content.task_handler.unpublish": "Unveröffentlichen"
+}

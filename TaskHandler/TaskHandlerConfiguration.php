@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -23,7 +23,7 @@ class TaskHandlerConfiguration
      *
      * @return static
      */
-    public static function create($title)
+    public static function create(string $title)
     {
         return new self($title);
     }
@@ -33,20 +33,12 @@ class TaskHandlerConfiguration
      */
     private $title;
 
-    /**
-     * @param string $title
-     */
-    private function __construct($title)
+    private function __construct(string $title)
     {
         $this->title = $title;
     }
 
-    /**
-     * Returns title.
-     *
-     * @return string
-     */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }

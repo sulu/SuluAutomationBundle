@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -47,7 +47,7 @@ class TaskManagerTest extends TestCase
      */
     private $taskManager;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->taskRepository = $this->prophesize(TaskRepositoryInterface::class);
         $this->eventDispatcher = $this->prophesize(EventDispatcherInterface::class);
@@ -107,12 +107,12 @@ class TaskManagerTest extends TestCase
     private function assertEventDispatched($eventName, $task)
     {
         $this->eventDispatcher->dispatch(
-            $eventName,
             Argument::that(
-                function (TaskEvent $event) use ($task) {
+                function(TaskEvent $event) use ($task) {
                     return $task == $event->getTask();
                 }
-            )
+            ),
+            $eventName
         )->willReturnArgument(1);
     }
 }

@@ -15,6 +15,8 @@
         <property name="scheme" type="string" expose="true" groups="fullTask,partialTask,api"/>
         <property name="host" type="string" expose="true" groups="fullTask,partialTask,api"/>
 
+        <virtual-property method="getTime" name="time" serialized-name="time" groups="fullTask,partialTask"/>
+        <virtual-property method="getDate" name="date" serialized-name="date" groups="fullTask,partialTask"/>
         <virtual-property method="getCreatorFullname" name="creator" serialized-name="creator" groups="fullTask,partialTask"/>
         <virtual-property method="getChangerFullname" name="changer" serialized-name="changer" groups="fullTask,partialTask"/>
     </class>

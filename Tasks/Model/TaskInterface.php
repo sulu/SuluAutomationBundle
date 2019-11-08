@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -23,93 +23,100 @@ interface TaskInterface extends AuditableInterface
      *
      * @return string
      */
-    public function getId();
+    public function getId(): string;
 
     /**
      * Set id.
      *
      * @param string $id
      *
-     * @return $this
+     * @return TaskInterface
      */
-    public function setId($id);
+    public function setId(string $id): self;
 
     /**
      * Returns task.
      *
      * @return string
      */
-    public function getHandlerClass();
+    public function getHandlerClass(): string;
 
     /**
      * Returns schedule.
      *
      * @return \DateTime
      */
-    public function getSchedule();
+    public function getSchedule(): \DateTime;
+
+    /**
+     * @param \DateTime $schedule
+     *
+     * @return TaskInterface
+     */
+    public function setSchedule(\DateTime $schedule): self;
 
     /**
      * Returns locale.
      *
      * @return string
      */
-    public function getLocale();
+    public function getLocale(): string;
 
     /**
      * Returns entity-class.
      *
      * @return string
      */
-    public function getEntityClass();
+    public function getEntityClass(): string;
 
     /**
      * Returns entity-id.
      *
      * @return string
      */
-    public function getEntityId();
+    public function getEntityId(): string;
 
     /**
      * Returns taskId.
      *
      * @return string
      */
-    public function getTaskId();
+    public function getTaskId(): string;
 
     /**
      * Set taskId.
      *
      * @param string $taskId
      *
-     * @return $this
+     * @return TaskInterface
      */
-    public function setTaskId($taskId);
+    public function setTaskId(string $taskId): self;
 
     /**
      * Returns host.
      *
      * @return string
      */
-    public function getHost();
+    public function getHost(): string;
 
     /**
      * Returns scheme.
      *
      * @return string
      */
-    public function getScheme();
+    public function getScheme(): string;
 
     /**
      * Returns creator full-name.
      *
      * @return string
      */
-    public function getCreatorFullName();
+    public function getCreatorFullName(): string;
 
     /**
      * Returns creator full-name.
      *
      * @return string
      */
-    public function getChangerFullName();
+    public function getChangerFullName(): string;
 }

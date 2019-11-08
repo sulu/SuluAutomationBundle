@@ -2,26 +2,39 @@ sudo: false
 
 language: php
 
+services:
+    - mysql
+
 cache:
   directories:
     - $HOME/.composer/cache
 
 matrix:
   include:
-    - php: 7.1
-      env:
-          - COMPOSER_FLAGS="--prefer-lowest --prefer-stable --prefer-dist --no-interaction"
     - php: 7.2
       env:
+          - COMPOSER_FLAGS="--prefer-lowest --prefer-stable --prefer-dist --no-interaction"
+    - php: 7.3
+      env:
           - COMPOSER_FLAGS="--prefer-dist --no-interaction"
+          - CODE_COVERAGE="--coverage-clover=coverage.clover"
+          - PHPSTAN=true
 
-before_script:
-  - phpenv config-rm xdebug.ini
+before_install:
   - phpenv config-add Tests/travis.php.ini
   - composer self-update
-  - composer update $COMPOSER_FLAGS
-  - ./Tests/app/console doctrine:database:create
-  - ./Tests/app/console doctrine:schema:create
+
+install:
+    - if [[ -z $CODE_COVERAGE ]]; then phpenv config-rm xdebug.ini ; fi
+    - travis_retry composer update $COMPOSER_FLAGS
+    - composer info -i
+    - ./Tests/Application/bin/console doctrine:database:create
+    - ./Tests/Application/bin/console doctrine:schema:update --force
 
 script:
-  - vendor/bin/phpunit
+    - if [[ $PHPSTAN = true ]]; then composer phpstan; fi
+    - composer phpunit -- $CODE_COVERAGE
+
+after_script:
+    - if [[ -n $CODE_COVERAGE ]]; then wget https://scrutinizer-ci.com/ocular.phar ; fi
+    - if [[ -n $CODE_COVERAGE ]]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover ; fi

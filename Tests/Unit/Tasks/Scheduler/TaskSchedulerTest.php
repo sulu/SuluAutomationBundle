@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -59,7 +59,7 @@ class TaskSchedulerTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->taskRepository = $this->prophesize(TaskRepositoryInterface::class);
         $this->taskExecutionRepository = $this->prophesize(TaskExecutionRepositoryInterface::class);
@@ -93,6 +93,7 @@ class TaskSchedulerTest extends TestCase
         $this->taskRepository->findByUuid('123-312-123')->willReturn($phpTask->reveal());
         $phpTaskExecution = $this->prophesize(TaskExecutionInterface::class);
         $this->taskExecutionRepository->findByTask($phpTask->reveal())->willReturn([$phpTaskExecution->reveal()]);
+        $this->taskExecutionRepository->remove($phpTaskExecution->reveal())->shouldBeCalled();
 
         $phpTask->getFirstExecution()->willReturn(new \DateTime('-1 day'));
         $task->getSchedule()->willReturn(new \DateTime('1 day'));

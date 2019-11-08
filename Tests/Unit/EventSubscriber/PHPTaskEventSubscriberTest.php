@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -42,7 +42,7 @@ class PHPTaskEventSubscriberTest extends TestCase
      */
     private $eventSubscriber;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->requestStack = $this->prophesize(RequestStack::class);
         $this->taskRepository = $this->prophesize(TaskRepositoryInterface::class);
@@ -75,7 +75,7 @@ class PHPTaskEventSubscriberTest extends TestCase
 
         $this->requestStack->push(
             Argument::that(
-                function (Request $request) use ($event) {
+                function(Request $request) use ($event) {
                     return 'http' === $request->getScheme()
                            && 'sulu.io' === $request->getHost()
                            && $request->attributes->get('_task_id') === $event->getTask()->getUuid();
@@ -97,7 +97,7 @@ class PHPTaskEventSubscriberTest extends TestCase
 
         $this->requestStack->push(
             Argument::that(
-                function (Request $request) use ($event) {
+                function(Request $request) use ($event) {
                     return 'https' === $request->getScheme()
                            && 'sulu.io' === $request->getHost()
                            && $request->attributes->get('_task_id') === $event->getTask()->getUuid();

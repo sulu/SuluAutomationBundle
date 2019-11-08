@@ -15,41 +15,26 @@ Composer documentation.
 
 ### Step 2: Enabled the Bundle
 
-Then, enable the bundle by adding it to the list of registered bundles in the
-`app/AbstractKernel.php` file of your Sulu project.
+Enable the bundle by adding it to the list of registered bundles in the
+`config/bundles.php` file of your Sulu project.
 
 ```php
-<?php
-// app/AbstractKernel.php
-
-// ...
-abstract class AbstractKernel extends SuluKernel
-{
-    public function registerBundles()
-    {
-        $bundles = [
-            // ...
-            new Task\TaskBundle\TaskBundle(),
-            new Sulu\Bundle\AutomationBundle\SuluAutomationBundle(),
-        ];
-    }
-}
+Sulu\Bundle\AutomationBundle\SuluAutomationBundle::class => ['all' => true],
 ```
 
 ## Step 3: Configure the routes
 
-Then, add the required routes to the `app/config/admin/routing.yml` configuration file.
+Add the required routes to the `config/routes/sulu_admin.yaml` configuration file.
 
 ```yaml
 # ...
 sulu_automation_api:
-    type: rest
-    resource: "@SuluAutomationBundle/Resources/config/routing_api.xml"
+    resource: '@SuluAutomationBundle/Resources/config/routing_api.yml'
     prefix: /admin/api
 
 sulu_automation:
     type: rest
-    resource: "@SuluAutomationBundle/Resources/config/routing.xml"
+    resource: '@SuluAutomationBundle/Resources/config/routing.yml'
     prefix: /admin/automation
 ```
 
@@ -60,14 +45,6 @@ using doctrine migrations or the following command:
 
 ```console
 bin/console doctrine:schema:update --force
-```
-
-## Step 5: Export the translations
-
-This bundle also includes a few translations, which must be exported:
-
-```console
-bin/console sulu:translate:export
 ```
 
 ## Step 6: Configure a cronjob

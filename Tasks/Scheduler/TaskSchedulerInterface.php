@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -24,7 +24,7 @@ interface TaskSchedulerInterface
      *
      * @param TaskInterface $task
      */
-    public function schedule(TaskInterface $task);
+    public function schedule(TaskInterface $task): void;
 
     /**
      * Reschedule given task.
@@ -33,12 +33,12 @@ interface TaskSchedulerInterface
      *
      * @throws TaskExpiredException
      */
-    public function reschedule(TaskInterface $task);
+    public function reschedule(TaskInterface $task): void;
 
     /**
      * Unschedules given task.
      *
      * @param TaskInterface $task
      */
-    public function remove(TaskInterface $task);
+    public function remove(TaskInterface $task): void;
 }

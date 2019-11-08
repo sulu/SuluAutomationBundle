@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -23,7 +23,7 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
     /**
      * {@inheritdoc}
      */
-    public function create()
+    public function create(): TaskInterface
     {
         $class = $this->_entityName;
 
@@ -33,7 +33,7 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
     /**
      * {@inheritdoc}
      */
-    public function save(TaskInterface $task)
+    public function save(TaskInterface $task): TaskInterface
     {
         $this->_em->persist($task);
 
@@ -43,31 +43,39 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
     /**
      * {@inheritdoc}
      */
-    public function remove(TaskInterface $task)
+    public function remove(TaskInterface $task): TaskInterface
     {
         $this->_em->remove($task);
+
+        return $task;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findById($id)
+    public function findById(string $id): ?TaskInterface
     {
-        return $this->find($id);
+        /** @var TaskInterface $task */
+        $task = $this->find($id);
+
+        return $task;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function findByTaskId($id)
+    public function findByTaskId(string $id): ?TaskInterface
     {
-        return $this->findOneBy(['taskId' => $id]);
+        /** @var TaskInterface $task */
+        $task = $this->findOneBy(['taskId' => $id]);
+
+        return $task;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function countFutureTasks($entityClass, $entityId, $locale = null)
+    public function countFutureTasks(string $entityClass, string $entityId, string $locale = null): int
     {
         $queryBuilder = $this->createQueryBuilder('task')
             ->select('COUNT(task.id)')
@@ -78,7 +86,7 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
             ->setParameter('entityId', $entityId)
             ->setParameter('schedule', new \DateTime());
 
-        if ($locale) {
+        if (null != $locale) {
             $queryBuilder->andWhere('task.locale = :locale')
                 ->setParameter('locale', $locale);
         }
@@ -91,7 +99,7 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
     /**
      * {@inheritdoc}
      */
-    public function revert(TaskInterface $task)
+    public function revert(TaskInterface $task): TaskInterface
     {
         $this->_em->refresh($task);
 

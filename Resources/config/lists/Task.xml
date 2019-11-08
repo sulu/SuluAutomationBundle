@@ -1,0 +1,100 @@
+<?xml version="1.0" ?>
+<list xmlns="http://schemas.sulu.io/list-builder/list">
+    <key>tasks</key>
+
+    <joins name="creator">
+        <join>
+            <entity-name>%sulu.model.user.class%</entity-name>
+            <field-name>%sulu.model.task.class%.creator</field-name>
+        </join>
+        <join>
+            <entity-name>%sulu.model.contact.class%</entity-name>
+            <field-name>%sulu.model.user.class%.contact</field-name>
+        </join>
+    </joins>
+    <joins name="changer">
+        <join>
+            <entity-name>%sulu.model.user.class%</entity-name>
+            <field-name>%sulu.model.task.class%.changer</field-name>
+        </join>
+        <join>
+            <entity-name>%sulu.model.contact.class%</entity-name>
+            <field-name>%sulu.model.user.class%.contact</field-name>
+        </join>
+    </joins>
+
+    <properties>
+        <property name="id" translation="public.id" visibility="no" sortable="false">
+            <field-name>id</field-name>
+            <entity-name>%sulu.model.task.class%</entity-name>
+        </property>
+
+        <property name="locale" visibility="never">
+            <field-name>locale</field-name>
+            <entity-name>%sulu.model.task.class%</entity-name>
+        </property>
+
+        <property name="handlerClass" visibility="never">
+            <field-name>handlerClass</field-name>
+            <entity-name>%sulu.model.task.class%</entity-name>
+        </property>
+
+        <property name="status" translation="public.status" sortable="false"/>
+
+        <property name="taskName" translation="sulu_automation.task.name"
+                  visibility="always" sortable="false"/>
+
+        <property name="taskId" visibility="never">
+            <field-name>taskId</field-name>
+            <entity-name>%sulu.model.task.class%</entity-name>
+        </property>
+
+        <property name="schedule" translation="sulu_automation.task.schedule" visibility="always"
+                  type="datetime">
+            <field-name>schedule</field-name>
+            <entity-name>%sulu.model.task.class%</entity-name>
+        </property>
+
+        <property name="entityClass" visibility="never" sortable="false">
+            <field-name>entityClass</field-name>
+            <entity-name>%sulu.model.task.class%</entity-name>
+        </property>
+
+        <property name="entityId" visibility="never" sortable="false">
+            <field-name>entityId</field-name>
+            <entity-name>%sulu.model.task.class%</entity-name>
+        </property>
+
+        <concatenation-property name="creator" visibility="always" glue=" "
+                                translation="sulu_automation.list.creator" sortable="false">
+            <field>
+                <field-name>firstName</field-name>
+                <entity-name>%sulu.model.contact.class%</entity-name>
+
+                <joins ref="creator"/>
+            </field>
+            <field>
+                <field-name>lastName</field-name>
+                <entity-name>%sulu.model.contact.class%</entity-name>
+
+                <joins ref="creator"/>
+            </field>
+        </concatenation-property>
+
+        <concatenation-property name="changer" glue=" " translation="sulu_automation.list.changer"
+                                sortable="false">
+            <field>
+                <field-name>firstName</field-name>
+                <entity-name>%sulu.model.contact.class%</entity-name>
+
+                <joins ref="changer"/>
+            </field>
+            <field>
+                <field-name>lastName</field-name>
+                <entity-name>%sulu.model.contact.class%</entity-name>
+
+                <joins ref="changer"/>
+            </field>
+        </concatenation-property>
+    </properties>
+</list>

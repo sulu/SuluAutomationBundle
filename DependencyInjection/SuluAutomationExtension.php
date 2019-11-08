@@ -3,7 +3,7 @@
 /*
  * This file is part of Sulu.
  *
- * (c) MASSIVE ART WebServices GmbH
+ * (c) Sulu GmbH
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -40,6 +40,27 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
                             'sulu_automation' => [
                                 'path' => __DIR__ . '/../Resources/config/serializer',
                                 'namespace_prefix' => 'Sulu\Bundle\AutomationBundle\Entity',
+                            ],
+                        ],
+                    ],
+                ]
+            );
+        }
+
+        if ($container->hasExtension('sulu_admin')) {
+            $container->prependExtensionConfig(
+                'sulu_admin',
+                [
+                    'lists' => [
+                        'directories' => [
+                            __DIR__ . '/../Resources/config/lists',
+                        ],
+                    ],
+                    'resources' => [
+                        'tasks' => [
+                            'routes' => [
+                                'list' => 'sulu_automation.get_tasks',
+                                'detail' => 'sulu_automation.get_task',
                             ],
                         ],
                     ],

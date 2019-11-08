@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of Sulu.
+ *
+ * (c) Sulu GmbH
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Sulu\Bundle\AutomationBundle\EventSubscriber;
 
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface;
@@ -37,7 +46,7 @@ class PHPTaskEventSubscriber implements EventSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             Events::TASK_BEFORE => ['pushRequest'],
@@ -50,7 +59,7 @@ class PHPTaskEventSubscriber implements EventSubscriberInterface
      *
      * @param TaskEvent $event
      */
-    public function pushRequest(TaskEvent $event)
+    public function pushRequest(TaskEvent $event): void
     {
         $task = $this->taskRepository->findByTaskId($event->getTask()->getUuid());
         if (!$task) {
@@ -76,7 +85,7 @@ class PHPTaskEventSubscriber implements EventSubscriberInterface
      *
      * @param TaskEvent $event
      */
-    public function popRequest(TaskEvent $event)
+    public function popRequest(TaskEvent $event): void
     {
         $request = $this->requestStack->getCurrentRequest();
         if (!$request || $request->attributes->get('_task_id') !== $event->getTask()->getUuid()) {
