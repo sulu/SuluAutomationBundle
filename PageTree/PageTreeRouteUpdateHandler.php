@@ -12,6 +12,7 @@
 namespace Sulu\Bundle\AutomationBundle\PageTree;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\TaskHandlerConfiguration;
 use Sulu\Bundle\PageBundle\Document\BasePageDocument;
@@ -74,7 +75,7 @@ class PageTreeRouteUpdateHandler implements AutomationTaskHandlerInterface, Lock
      */
     public function getConfiguration(): TaskHandlerConfiguration
     {
-        return TaskHandlerConfiguration::create('sulu_route.update_page_tree_route');
+        return TaskHandlerConfiguration::create('sulu_automation.update_page_tree_route');
     }
 
     /**
@@ -85,11 +86,13 @@ class PageTreeRouteUpdateHandler implements AutomationTaskHandlerInterface, Lock
         $this->entityManager->beginTransaction();
 
         try {
-            $this->routeUpdater->update($this->documentManager->find($workload['id'], $workload['locale']));
+            /** @var BasePageDocument $document */
+            $document = $this->documentManager->find($workload['id'], $workload['locale']);
+            $this->routeUpdater->update($document);
 
             $this->documentManager->flush();
             $this->entityManager->commit();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->entityManager->rollback();
 
             throw $exception;
