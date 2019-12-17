@@ -92,20 +92,7 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
-
-        if ($container->hasExtension('sulu_route')) {
-            $suluRouteConfig = $container->getExtensionConfig('sulu_route');
-            $pageRouteCascade = $suluRouteConfig['content_types']['page_tree_route']['page_route_cascade'];
-
-            if ('task' === $pageRouteCascade) {
-                $loader->load('page_tree_route.xml');
-
-                $container->setAlias(
-                    'sulu_route.page_tree_route.updater',
-                    'sulu_automation.page_tree.updater'
-                );
-            }
-        }
+        $loader->load('page_tree_route.xml');
 
         $this->configurePersistence($config['objects'], $container);
     }
