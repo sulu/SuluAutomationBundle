@@ -31,6 +31,11 @@ class AutomationAdmin extends Admin
 
     const EDIT_FORM_VIEW = 'sulu_automation.edit_form';
 
+    public static function getPriority(): int
+    {
+        return -512;
+    }
+
     /**
      * @var ViewBuilderFactoryInterface
      */
@@ -58,6 +63,10 @@ class AutomationAdmin extends Admin
 
     public function configureViews(ViewCollection $viewCollection): void
     {
+        if (!$viewCollection->has(PageAdmin::EDIT_FORM_VIEW)) {
+            return;
+        }
+
         $automationViewBuilder = new AutomationViewBuilder(static::LIST_VIEW, '/automation');
         $automationViewBuilder
             ->setEntityClass(BasePageDocument::class)
