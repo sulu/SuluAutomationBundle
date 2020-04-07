@@ -80,7 +80,7 @@ class PageTreeRouteUpdateHandlerTest extends TestCase
     public function testGetConfiguration()
     {
         $result = $this->handler->getConfiguration();
-        $this->assertEquals('sulu_article.update_route', $result->getTitle());
+        $this->assertEquals('sulu_automation.update_page_tree_route', $result->getTitle());
     }
 
     public function testHandle()

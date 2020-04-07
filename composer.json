@@ -46,7 +46,6 @@
             "Sulu\\Bundle\\AutomationBundle\\": ""
         }
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
             "dev-develop": "2.0-dev"
