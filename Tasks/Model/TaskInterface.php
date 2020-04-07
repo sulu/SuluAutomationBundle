@@ -20,15 +20,11 @@ interface TaskInterface extends AuditableInterface
 {
     /**
      * Returns id.
-     *
-     * @return string
      */
     public function getId(): string;
 
     /**
      * Set id.
-     *
-     * @param string $id
      *
      * @return TaskInterface
      */
@@ -36,57 +32,41 @@ interface TaskInterface extends AuditableInterface
 
     /**
      * Returns task.
-     *
-     * @return string
      */
     public function getHandlerClass(): string;
 
     /**
      * Returns schedule.
-     *
-     * @return \DateTime
      */
     public function getSchedule(): \DateTime;
 
     /**
-     * @param \DateTime $schedule
-     *
      * @return TaskInterface
      */
     public function setSchedule(\DateTime $schedule): self;
 
     /**
      * Returns locale.
-     *
-     * @return string
      */
     public function getLocale(): string;
 
     /**
      * Returns entity-class.
-     *
-     * @return string
      */
     public function getEntityClass(): string;
 
     /**
      * Returns entity-id.
-     *
-     * @return string
      */
     public function getEntityId(): string;
 
     /**
      * Returns taskId.
-     *
-     * @return string
      */
     public function getTaskId(): string;
 
     /**
      * Set taskId.
-     *
-     * @param string $taskId
      *
      * @return TaskInterface
      */
@@ -94,29 +74,21 @@ interface TaskInterface extends AuditableInterface
 
     /**
      * Returns host.
-     *
-     * @return string
      */
     public function getHost(): string;
 
     /**
      * Returns scheme.
-     *
-     * @return string
      */
     public function getScheme(): string;
 
     /**
      * Returns creator full-name.
-     *
-     * @return string
      */
     public function getCreatorFullName(): string;
 
     /**
      * Returns creator full-name.
-     *
-     * @return string
      */
     public function getChangerFullName(): string;
 }

@@ -16,11 +16,11 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Sulu\Bundle\AutomationBundle\PageTree\AutomationPageTreeUpdater;
 use Sulu\Bundle\AutomationBundle\PageTree\PageTreeRouteUpdateHandler;
-use Sulu\Bundle\RouteBundle\PageTree\PageTreeUpdaterInterface;
 use Sulu\Bundle\AutomationBundle\SuluAutomationBundle;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Bundle\PageBundle\Document\BasePageDocument;
+use Sulu\Bundle\RouteBundle\PageTree\PageTreeUpdaterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 

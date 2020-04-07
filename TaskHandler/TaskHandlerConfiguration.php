@@ -19,8 +19,6 @@ class TaskHandlerConfiguration
     /**
      * Create a new configuration.
      *
-     * @param string $title
-     *
      * @return static
      */
     public static function create(string $title)

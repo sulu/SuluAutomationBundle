@@ -33,10 +33,6 @@ class PHPTaskEventSubscriber implements EventSubscriberInterface
      */
     private $taskRepository;
 
-    /**
-     * @param RequestStack $requestStack
-     * @param TaskRepositoryInterface $taskRepository
-     */
     public function __construct(RequestStack $requestStack, TaskRepositoryInterface $taskRepository)
     {
         $this->requestStack = $requestStack;
@@ -56,8 +52,6 @@ class PHPTaskEventSubscriber implements EventSubscriberInterface
 
     /**
      * Create and push new request to requests-stack.
-     *
-     * @param TaskEvent $event
      */
     public function pushRequest(TaskEvent $event): void
     {
@@ -82,8 +76,6 @@ class PHPTaskEventSubscriber implements EventSubscriberInterface
 
     /**
      * Pop request from request stack.
-     *
-     * @param TaskEvent $event
      */
     public function popRequest(TaskEvent $event): void
     {
