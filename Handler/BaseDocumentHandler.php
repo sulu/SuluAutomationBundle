@@ -53,9 +53,6 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
 
     /**
      * Handle given document.
-     *
-     * @param WorkflowStageBehavior $document
-     * @param string $locale
      */
     abstract protected function handleDocument(WorkflowStageBehavior $document, string $locale): void;
 

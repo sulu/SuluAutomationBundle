@@ -20,35 +20,21 @@ interface TaskManagerInterface
 {
     /**
      * Create a new task-entity.
-     *
-     * @param TaskInterface $task
-     *
-     * @return TaskInterface
      */
     public function create(TaskInterface $task): TaskInterface;
 
     /**
      * Update given task-entity.
-     *
-     * @param TaskInterface $task
-     *
-     * @return TaskInterface
      */
     public function update(TaskInterface $task): TaskInterface;
 
     /**
      * Removes given task-entity.
-     *
-     * @param string $id
      */
     public function remove(string $id): void;
 
     /**
      * Find task identified by given id.
-     *
-     * @param string $id
-     *
-     * @return TaskInterface
      */
     public function findById(string $id): TaskInterface;
 }

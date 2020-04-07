@@ -35,11 +35,6 @@ class TaskHandlerController
         $this->taskHandlerFactory = $taskHandlerFactory;
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return Response
-     */
     public function getAction(Request $request): Response
     {
         $entityClass = $this->getRequestParameter($request, 'entityClass', true);

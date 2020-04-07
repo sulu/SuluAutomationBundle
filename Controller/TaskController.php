@@ -121,8 +121,6 @@ class TaskController extends AbstractRestController implements ClassResourceInte
 
     /**
      * Returns fields for tasks.
-     *
-     * @return Response
      */
     public function cgetFieldsAction(): Response
     {
@@ -131,10 +129,6 @@ class TaskController extends AbstractRestController implements ClassResourceInte
 
     /**
      * Returns list of tasks.
-     *
-     * @param Request $request
-     *
-     * @return Response
      */
     public function cgetAction(Request $request): Response
     {
@@ -195,10 +189,6 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      * Prepares list-builder.
      *
      * @param FieldDescriptorInterface[] $fieldDescriptors
-     * @param Request $request
-     * @param ListBuilderInterface $listBuilder
-     *
-     * @return ListBuilderInterface
      */
     private function prepareListBuilder(array $fieldDescriptors, Request $request, ListBuilderInterface $listBuilder): ListBuilderInterface
     {
@@ -238,8 +228,6 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      * Executes given list-builder and returns result.
      *
      * @param FieldDescriptorInterface[] $fieldDescriptors
-     * @param Request $request
-     * @param ListBuilderInterface $listBuilder
      *
      * @return mixed[]
      */
@@ -265,10 +253,6 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     /**
      * Returns task for given id.
      *
-     * @param string $id
-     *
-     * @return Response
-     *
      * @throws TaskNotFoundException
      */
     public function getAction(string $id): Response
@@ -278,10 +262,6 @@ class TaskController extends AbstractRestController implements ClassResourceInte
 
     /**
      * Create new task.
-     *
-     * @param Request $request
-     *
-     * @return Response
      */
     public function postAction(Request $request): Response
     {
@@ -320,11 +300,6 @@ class TaskController extends AbstractRestController implements ClassResourceInte
 
     /**
      * Update task with given id.
-     *
-     * @param string $id
-     * @param Request $request
-     *
-     * @return Response
      */
     public function putAction(string $id, Request $request): Response
     {
@@ -360,10 +335,6 @@ class TaskController extends AbstractRestController implements ClassResourceInte
 
     /**
      * Removes task with given id.
-     *
-     * @param string $id
-     *
-     * @return Response
      */
     public function deleteAction(string $id): Response
     {
@@ -377,10 +348,6 @@ class TaskController extends AbstractRestController implements ClassResourceInte
 
     /**
      * Removes multiple tasks identified by ids parameter.
-     *
-     * @param Request $request
-     *
-     * @return Response
      */
     public function cdeleteAction(Request $request): Response
     {

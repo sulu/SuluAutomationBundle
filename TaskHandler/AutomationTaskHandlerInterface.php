@@ -21,26 +21,16 @@ interface AutomationTaskHandlerInterface extends TaskHandlerInterface
 {
     /**
      * Configures options-resolver to validate workload.
-     *
-     * @param OptionsResolver $optionsResolver
-     *
-     * @return OptionsResolver
      */
     public function configureOptionsResolver(OptionsResolver $optionsResolver): OptionsResolver;
 
     /**
      * Returns true if handler supports given class.
-     *
-     * @param string $entityClass
-     *
-     * @return bool
      */
     public function supports(string $entityClass): bool;
 
     /**
      * Returns configuration for this task-handler.
-     *
-     * @return TaskHandlerConfiguration
      */
     public function getConfiguration(): TaskHandlerConfiguration;
 }

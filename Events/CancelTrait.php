@@ -23,8 +23,6 @@ trait CancelTrait
 
     /**
      * Returns canceled.
-     *
-     * @return bool
      */
     public function isCanceled(): bool
     {

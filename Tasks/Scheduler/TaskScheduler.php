@@ -48,12 +48,6 @@ class TaskScheduler implements TaskSchedulerInterface
      */
     private $taskScheduler;
 
-    /**
-     * @param TaskRepositoryInterface $phpTaskRepository
-     * @param TaskExecutionRepositoryInterface $phpTaskExecutionRepository
-     * @param TaskHandlerFactoryInterface $taskHandlerFactory
-     * @param PHPTaskSchedulerInterface $taskScheduler
-     */
     public function __construct(
         TaskRepositoryInterface $phpTaskRepository,
         TaskExecutionRepositoryInterface $phpTaskExecutionRepository,
@@ -118,10 +112,7 @@ class TaskScheduler implements TaskSchedulerInterface
     /**
      * Schedule php-task.
      *
-     * @param TaskInterface $task
      * @param string[] $workload
-     *
-     * @return PHPTaskInterface
      */
     private function scheduleTask(TaskInterface $task, array $workload): PHPTaskInterface
     {
@@ -132,8 +123,6 @@ class TaskScheduler implements TaskSchedulerInterface
 
     /**
      * Create and validate workload for given task.
-     *
-     * @param TaskInterface $task
      *
      * @return string[]
      *

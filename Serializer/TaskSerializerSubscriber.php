@@ -36,10 +36,6 @@ class TaskSerializerSubscriber implements EventSubscriberInterface
      */
     private $taskExecutionRepository;
 
-    /**
-     * @param TaskHandlerFactoryInterface $handlerFactory
-     * @param TaskExecutionRepositoryInterface $taskExecutionRepository
-     */
     public function __construct(
         TaskHandlerFactoryInterface $handlerFactory,
         TaskExecutionRepositoryInterface $taskExecutionRepository
@@ -64,8 +60,6 @@ class TaskSerializerSubscriber implements EventSubscriberInterface
 
     /**
      * Append task-name to task-serialization.
-     *
-     * @param ObjectEvent $event
      *
      * @throws \Task\Handler\TaskHandlerNotExistsException
      */

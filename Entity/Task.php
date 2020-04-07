@@ -78,6 +78,8 @@ class Task implements TaskInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @return self
      */
     public function setId(string $id): TaskInterface
     {
@@ -109,6 +111,9 @@ class Task implements TaskInterface
         return $this->schedule;
     }
 
+    /**
+     * @return self
+     */
     public function setSchedule(\DateTime $schedule): TaskInterface
     {
         $this->schedule = $schedule;
@@ -163,6 +168,9 @@ class Task implements TaskInterface
         return $this->taskId;
     }
 
+    /**
+     * @return self
+     */
     public function setTaskId(string $taskId): TaskInterface
     {
         $this->taskId = $taskId;
