@@ -65,7 +65,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
 
                 $handlerOption = new OptionMetadata();
                 $handlerOption->setName(get_class($handler));
-                $handlerOption->setTitle($configuration->getTitle());
+                $handlerOption->setTitle($this->translator->trans($configuration->getTitle(), [], 'admin', $locale));
 
                 $valuesOption->addValueOption($handlerOption);
             }
