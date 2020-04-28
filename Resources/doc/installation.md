@@ -19,6 +19,7 @@ Enable the bundle by adding it to the list of registered bundles in the
 `config/bundles.php` file of your Sulu project.
 
 ```php
+Task\TaskBundle\TaskBundle::class => ['all' => true],
 Sulu\Bundle\AutomationBundle\SuluAutomationBundle::class => ['all' => true],
 ```
 
@@ -27,7 +28,6 @@ Sulu\Bundle\AutomationBundle\SuluAutomationBundle::class => ['all' => true],
 Add the required routes to the `config/routes/sulu_admin.yaml` configuration file.
 
 ```yaml
-# ...
 sulu_automation_api:
     resource: '@SuluAutomationBundle/Resources/config/routing_api.yml'
     prefix: /admin/api
