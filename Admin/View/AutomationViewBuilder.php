@@ -34,7 +34,9 @@ class AutomationViewBuilder extends FormOverlayListViewBuilder implements Automa
             ->addListAdapters(['table'])
             ->setTabOrder(4096)
             ->addRouterAttributesToFormRequest(['id' => 'entityId'])
-            ->addRouterAttributesToListRequest(['id' => 'entityId']);
+            ->addRouterAttributesToListRequest(['id' => 'entityId'])
+            ->setOption('itemDisabledCondition', 'status != "planned"')
+        ;
     }
 
     public function setEntityClass(string $entityClass): AutomationViewBuilderInterface

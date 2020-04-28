@@ -3,6 +3,7 @@
   "sulu_automation.tasks": "Aufgaben",
   "sulu_automation.task": "Aufgabe",
   "sulu_automation.task.name": "Aufgabe",
+  "sulu_automation.task.status": "Status",
   "sulu_automation.task.schedule": "Zeitplan",
   "sulu_automation.task.schedule.time": "Zeit",
   "sulu_automation.task.schedule.date": "Datum",

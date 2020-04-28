@@ -24,7 +24,7 @@
     </joins>
 
     <properties>
-        <property name="id" translation="public.id" visibility="no" sortable="false">
+        <property name="id" translation="sulu_admin.id" visibility="no" sortable="false">
             <field-name>id</field-name>
             <entity-name>%sulu.model.task.class%</entity-name>
         </property>
@@ -39,7 +39,7 @@
             <entity-name>%sulu.model.task.class%</entity-name>
         </property>
 
-        <property name="status" translation="public.status" sortable="false"/>
+        <property name="status" translation="sulu_automation.task.status" sortable="false"/>
 
         <property name="taskName" translation="sulu_automation.task.name"
                   visibility="always" sortable="false"/>
