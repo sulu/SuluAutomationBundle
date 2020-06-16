@@ -26,10 +26,7 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
 {
     use PersistenceExtensionTrait;
 
-    /**
-     * @return void
-     */
-    public function prepend(ContainerBuilder $container)
+    public function prepend(ContainerBuilder $container): void
     {
         if ($container->hasExtension('jms_serializer')) {
             $container->prependExtensionConfig(
@@ -82,10 +79,7 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
         }
     }
 
-    /**
-     * @return void
-     */
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);

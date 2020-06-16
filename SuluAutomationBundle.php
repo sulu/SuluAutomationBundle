@@ -23,10 +23,7 @@ class SuluAutomationBundle extends Bundle
 {
     use PersistenceBundleTrait;
 
-    /**
-     * @return void
-     */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $this->buildPersistence(
             [
