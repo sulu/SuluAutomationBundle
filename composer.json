@@ -12,10 +12,10 @@
     ],
     "require": {
         "php": "^7.2",
-        "friendsofsymfony/rest-bundle": "^2.8 || ^3.0",
+        "friendsofsymfony/rest-bundle": "^2.5 || ^3.0",
         "jms/serializer-bundle": "^3.0",
-        "php-task/php-task": "^1.4",
-        "php-task/task-bundle": "^2.0",
+        "php-task/php-task": "^1.3.3",
+        "php-task/task-bundle": "^1.3 || ^2.0",
         "sulu/sulu": "^2.0.7",
         "symfony/config": "^4.3 || ^5.0",
         "symfony/dependency-injection": "^4.3 || ^5.0",
