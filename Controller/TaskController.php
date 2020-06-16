@@ -16,7 +16,6 @@ use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializerInterface;
-use Nette\Utils\DateTime;
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
 use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
@@ -44,6 +43,9 @@ use Task\Storage\TaskRepositoryInterface;
  */
 class TaskController extends AbstractRestController implements ClassResourceInterface, SecuredControllerInterface
 {
+    /**
+     * @var string[]
+     */
     private static $scheduleComparators = [
         'future' => ListBuilderInterface::WHERE_COMPARATOR_GREATER_THAN,
         'past' => ListBuilderInterface::WHERE_COMPARATOR_LESS,
@@ -287,7 +289,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
             $context
         );
 
-        /** @var DateTime $date */
+        /** @var \DateTime $date */
         $date = date_create_from_format('Y-m-d:H:i:s', $data['date'] . ':' . $data['time']);
 
         $task->setSchedule($date);
@@ -325,7 +327,9 @@ class TaskController extends AbstractRestController implements ClassResourceInte
             $context
         );
 
-        $task->setSchedule(date_create_from_format('Y-m-d:H:i:s', $data['date'] . ':' . $data['time']));
+        /** @var \DateTime $dateTime */
+        $dateTime = date_create_from_format('Y-m-d:H:i:s', $data['date'] . ':' . $data['time']);
+        $task->setSchedule($dateTime);
         $task = $this->taskManager->update($task);
 
         $this->entityManager->flush();
@@ -379,7 +383,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
     public function getSecurityContext()
     {

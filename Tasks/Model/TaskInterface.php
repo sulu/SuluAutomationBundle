@@ -63,14 +63,14 @@ interface TaskInterface extends AuditableInterface
     /**
      * Returns taskId.
      */
-    public function getTaskId(): string;
+    public function getTaskId(): ?string;
 
     /**
      * Set taskId.
      *
      * @return TaskInterface
      */
-    public function setTaskId(string $taskId): self;
+    public function setTaskId(?string $taskId): self;
 
     /**
      * Returns host.

@@ -54,7 +54,7 @@ class Task implements TaskInterface
     private $entityId;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $taskId;
 
@@ -163,7 +163,7 @@ class Task implements TaskInterface
         return $this;
     }
 
-    public function getTaskId(): string
+    public function getTaskId(): ?string
     {
         return $this->taskId;
     }
@@ -171,7 +171,7 @@ class Task implements TaskInterface
     /**
      * @return self
      */
-    public function setTaskId(string $taskId): TaskInterface
+    public function setTaskId(?string $taskId): TaskInterface
     {
         $this->taskId = $taskId;
 

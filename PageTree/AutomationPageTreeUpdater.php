@@ -48,10 +48,7 @@ class AutomationPageTreeUpdater implements PageTreeUpdaterInterface
         $this->requestStack = $requestStack;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function update(BasePageDocument $document)
+    public function update(BasePageDocument $document): void
     {
         $request = $this->requestStack->getCurrentRequest();
         if (!$request) {

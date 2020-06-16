@@ -76,7 +76,7 @@ class TaskScheduler implements TaskSchedulerInterface
     {
         $workload = $this->createWorkload($task);
 
-        $phpTask = $this->taskRepository->findByUuid($task->getTaskId());
+        $phpTask = $this->taskRepository->findByUuid((string) $task->getTaskId());
         $executions = $this->taskExecutionRepository->findByTask($phpTask);
 
         if ($task->getSchedule() == $phpTask->getFirstExecution()
@@ -105,7 +105,7 @@ class TaskScheduler implements TaskSchedulerInterface
      */
     public function remove(TaskInterface $task): void
     {
-        $phpTask = $this->taskRepository->findByUuid($task->getTaskId());
+        $phpTask = $this->taskRepository->findByUuid((string) $task->getTaskId());
         $this->taskRepository->remove($phpTask);
     }
 

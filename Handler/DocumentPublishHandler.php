@@ -26,7 +26,7 @@ class DocumentPublishHandler extends BaseDocumentHandler
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $locale
      */
     protected function handleDocument(WorkflowStageBehavior $document, $locale): void
     {
