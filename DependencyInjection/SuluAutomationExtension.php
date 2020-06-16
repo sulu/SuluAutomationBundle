@@ -26,6 +26,9 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
 {
     use PersistenceExtensionTrait;
 
+    /**
+     * {@inheritdoc}
+     */
     public function prepend(ContainerBuilder $container): void
     {
         if ($container->hasExtension('jms_serializer')) {
@@ -79,6 +82,9 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
