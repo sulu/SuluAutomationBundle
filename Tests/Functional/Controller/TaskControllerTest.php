@@ -15,6 +15,7 @@ use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Tests\Handler\FirstHandler;
 use Sulu\Bundle\AutomationBundle\Tests\Handler\SecondHandler;
 use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 /**
  * Tests for task-api.
@@ -22,10 +23,16 @@ use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
 class TaskControllerTest extends SuluTestCase
 {
     /**
+     * @var KernelBrowser
+     */
+    private $client;
+
+    /**
      * {@inheritdoc}
      */
     public function setUp(): void
     {
+        $this->client = $this->createAuthenticatedClient();
         $this->purgeDatabase();
     }
 
@@ -37,11 +44,10 @@ class TaskControllerTest extends SuluTestCase
             $this->testPost(),
         ];
 
-        $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/api/tasks?fields=id,schedule,handlerClass,taskName');
-        $this->assertHttpStatusCode(200, $client->getResponse(), 1000);
+        $this->client->request('GET', '/api/tasks?fields=id,schedule,handlerClass,taskName');
+        $this->assertHttpStatusCode(200, $this->client->getResponse(), 1000);
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(3, $responseData['total']);
         $this->assertCount(3, $responseData['_embedded']['tasks']);
 
@@ -70,11 +76,10 @@ class TaskControllerTest extends SuluTestCase
 
         $ids = [$postData[2]['id'], $postData[0]['id']];
 
-        $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/api/tasks?ids=' . implode(',', $ids));
-        $this->assertHttpStatusCode(200, $client->getResponse());
+        $this->client->request('GET', '/api/tasks?ids=' . implode(',', $ids));
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(2, $responseData['total']);
         $this->assertCount(2, $responseData['_embedded']['tasks']);
 
@@ -92,11 +97,10 @@ class TaskControllerTest extends SuluTestCase
             $this->testPost(FirstHandler::class, '+1 day', 'ThisClass', 1, 'de'),
         ];
 
-        $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/api/tasks?locale=de&fields=id,schedule,handlerClass,taskName');
-        $this->assertHttpStatusCode(200, $client->getResponse());
+        $this->client->request('GET', '/api/tasks?locale=de&fields=id,schedule,handlerClass,taskName');
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(2, $responseData['total']);
         $this->assertCount(2, $responseData['_embedded']['tasks']);
 
@@ -124,11 +128,10 @@ class TaskControllerTest extends SuluTestCase
             $this->testPost(FirstHandler::class, '+1 day', 'OtherClass', 1),
         ];
 
-        $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/api/tasks?entityClass=ThisClass&entityId=1');
-        $this->assertHttpStatusCode(200, $client->getResponse());
+        $this->client->request('GET', '/api/tasks?entityClass=ThisClass&entityId=1');
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(1, $responseData['total']);
         $this->assertCount(1, $responseData['_embedded']['tasks']);
 
@@ -144,11 +147,10 @@ class TaskControllerTest extends SuluTestCase
             $this->testPost(FirstHandler::class, '+1 day', 'OtherClass', 1),
         ];
 
-        $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/api/tasks?fields=id,schedule,handlerClass,taskName&schedule=future');
-        $this->assertHttpStatusCode(200, $client->getResponse());
+        $this->client->request('GET', '/api/tasks?fields=id,schedule,handlerClass,taskName&schedule=future');
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(2, $responseData['total']);
         $this->assertCount(2, $responseData['_embedded']['tasks']);
 
@@ -176,11 +178,10 @@ class TaskControllerTest extends SuluTestCase
             $this->testPost(FirstHandler::class, '-1 day', 'OtherClass', 1),
         ];
 
-        $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/api/tasks?fields=id,schedule,handlerClass,taskName&schedule=past');
-        $this->assertHttpStatusCode(200, $client->getResponse());
+        $this->client->request('GET', '/api/tasks?fields=id,schedule,handlerClass,taskName&schedule=past');
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(2, $responseData['total']);
         $this->assertCount(2, $responseData['_embedded']['tasks']);
 
@@ -208,14 +209,13 @@ class TaskControllerTest extends SuluTestCase
             $this->testPost(FirstHandler::class),
         ];
 
-        $client = $this->createAuthenticatedClient();
-        $client->request(
+        $this->client->request(
             'GET',
             '/api/tasks?fields=id,schedule,handlerClass,taskName&handlerClass=' . FirstHandler::class
         );
-        $this->assertHttpStatusCode(200, $client->getResponse());
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(2, $responseData['total']);
         $this->assertCount(2, $responseData['_embedded']['tasks']);
 
@@ -234,16 +234,16 @@ class TaskControllerTest extends SuluTestCase
             );
         }
 
-        $client->request(
+        $this->client->request(
             'GET',
             '/api/tasks?fields=id,schedule,handlerClass,taskName&handlerClass='
             . FirstHandler::class
             . ','
             . SecondHandler::class
         );
-        $this->assertHttpStatusCode(200, $client->getResponse());
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(3, $responseData['total']);
         $this->assertCount(3, $responseData['_embedded']['tasks']);
 
@@ -271,8 +271,7 @@ class TaskControllerTest extends SuluTestCase
     ) {
         $date = new \DateTime($schedule);
 
-        $client = $this->createAuthenticatedClient();
-        $client->request(
+        $this->client->request(
             'POST',
             '/api/tasks',
             [
@@ -284,9 +283,9 @@ class TaskControllerTest extends SuluTestCase
                 'locale' => $locale,
             ]
         );
-        $this->assertHttpStatusCode(200, $client->getResponse());
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('id', $responseData);
         $this->assertEquals($handlerClass, $responseData['handlerClass']);
@@ -306,8 +305,7 @@ class TaskControllerTest extends SuluTestCase
 
         $date = new \DateTime($schedule);
 
-        $client = $this->createAuthenticatedClient();
-        $client->request(
+        $this->client->request(
             'PUT',
             '/api/tasks/' . $postData['id'],
             [
@@ -319,9 +317,9 @@ class TaskControllerTest extends SuluTestCase
                 'time' => $date->format('H:i:s'),
             ]
         );
-        $this->assertHttpStatusCode(200, $client->getResponse());
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertEquals($postData['id'], $responseData['id']);
         $this->assertEquals($handlerClass, $responseData['handlerClass']);
@@ -333,11 +331,10 @@ class TaskControllerTest extends SuluTestCase
     {
         $postData = $this->testPost();
 
-        $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/api/tasks/' . $postData['id']);
-        $this->assertHttpStatusCode(200, $client->getResponse());
+        $this->client->request('GET', '/api/tasks/' . $postData['id']);
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertEquals($postData['id'], $responseData['id']);
         $this->assertEquals($postData['handlerClass'], $responseData['handlerClass']);
@@ -360,11 +357,10 @@ class TaskControllerTest extends SuluTestCase
         $taskManager->create($task);
         $this->getEntityManager()->flush();
 
-        $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/api/tasks/' . $task->getId());
-        $this->assertHttpStatusCode(200, $client->getResponse());
+        $this->client->request('GET', '/api/tasks/' . $task->getId());
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertEquals($task->getId(), $responseData['id']);
         $this->assertEquals('', $responseData['creator']);
@@ -375,12 +371,11 @@ class TaskControllerTest extends SuluTestCase
     {
         $postData = $this->testPost();
 
-        $client = $this->createAuthenticatedClient();
-        $client->request('DELETE', '/api/tasks/' . $postData['id']);
-        $this->assertHttpStatusCode(204, $client->getResponse());
+        $this->client->request('DELETE', '/api/tasks/' . $postData['id']);
+        $this->assertHttpStatusCode(204, $this->client->getResponse());
 
-        $client->request('GET', '/api/tasks/' . $postData['id']);
-        $this->assertHttpStatusCode(404, $client->getResponse());
+        $this->client->request('GET', '/api/tasks/' . $postData['id']);
+        $this->assertHttpStatusCode(404, $this->client->getResponse());
     }
 
     public function testCDelete()
@@ -391,18 +386,17 @@ class TaskControllerTest extends SuluTestCase
             $this->testPost(),
         ];
 
-        $client = $this->createAuthenticatedClient();
-        $client->request('DELETE', '/api/tasks?ids=' . $postData[0]['id'] . ',' . $postData[1]['id']);
-        $this->assertHttpStatusCode(204, $client->getResponse());
+        $this->client->request('DELETE', '/api/tasks?ids=' . $postData[0]['id'] . ',' . $postData[1]['id']);
+        $this->assertHttpStatusCode(204, $this->client->getResponse());
 
-        $client->request('GET', '/api/tasks/' . $postData[0]['id']);
-        $this->assertHttpStatusCode(404, $client->getResponse());
-        $client->request('GET', '/api/tasks/' . $postData[1]['id']);
-        $this->assertHttpStatusCode(404, $client->getResponse());
-        $client->request('GET', '/api/tasks/' . $postData[2]['id']);
-        $this->assertHttpStatusCode(200, $client->getResponse());
+        $this->client->request('GET', '/api/tasks/' . $postData[0]['id']);
+        $this->assertHttpStatusCode(404, $this->client->getResponse());
+        $this->client->request('GET', '/api/tasks/' . $postData[1]['id']);
+        $this->assertHttpStatusCode(404, $this->client->getResponse());
+        $this->client->request('GET', '/api/tasks/' . $postData[2]['id']);
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($client->getResponse()->getContent(), true);
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertEquals($postData[2]['id'], $responseData['id']);
     }
