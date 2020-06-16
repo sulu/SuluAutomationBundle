@@ -65,7 +65,7 @@ class PageTreeRouteUpdateHandler implements AutomationTaskHandlerInterface, Lock
     /**
      * {@inheritdoc}
      */
-    public function supports($entityClass): bool
+    public function supports(string $entityClass): bool
     {
         return is_subclass_of($entityClass, BasePageDocument::class);
     }

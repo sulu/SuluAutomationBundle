@@ -45,7 +45,7 @@ class TaskSerializerSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return mixed[]
      */
     public static function getSubscribedEvents()
     {
@@ -80,7 +80,7 @@ class TaskSerializerSubscriber implements EventSubscriberInterface
             );
         }
 
-        $executions = $this->taskExecutionRepository->findByTaskUuid($object->getTaskId());
+        $executions = $this->taskExecutionRepository->findByTaskUuid((string) $object->getTaskId());
         if (0 < count($executions)) {
             /** @var SerializationVisitorInterface $serializationVisitor */
             $serializationVisitor = $event->getVisitor();

@@ -24,7 +24,7 @@ class SuluAutomationBundle extends Bundle
     use PersistenceBundleTrait;
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     public function build(ContainerBuilder $container)
     {

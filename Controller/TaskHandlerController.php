@@ -17,7 +17,7 @@ use Sulu\Component\Rest\RequestParametersTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Task\Handler\TaskHandlerFactoryInterface;
+use Task\TaskBundle\Handler\TaskHandlerFactory;
 
 /**
  * Provides simple-api for task-handler.
@@ -28,9 +28,12 @@ class TaskHandlerController
 {
     use RequestParametersTrait;
 
+    /**
+     * @var TaskHandlerFactory
+     */
     protected $taskHandlerFactory;
 
-    public function __construct(TaskHandlerFactoryInterface $taskHandlerFactory)
+    public function __construct(TaskHandlerFactory $taskHandlerFactory)
     {
         $this->taskHandlerFactory = $taskHandlerFactory;
     }

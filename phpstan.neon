@@ -1,5 +1,5 @@
 includes:
-    - vendor/jangregor/phpstan-prophecy/src/extension.neon
+    - vendor/jangregor/phpstan-prophecy/extension.neon
     - vendor/phpstan/phpstan-doctrine/extension.neon
     - vendor/phpstan/phpstan-doctrine/rules.neon
     - vendor/phpstan/phpstan-symfony/extension.neon
@@ -16,9 +16,10 @@ parameters:
         - %currentWorkingDirectory%/Tests/*
         - %currentWorkingDirectory%/vendor/*
     symfony:
-        container_xml_path: %rootDir%/../../../Tests/Application/var/cache/admin/dev/adminAdminDevDebugProjectContainer.xml
+        container_xml_path: %rootDir%/../../../Tests/Application/var/cache/admin/test/Sulu_Bundle_AutomationBundle_Tests_Application_KernelTestDebugContainer.xml
         console_application_loader: Tests/phpstan/console-application.php
     doctrine:
         objectManagerLoader: Tests/phpstan/object-manager.php
+    checkGenericClassInNonGenericObjectType: false
     ignoreErrors:
         - '#Symfony\\Contracts\\EventDispatcher\\EventDispatcherInterface::dispatch()#'

@@ -27,7 +27,7 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
     use PersistenceExtensionTrait;
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     public function prepend(ContainerBuilder $container)
     {
@@ -83,7 +83,7 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     public function load(array $configs, ContainerBuilder $container)
     {

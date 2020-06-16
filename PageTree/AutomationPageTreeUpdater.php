@@ -49,7 +49,7 @@ class AutomationPageTreeUpdater implements PageTreeUpdaterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return void
      */
     public function update(BasePageDocument $document)
     {

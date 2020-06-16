@@ -40,6 +40,9 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
         $this->taskHandlerFactory = $taskHandlerFactory;
     }
 
+    /**
+     * @param mixed[] $metadataOptions
+     */
     public function getMetadata(string $key, string $locale, array $metadataOptions): ?MetadataInterface
     {
         if ('task_details' !== $key) {

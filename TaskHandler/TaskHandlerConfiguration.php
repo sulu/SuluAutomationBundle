@@ -19,7 +19,7 @@ class TaskHandlerConfiguration
     /**
      * Create a new configuration.
      *
-     * @return static
+     * @return TaskHandlerConfiguration
      */
     public static function create(string $title)
     {
