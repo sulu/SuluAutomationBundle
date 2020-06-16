@@ -21,5 +21,3 @@ parameters:
     doctrine:
         objectManagerLoader: Tests/phpstan/object-manager.php
     checkGenericClassInNonGenericObjectType: false
-    ignoreErrors:
-        - '#Symfony\\Contracts\\EventDispatcher\\EventDispatcherInterface::dispatch()#'
