@@ -113,6 +113,6 @@ class TaskManagerTest extends TestCase
                 }
             ),
             $eventName
-        )->willReturnArgument(1);
+        )->willReturnArgument(0);
     }
 }

@@ -7,8 +7,8 @@
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Debug\Debug;
 use Sulu\Bundle\AutomationBundle\Tests\Application\Kernel;
+use Symfony\Component\ErrorHandler\Debug;
 
 set_time_limit(0);
 
@@ -19,7 +19,12 @@ $env = $input->getParameterOption(array('--env', '-e'), getenv('APP_ENV') ?: 'de
 $debug = getenv('APP_DEBUG') !== '0' && !$input->hasParameterOption(array('--no-debug', '')) && $env !== 'prod';
 
 if ($debug) {
-    Debug::enable();
+    // Clean up when sf 4.3 support is removed
+    if (class_exists(Debug::class)) {
+        Debug::enable();
+    } else {
+        \Symfony\Component\Debug\Debug::enable();
+    }
 }
 
 $kernel = new Kernel($env, $debug);

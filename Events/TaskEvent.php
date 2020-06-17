@@ -12,7 +12,7 @@
 namespace Sulu\Bundle\AutomationBundle\Events;
 
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Base class for task-events.
