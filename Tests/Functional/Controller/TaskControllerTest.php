@@ -356,6 +356,7 @@ class TaskControllerTest extends SuluTestCase
         $taskManager = $this->getContainer()->get('sulu_automation.tasks.manager');
         $taskManager->create($task);
         $this->getEntityManager()->flush();
+        $this->getEntityManager()->clear();
 
         $this->client->request('GET', '/api/tasks/' . $task->getId());
         $this->assertHttpStatusCode(200, $this->client->getResponse());

@@ -19,5 +19,6 @@
 
     <php>
         <env name="KERNEL_CLASS" value="Sulu\Bundle\AutomationBundle\Tests\Application\Kernel"/>
+        <env name="APP_ENV" value="test" force="true"/>
     </php>
 </phpunit>
