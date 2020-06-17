@@ -8,6 +8,7 @@
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Sulu\Bundle\AutomationBundle\Tests\Application\Kernel;
+use Symfony\Component\ErrorHandler\Debug;
 
 set_time_limit(0);
 
@@ -19,10 +20,10 @@ $debug = getenv('APP_DEBUG') !== '0' && !$input->hasParameterOption(array('--no-
 
 if ($debug) {
     // Clean up when sf 4.3 support is removed
-    if (Kernel::VERSION_ID < 40411) {
-        \Symfony\Component\Debug\Debug::enable();
+    if (class_exists(Debug::class)) {
+        Debug::enable();
     } else {
-        \Symfony\Component\ErrorHandler\Debug::enable();
+        \Symfony\Component\Debug\Debug::enable();
     }
 }
 
