@@ -29,6 +29,9 @@ class ListMetadataLoader implements ListMetadataLoaderInterface
         $this->xmlListMetadataLoader = $xmlListMetadataLoader;
     }
 
+    /**
+     * @param mixed[] $metadataOptions
+     */
     public function getMetadata(string $key, string $locale, array $metadataOptions = []): ?MetadataInterface
     {
         if ('tasks' !== $key) {
