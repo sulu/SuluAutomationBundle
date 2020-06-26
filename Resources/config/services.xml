@@ -40,6 +40,12 @@
             <tag name="sulu_admin.form_metadata_loader"/>
         </service>
 
+        <service id="sulu_automation.metadata.list_metadata_loader" class="Sulu\Bundle\AutomationBundle\Metadata\ListMetadataLoader">
+            <argument type="service" id="sulu_admin.xml_list_metadata_loader"/>
+
+            <tag name="sulu_admin.list_metadata_loader" priority="1024"/>
+        </service>
+
         <service id="sulu_automation.admin" class="Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin">
             <argument type="service" id="sulu_admin.view_builder_factory"/>
             <argument type="service" id="sulu_core.webspace.webspace_manager"/>
