@@ -54,7 +54,6 @@ class ListMetadataLoader implements ListMetadataLoaderInterface
             }
 
             $field->setType('icon');
-            $field->setVisibility('always');
             $field->setTransformerTypeParameters([
                 'mapping' => [
                     'planned' => 'su-clock',
