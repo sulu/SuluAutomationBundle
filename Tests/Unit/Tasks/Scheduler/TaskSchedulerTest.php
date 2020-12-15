@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Sulu\Bundle\AutomationBundle\Tests\Unit\Scheduler;
+namespace Sulu\Bundle\AutomationBundle\Tests\Unit\Tasks\Scheduler;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
