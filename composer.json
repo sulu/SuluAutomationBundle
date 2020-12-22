@@ -51,16 +51,27 @@
         }
     },
     "scripts": {
+        "lint": [
+            "@lint-composer",
+            "@lint-yaml",
+            "@lint-schema",
+            "@phpstan"
+        ],
+        "lint-composer": "@composer validate --strict",
+        "lint-yaml": "@php Tests/Application/bin/console lint:yaml Resources/config",
+        "lint-schema": "@php Tests/Application/bin/console doctrine:schema:validate",
+        "test": [
+            "@phpunit"
+        ],
+        "bootstrap-test-environment": [
+            "Tests/Application/bin/console doctrine:database:drop --if-exists --force --env test",
+            "Tests/Application/bin/console doctrine:database:create --env test",
+            "Tests/Application/bin/console doctrine:schema:update --force --env test"
+        ],
+        "phpunit": "vendor/bin/phpunit",
         "phpstan": [
-            "Tests/Application/bin/console cache:warmup --env dev",
-            "vendor/bin/phpstan analyse"
-        ],
-        "bootstrap-test-env": [
-            "Tests/Application/bin/console doctrine:database:create --if-not-exists",
-            "Tests/Application/bin/console doctrine:schema:update --force"
-        ],
-        "phpunit": [
-            "vendor/bin/phpunit"
+            "Tests/Application/bin/console cache:warmup",
+            "vendor/bin/phpstan analyze"
         ]
     },
     "config": {
