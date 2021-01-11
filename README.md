@@ -1,7 +1,12 @@
 # SuluAutomationBundle
 
-[![Build Status](https://travis-ci.org/sulu/SuluAutomationBundle.svg)](https://travis-ci.org/sulu/SuluAutomationBundle)
-[![StyleCI](https://styleci.io/repos/81314407/shield)](https://styleci.io/repos/81314407)
+<p align="center">
+
+<a href="https://github.com/sulu/SuluAutomationBundle/actions" target="_blank">
+    <img src="https://img.shields.io/github/workflow/status/sulu/SuluAutomationBundle/Test%20application/master.svg?label=github-actions" alt="GitHub actions status">
+</a>
+
+<p>
 
 The SuluAutomationBundle provides a way to manages future tasks which can be scheduled for entities in the Sulu-Admin.
 For example schedule the publishing of a page to a specific datetime in the future.
