@@ -20,12 +20,12 @@ For detailed requirements see [composer.json](https://github.com/sulu/SuluAutoma
 ## Documentation
 
 The Documentation is stored in the
-[Resources/doc/](https://github.com/sulu/SuluAutomationBundle/blob/master/Resources/doc) folder.
+[Resources/doc/](https://github.com/sulu/SuluAutomationBundle/blob/1.2/Resources/doc) folder.
 
 ## Installation
 
 All the installation instructions are located in the 
-[documentation](https://github.com/sulu/SuluAutomationBundle/blob/master/Resources/doc/installation.md).
+[documentation](https://github.com/sulu/SuluAutomationBundle/blob/1.2/Resources/doc/installation.md).
 
 ## License
 
