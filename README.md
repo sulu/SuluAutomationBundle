@@ -15,7 +15,7 @@ To schedule tasks this bundle uses the [php-task library](https://github.com/php
 * Sulu `^1.5`
 * PHP-Task `^1.1`
 
-For detailed requirements see [composer.json](https://github.com/sulu/SuluAutomationBundle/blob/master/composer.json).
+For detailed requirements see [composer.json](https://github.com/sulu/SuluAutomationBundle/blob/1.2/composer.json).
 
 ## Documentation
 
