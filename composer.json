@@ -23,7 +23,7 @@
         "jackalope/jackalope-doctrine-dbal": "~1.2",
         "handcraftedinthealps/zendsearch": "^2.0"
     },
-        "autoload": {
+    "autoload": {
         "psr-4": {
             "Sulu\\Bundle\\AutomationBundle\\": ""
         }
