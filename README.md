@@ -9,7 +9,7 @@
 </p>
 
 <a href="https://github.com/sulu/SuluAutomationBundle/actions" target="_blank">
-    <img src="https://img.shields.io/github/workflow/status/sulu/SuluAutomationBundle/Test%20application/master.svg?label=github-actions" alt="GitHub actions status">
+    <img src="https://img.shields.io/github/workflow/status/sulu/SuluAutomationBundle/Test%20application/1.2.svg?label=github-actions" alt="GitHub actions status">
 </a>
 
 <p>
