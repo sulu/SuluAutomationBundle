@@ -18,9 +18,10 @@
     },
     "require-dev": {
         "phpunit/phpunit": "~4.8 || ~5.0",
+        "doctrine/data-fixtures": "^1.1",
         "symfony/monolog-bundle": "~2.4",
         "jackalope/jackalope-doctrine-dbal": "~1.2",
-        "zendframework/zendsearch": "2.*@RC"
+        "handcraftedinthealps/zendsearch": "^2.0"
     },
     "autoload": {
         "psr-4": {
