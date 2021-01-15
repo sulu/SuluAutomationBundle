@@ -13,7 +13,7 @@ jobs:
         runs-on: ubuntu-latest
 
         env:
-            DATABASE_URL: 'mysql://root:root@127.0.0.1/sulu_redirect_test?serverVersion=5.7'
+            DATABASE_URL: 'mysql://root:root@127.0.0.1/sulu_automation_test?serverVersion=5.7'
 
         strategy:
             fail-fast: false
