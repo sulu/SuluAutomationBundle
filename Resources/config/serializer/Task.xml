@@ -8,6 +8,7 @@
         </property>
         <property name="entityClass" type="string" expose="true" groups="fullTask,partialTask,api"/>
         <property name="entityId" type="string" expose="true" groups="fullTask,partialTask,api"/>
+        <property name="taskId" type="string" expose="true" groups="fullTask,partialTask,api"/>
         <property name="locale" type="string" expose="true" groups="fullTask,partialTask,api"/>
         <property name="created" type="DateTime" expose="true" groups="fullTask,partialTask"/>
         <property name="changed" type="DateTime" expose="true" groups="fullTask,partialTask"/>

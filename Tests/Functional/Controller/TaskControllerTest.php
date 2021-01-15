@@ -310,7 +310,8 @@ class TaskControllerTest extends SuluTestCase
             '/api/tasks/' . $postData['id'],
             [
                 'handlerClass' => $handlerClass,
-                'entityId' => $postData['id'],
+                'entityId' => $postData['entityId'],
+                'taskId' => $postData['taskId'],
                 'entityClass' => $entityClass,
                 'locale' => $locale,
                 'date' => $date->format('Y-m-d'),
