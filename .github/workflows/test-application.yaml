@@ -9,28 +9,24 @@ on:
 
 jobs:
     test:
-        name: "Run tests with php ${{ matrix.php-version }}"
+        name: 'Run tests with php ${{ matrix.php-version }}'
         runs-on: ubuntu-latest
 
         env:
-            SYMFONY__DATABASE__DRIVER: pdo_mysql
-            SYMFONY__DATABASE__VERSION: 5.7
-            SYMFONY__DATABASE__HOST: 127.0.0.1
-            SYMFONY__DATABASE__PORT: 3306
-            SYMFONY__DATABASE__NAME: sulu_test
-            SYMFONY__DATABASE__USER: root
-            SYMFONY__DATABASE__PASSWORD: root
+            DATABASE_URL: 'mysql://root:root@127.0.0.1/sulu_redirect_test?serverVersion=5.7'
 
         strategy:
             fail-fast: false
             matrix:
                 include:
-                    - php-version: '5.5'
+                    - php-version: '7.2'
+                      lint: false
                       composer-flags: '--prefer-lowest --prefer-dist --no-interaction'
                       tools: 'composer:v1'
                       env:
                           SYMFONY_DEPRECATIONS_HELPER: disabled
                     - php-version: '7.4'
+                      lint: true
                       composer-flags: '--prefer-dist --no-interaction'
                       tools: 'composer:v2'
                       env:
@@ -55,7 +51,6 @@ jobs:
                   php-version: ${{ matrix.php-version }}
                   extensions: 'mysql, gd'
                   tools: ${{ matrix.tools }}
-                  coverage: none
 
             - name: Get composer cache directory
               id: composer-cache-dir
@@ -64,22 +59,21 @@ jobs:
             - name: Cache dependencies
               uses: actions/cache@v2
               with:
-                path: ${{ steps.composer-cache-dir.outputs.dir }}
-                key: ${{ runner.os }}-composer-${{ hashFiles('composer.json', 'composer.lock') }}
-                restore-keys: |
-                  ${{ runner.os }}-composer-
+                  path: ${{ steps.composer-cache-dir.outputs.dir }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('composer.json', 'composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-composer-
 
             - name: Install dependencies
-              run: |
-                  composer validate --strict
-                  composer update ${{ matrix.composer-flags }}
+              run: composer update ${{ matrix.composer-flags }}
 
-            - name: Create database
-              run: |
-                  Tests/app/console doctrine:database:create
-                  Tests/app/console doctrine:schema:update --force
-              env: ${{ matrix.env }}
+            - name: Bootstrap test environment
+              run: composer bootstrap-test-environment
 
-            - name: Run tests
-              run: time vendor/bin/phpunit
+            - name: Lint code
+              if: ${{ matrix.lint }}
+              run: composer lint
+
+            - name: Execute test cases
+              run: composer test
               env: ${{ matrix.env }}
