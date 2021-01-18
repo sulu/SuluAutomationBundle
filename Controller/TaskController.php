@@ -212,7 +212,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
 
         if ($handlerClasses = $request->get('handlerClass')) {
             $handlerClassList = explode(',', $handlerClasses);
-            if (0 < count($handlerClassList)) {
+            if (!empty($handlerClasses)) {
                 $listBuilder->in($fieldDescriptors['handlerClass'], $handlerClassList);
             }
         }
