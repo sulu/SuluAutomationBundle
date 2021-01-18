@@ -19,9 +19,9 @@ use Sulu\Component\Persistence\Model\AuditableTrait;
  */
 class Task implements TaskInterface
 {
-    const RESOURCE_KEY = 'tasks';
-
     use AuditableTrait;
+
+    const RESOURCE_KEY = 'tasks';
 
     /**
      * @var string
