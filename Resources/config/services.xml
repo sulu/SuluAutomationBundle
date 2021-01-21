@@ -23,6 +23,7 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument type="service" id="jms_serializer"/>
             <argument type="service" id="sulu_core.list_builder.field_descriptor_factory"/>
+            <argument type="service" id="sulu.repository.task"/>
 
             <tag name="sulu.context" context="admin"/>
         </service>

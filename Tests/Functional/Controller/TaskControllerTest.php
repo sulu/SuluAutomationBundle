@@ -343,6 +343,27 @@ class TaskControllerTest extends SuluTestCase
         $this->assertEquals($postData['locale'], $responseData['locale']);
     }
 
+    public function testGetAmount()
+    {
+        $this->testPost(FirstHandler::class, '+1 day', 'ThisClass', 1, 'de');
+        $this->testPost(SecondHandler::class, '+1 day', 'ThisClass', 1, 'de');
+        $this->testPost(FirstHandler::class, '-1 day', 'ThisClass', 1, 'de');
+        $this->testPost(FirstHandler::class, '+1 day', 'OtherClass', 1, 'de');
+        $this->testPost(FirstHandler::class, '+1 day', 'ThisClass', 2, 'de');
+        $this->testPost(FirstHandler::class, '+1 day', 'ThisClass', 1, 'en');
+
+        $this->client->request('GET', '/api/task/amount', [
+            'entityClass' => 'ThisClass',
+            'entityId' => 1,
+            'locale' => 'de',
+        ]);
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
+
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertEquals(2, $responseData['amount']);
+    }
+
     public function testGetWithoutCreator()
     {
         $task = new Task();
