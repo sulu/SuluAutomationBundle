@@ -343,7 +343,7 @@ class TaskControllerTest extends SuluTestCase
         $this->assertEquals($postData['locale'], $responseData['locale']);
     }
 
-    public function testGetAmount()
+    public function testGetCount()
     {
         $this->testPost(FirstHandler::class, '+1 day', 'ThisClass', 1, 'de');
         $this->testPost(SecondHandler::class, '+1 day', 'ThisClass', 1, 'de');
@@ -352,7 +352,7 @@ class TaskControllerTest extends SuluTestCase
         $this->testPost(FirstHandler::class, '+1 day', 'ThisClass', 2, 'de');
         $this->testPost(FirstHandler::class, '+1 day', 'ThisClass', 1, 'en');
 
-        $this->client->request('GET', '/api/task/amount', [
+        $this->client->request('GET', '/api/task/count', [
             'entityClass' => 'ThisClass',
             'entityId' => 1,
             'locale' => 'de',
@@ -361,7 +361,7 @@ class TaskControllerTest extends SuluTestCase
 
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertEquals(2, $responseData['amount']);
+        $this->assertEquals(2, $responseData['count']);
     }
 
     public function testGetWithoutCreator()

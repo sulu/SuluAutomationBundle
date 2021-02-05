@@ -49,7 +49,7 @@ class AutomationViewBuilder extends FormOverlayListViewBuilder implements Automa
 
         $this
             ->addTabBadges([
-                static::BADGE_KEY => (new Badge('sulu_automation.get_task_amount', '/amount', 'value != 0'))
+                static::BADGE_KEY => (new Badge('sulu_automation.get_task_count', '/count', 'value != 0'))
                     ->addRequestParameters([
                         'entityClass' => $entityClass,
                     ])

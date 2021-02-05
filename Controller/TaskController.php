@@ -271,16 +271,16 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     }
 
     /**
-     * Returns amount of pending tasks for entity with given id.
+     * Returns count of pending tasks for entity with given id.
      */
-    public function getAmountAction(Request $request): Response
+    public function getCountAction(Request $request): Response
     {
         $entityClass = $request->query->get('entityClass');
         $entityId = $request->query->get('entityId');
         $locale = $request->query->get('locale');
 
         return $this->handleView($this->view([
-            'amount' => $this->automationTaskRepository->countFutureTasks($entityClass, $entityId, $locale),
+            'count' => $this->automationTaskRepository->countFutureTasks($entityClass, $entityId, $locale),
         ]));
     }
 
