@@ -275,8 +275,8 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      */
     public function getCountAction(Request $request): Response
     {
-        $entityClass = $request->query->get('entityClass');
-        $entityId = $request->query->get('entityId');
+        $entityClass = (string) $request->query->get('entityClass');
+        $entityId = (string) $request->query->get('entityId');
         $locale = $request->query->get('locale');
 
         return $this->handleView($this->view([
