@@ -47,17 +47,19 @@ class AutomationViewBuilder extends FormOverlayListViewBuilder implements Automa
         $this->addRequestParameter('entityClass', $entityClass);
         $this->addMetadataRequestParameters(['entityClass' => $entityClass]);
 
-        $this
-            ->addTabBadges([
-                static::BADGE_KEY => (new Badge('sulu_automation.get_task_count', '/count', 'value != 0'))
-                    ->addRequestParameters([
-                        'entityClass' => $entityClass,
-                    ])
-                    ->addRouterAttributesToRequest([
-                        'locale',
-                        'id' => 'entityId',
-                    ]),
-            ]);
+        if (\method_exists($this, 'addTabBadges')) {
+            $this
+                ->addTabBadges([
+                    static::BADGE_KEY => (new Badge('sulu_automation.get_task_count', '/count', 'value != 0'))
+                        ->addRequestParameters([
+                            'entityClass' => $entityClass,
+                        ])
+                        ->addRouterAttributesToRequest([
+                            'locale',
+                            'id' => 'entityId',
+                        ]),
+                ]);
+        }
 
         return $this;
     }
