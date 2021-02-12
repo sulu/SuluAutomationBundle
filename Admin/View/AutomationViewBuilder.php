@@ -11,12 +11,15 @@
 
 namespace Sulu\Bundle\AutomationBundle\Admin\View;
 
+use Sulu\Bundle\AdminBundle\Admin\View\Badge;
 use Sulu\Bundle\AdminBundle\Admin\View\FormOverlayListViewBuilder;
 use Sulu\Bundle\AdminBundle\Admin\View\ToolbarAction;
 use Sulu\Bundle\AutomationBundle\Entity\Task;
 
 class AutomationViewBuilder extends FormOverlayListViewBuilder implements AutomationViewBuilderInterface
 {
+    const BADGE_KEY = 'sulu_automation.automation_tab_badge';
+
     public function __construct(string $name, string $path)
     {
         parent::__construct($name, $path);
@@ -43,6 +46,20 @@ class AutomationViewBuilder extends FormOverlayListViewBuilder implements Automa
     {
         $this->addRequestParameter('entityClass', $entityClass);
         $this->addMetadataRequestParameters(['entityClass' => $entityClass]);
+
+        if (\method_exists($this, 'addTabBadges')) {
+            $this
+                ->addTabBadges([
+                    static::BADGE_KEY => (new Badge('sulu_automation.get_task_count', '/count', 'value != 0'))
+                        ->addRequestParameters([
+                            'entityClass' => $entityClass,
+                        ])
+                        ->addRouterAttributesToRequest([
+                            'locale',
+                            'id' => 'entityId',
+                        ]),
+                ]);
+        }
 
         return $this;
     }

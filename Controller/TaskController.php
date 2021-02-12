@@ -22,6 +22,7 @@ use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
+use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface as AutomationTaskRepositoryInterface;
 use Sulu\Component\Rest\AbstractRestController;
 use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactoryInterface;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptorInterface;
@@ -82,6 +83,11 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     protected $taskManager;
 
     /**
+     * @var AutomationTaskRepositoryInterface
+     */
+    protected $automationTaskRepository;
+
+    /**
      * @var EntityManagerInterface
      */
     protected $entityManager;
@@ -107,7 +113,8 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         TaskManagerInterface $taskManager,
         EntityManagerInterface $entityManager,
         SerializerInterface $serializer,
-        FieldDescriptorFactoryInterface $fieldDescriptorFactory
+        FieldDescriptorFactoryInterface $fieldDescriptorFactory,
+        AutomationTaskRepositoryInterface $automationTaskRepository
     ) {
         parent::__construct($viewHandler, $tokenStorage);
         $this->doctrineListBuilderFactory = $doctrineListBuilderFactory;
@@ -119,6 +126,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $this->entityManager = $entityManager;
         $this->serializer = $serializer;
         $this->fieldDescriptorFactory = $fieldDescriptorFactory;
+        $this->automationTaskRepository = $automationTaskRepository;
     }
 
     /**
@@ -260,6 +268,20 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     public function getAction(string $id): Response
     {
         return $this->handleView($this->view($this->taskManager->findById($id)));
+    }
+
+    /**
+     * Returns count of pending tasks for entity with given id.
+     */
+    public function getCountAction(Request $request): Response
+    {
+        $entityClass = (string) $request->query->get('entityClass');
+        $entityId = (string) $request->query->get('entityId');
+        $locale = $request->query->get('locale');
+
+        return $this->handleView($this->view([
+            'count' => $this->automationTaskRepository->countFutureTasks($entityClass, $entityId, $locale),
+        ]));
     }
 
     /**
