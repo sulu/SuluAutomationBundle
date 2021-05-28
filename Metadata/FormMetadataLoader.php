@@ -20,6 +20,9 @@ use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Task\TaskBundle\Handler\TaskHandlerFactory;
 
+/**
+ * @internal
+ */
 class FormMetadataLoader implements FormMetadataLoaderInterface
 {
     /**
