@@ -13,7 +13,7 @@ namespace Sulu\Bundle\AutomationBundle\Admin\View;
 
 use Sulu\Bundle\AdminBundle\Admin\View\FormOverlayListViewBuilderInterface;
 
-interface AutomationViewBuilderInterface extends FormOverlayListViewBuilderInterface
+interface AutomationViewBuilderFactoryInterface
 {
-    public function setEntityClass(string $entityClass): self;
+    public function createTaskListViewBuilder(string $name, string $path, string $entityClass): FormOverlayListViewBuilderInterface;
 }

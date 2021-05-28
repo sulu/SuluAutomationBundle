@@ -12,13 +12,12 @@
 namespace Sulu\Bundle\AutomationBundle\Admin;
 
 use Sulu\Bundle\AdminBundle\Admin\Admin;
-use Sulu\Bundle\AdminBundle\Admin\View\ViewBuilderFactoryInterface;
 use Sulu\Bundle\AdminBundle\Admin\View\ViewCollection;
-use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilder;
+use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactoryInterface;
 use Sulu\Bundle\PageBundle\Admin\PageAdmin;
 use Sulu\Bundle\PageBundle\Document\BasePageDocument;
 use Sulu\Component\Security\Authorization\PermissionTypes;
-use Sulu\Component\Webspace\Manager\WebspaceManagerInterface;
+use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 
 /**
  * Admin integration of the bundle.
@@ -27,52 +26,42 @@ class AutomationAdmin extends Admin
 {
     const SECURITY_CONTEXT = 'sulu_automation.automation.tasks';
 
-    const LIST_VIEW = 'sulu_automation.list';
-
-    const EDIT_FORM_VIEW = 'sulu_automation.edit_form';
-
     public static function getPriority(): int
     {
-        return -512;
+        return PageAdmin::getPriority() - 1;
     }
 
     /**
-     * @var ViewBuilderFactoryInterface
+     * @var AutomationViewBuilderFactoryInterface
      */
-    protected $viewBuilderFactory;
+    protected $automationViewBuilderFactory;
 
     /**
-     * @var string
+     * @var SecurityCheckerInterface
      */
-    protected $title;
-
-    /**
-     * @var WebspaceManagerInterface
-     */
-    protected $webspaceManager;
+    protected $securityChecker;
 
     public function __construct(
-        ViewBuilderFactoryInterface $viewBuilderFactory,
-        WebspaceManagerInterface $webspaceManager,
-        string $title
+        AutomationViewBuilderFactoryInterface $automationViewBuilderFactory,
+        SecurityCheckerInterface $securityChecker
     ) {
-        $this->title = $title;
-        $this->viewBuilderFactory = $viewBuilderFactory;
-        $this->webspaceManager = $webspaceManager;
+        $this->automationViewBuilderFactory = $automationViewBuilderFactory;
+        $this->securityChecker = $securityChecker;
     }
 
     public function configureViews(ViewCollection $viewCollection): void
     {
-        if (!$viewCollection->has(PageAdmin::EDIT_FORM_VIEW)) {
-            return;
+        if ($viewCollection->has(PageAdmin::EDIT_FORM_VIEW)
+            && $this->securityChecker->hasPermission(static::SECURITY_CONTEXT, PermissionTypes::EDIT)
+        ) {
+            $viewCollection->add(
+                $this->automationViewBuilderFactory->createTaskListViewBuilder(
+                    PageAdmin::EDIT_FORM_VIEW . '.automation',
+                    '/automation',
+                    BasePageDocument::class
+                )->setParent(PageAdmin::EDIT_FORM_VIEW)
+            );
         }
-
-        $automationViewBuilder = new AutomationViewBuilder(static::LIST_VIEW, '/automation');
-        $automationViewBuilder
-            ->setEntityClass(BasePageDocument::class)
-            ->setParent(PageAdmin::EDIT_FORM_VIEW);
-
-        $viewCollection->add($automationViewBuilder);
     }
 
     /**
