@@ -6,7 +6,7 @@
     </a>
 </p>
 <p align="center">
-    <a href="https://github.com/sulu/SuluAutomationBundle/blob/2.x/LICENSE" target="_blank">
+    <a href="LICENSE" target="_blank">
         <img src="https://img.shields.io/github/license/sulu/SuluAutomationBundle.svg" alt="GitHub license">
     </a>
     <a href="https://github.com/sulu/SuluAutomationBundle/actions" target="_blank">
@@ -29,17 +29,17 @@ To schedule tasks this bundle uses the [php-task library](https://github.com/php
 * Sulu `^2.0`
 * PHP-Task `^1.3`
 
-For detailed requirements see [composer.json](https://github.com/sulu/SuluAutomationBundle/blob/2.x/composer.json).
+For detailed requirements see [composer.json](composer.json).
 
 ## Documentation
 
 The Documentation is stored in the
-[Resources/doc/](https://github.com/sulu/SuluAutomationBundle/blob/1.2/Resources/doc) folder.
+[Resources/doc/](Resources/doc) folder.
 
 ## Installation
 
 All the installation instructions are located in the 
-[documentation](https://github.com/sulu/SuluAutomationBundle/blob/1.2/Resources/doc/installation.md).
+[documentation](Resources/doc/installation.md).
 
 ## License
 
@@ -50,5 +50,5 @@ This bundle is under the MIT license. See the complete license [in the bundle](L
 Issues and feature requests are tracked in the [Github issue tracker](https://github.com/Sulu/SuluAutomationBundle/issues).
 
 When reporting a bug, it may be a good idea to reproduce it in a basic project built using the
-[Sulu Minimal Edition](https://github.com/sulu/sulu-minimal) to allow developers of the bundle to reproduce the issue
+[sulu/skeleton](https://github.com/sulu/skeleton) to allow developers of the bundle to reproduce the issue
 by simply cloning it and following some steps.
