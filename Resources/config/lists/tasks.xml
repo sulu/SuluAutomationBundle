@@ -39,7 +39,24 @@
             <entity-name>%sulu.model.task.class%</entity-name>
         </property>
 
-        <property name="status" translation="sulu_automation.task.status" visibility="always" sortable="false"/>
+        <property name="status" translation="sulu_automation.task.status" visibility="always" sortable="false">
+            <transformer type="icon">
+                <params>
+                    <param name="mapping" type="collection">
+                        <param name="planned" value="su-clock"/>
+                        <param name="running" value="su-process"/>
+                        <param name="completed" type="collection">
+                            <param name="icon" value="su-check-circle"/>
+                            <param name="color" value="#6ac86b"/>
+                        </param>
+                        <param name="failed" type="collection">
+                            <param name="icon" value="su-ban"/>
+                            <param name="color" value="#cf3939"/>
+                        </param>
+                    </param>
+                </params>
+            </transformer>
+        </property>
 
         <property name="taskName" translation="sulu_automation.task.name"
                   visibility="always" sortable="false"/>
