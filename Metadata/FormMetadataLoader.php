@@ -76,20 +76,12 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
         $singleSelectHandler->addOption($valuesOption);
         $form->addItem($singleSelectHandler);
 
-        // Time Field
-        $timeField = new FieldMetadata('time');
-        $timeField->setType('time');
-        $timeField->setColSpan(6);
-        $timeField->setLabel($this->translator->trans('sulu_automation.task.schedule.time', [], 'admin', $locale));
-        $form->addItem($timeField);
-
-        // Date Field
-        $dateField = new FieldMetadata('date');
-        $dateField->setType('date');
-        $dateField->setColSpan(6);
-        $dateField->setLabel($this->translator->trans('sulu_automation.task.schedule.date', [], 'admin', $locale));
-
-        $form->addItem($dateField);
+        // Schedule Field
+        $scheduleField = new FieldMetadata('schedule');
+        $scheduleField->setType('datetime');
+        $scheduleField->setRequired(true);
+        $scheduleField->setLabel($this->translator->trans('sulu_automation.task.schedule', [], 'admin', $locale));
+        $form->addItem($scheduleField);
 
         return $form;
     }

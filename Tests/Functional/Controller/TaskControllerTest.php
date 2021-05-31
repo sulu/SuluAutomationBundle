@@ -276,8 +276,7 @@ class TaskControllerTest extends SuluTestCase
             '/api/tasks',
             [
                 'handlerClass' => $handlerClass,
-                'date' => $date->format('Y-m-d'),
-                'time' => $date->format('H:i:s'),
+                'schedule' => $date->format('Y-m-d\TH:i:s'),
                 'entityClass' => $entityClass,
                 'entityId' => $entityId,
                 'locale' => $locale,
@@ -314,8 +313,7 @@ class TaskControllerTest extends SuluTestCase
                 'taskId' => $postData['taskId'],
                 'entityClass' => $entityClass,
                 'locale' => $locale,
-                'date' => $date->format('Y-m-d'),
-                'time' => $date->format('H:i:s'),
+                'schedule' => $date->format('Y-m-d\TH:i:s'),
             ]
         );
         $this->assertHttpStatusCode(200, $this->client->getResponse());
