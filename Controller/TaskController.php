@@ -347,6 +347,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
 
         $task = $this->taskManager->update($task);
 
+        $this->entityManager->merge($task);
         $this->entityManager->flush();
 
         return $this->handleView($this->view($task));
