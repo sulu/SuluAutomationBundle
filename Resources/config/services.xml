@@ -39,6 +39,8 @@
             <argument type="service" id="sulu_admin.view_builder_factory"/>
         </service>
 
+        <service id="Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactoryInterface" alias="sulu_automation.automation_view_builder_factory"/>
+
         <service id="sulu_automation.admin" class="Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin">
             <argument type="service" id="sulu_automation.automation_view_builder_factory"/>
             <argument type="service" id="sulu_security.security_checker"/>
