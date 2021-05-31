@@ -277,7 +277,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     {
         $entityClass = (string) $request->query->get('entityClass');
         $entityId = (string) $request->query->get('entityId');
-        $locale = $request->query->get('locale');
+        $locale = $request->query->has('locale') ? (string) $request->query->get('locale') : null;
 
         return $this->handleView($this->view([
             'count' => $this->automationTaskRepository->countFutureTasks($entityClass, $entityId, $locale),
@@ -354,6 +354,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $task->setSchedule($dateTime);
         $task = $this->taskManager->update($task);
 
+        $this->entityManager->merge($task);
         $this->entityManager->flush();
 
         return $this->handleView($this->view($task));

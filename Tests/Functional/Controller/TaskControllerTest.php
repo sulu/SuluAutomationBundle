@@ -290,7 +290,14 @@ class TaskControllerTest extends SuluTestCase
         $this->assertArrayHasKey('id', $responseData);
         $this->assertEquals($handlerClass, $responseData['handlerClass']);
         $this->assertEquals($date->format('Y-m-d\TH:i:s'), $responseData['schedule']);
+        $this->assertNotNull($responseData['taskId']);
         $this->assertEquals($locale, $responseData['locale']);
+
+        $taskManager = $this->getContainer()->get('sulu_automation.tasks.manager');
+        $task = $taskManager->findById($responseData['id']);
+        $this->assertEquals($handlerClass, $task->getHandlerClass());
+        $this->assertEqualsWithDelta($date, $task->getSchedule(), 1);
+        $this->assertNotNull($task->getTaskId());
 
         return $responseData;
     }
@@ -325,7 +332,14 @@ class TaskControllerTest extends SuluTestCase
         $this->assertEquals($postData['id'], $responseData['id']);
         $this->assertEquals($handlerClass, $responseData['handlerClass']);
         $this->assertEquals($date->format('Y-m-d\TH:i:s'), $responseData['schedule']);
+        $this->assertNotNull($responseData['taskId']);
         $this->assertEquals(FirstHandler::TITLE, $responseData['taskName']);
+
+        $taskManager = $this->getContainer()->get('sulu_automation.tasks.manager');
+        $task = $taskManager->findById($postData['id']);
+        $this->assertEquals($handlerClass, $task->getHandlerClass());
+        $this->assertEqualsWithDelta($date, $task->getSchedule(), 1);
+        $this->assertNotNull($task->getTaskId());
     }
 
     public function testGet()
