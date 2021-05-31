@@ -48,7 +48,6 @@ class AutomationViewBuilderFactory implements AutomationViewBuilderFactoryInterf
             ])
             ->addTabBadges([$taskCountBadge])
             ->addListAdapters(['table'])
-            ->setTabOrder(4096)
             ->addRequestParameters(['entityClass' => $entityClass])
             ->addMetadataRequestParameters(['entityClass' => $entityClass])
             ->addRouterAttributesToFormRequest(['id' => 'entityId'])

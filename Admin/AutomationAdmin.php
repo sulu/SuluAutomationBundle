@@ -59,7 +59,9 @@ class AutomationAdmin extends Admin
                     PageAdmin::EDIT_FORM_VIEW . '.automation',
                     '/automation',
                     BasePageDocument::class
-                )->setParent(PageAdmin::EDIT_FORM_VIEW)
+                )
+                    ->setTabOrder(4096)
+                    ->setParent(PageAdmin::EDIT_FORM_VIEW)
             );
         }
     }
