@@ -35,10 +35,15 @@
             <tag name="sulu_admin.form_metadata_loader"/>
         </service>
 
-        <service id="sulu_automation.admin" class="Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin">
+        <service id="sulu_automation.automation_view_builder_factory" class="Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactory">
             <argument type="service" id="sulu_admin.view_builder_factory"/>
-            <argument type="service" id="sulu_core.webspace.webspace_manager"/>
-            <argument>%sulu_admin.name%</argument>
+        </service>
+
+        <service id="Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactoryInterface" alias="sulu_automation.automation_view_builder_factory"/>
+
+        <service id="sulu_automation.admin" class="Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin">
+            <argument type="service" id="sulu_automation.automation_view_builder_factory"/>
+            <argument type="service" id="sulu_security.security_checker"/>
 
             <tag name="sulu.admin"/>
             <tag name="sulu.context" context="admin"/>
