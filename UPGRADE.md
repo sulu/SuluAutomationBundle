@@ -1,13 +1,15 @@
 # Upgrade
 
-## 2.0.0 (unreleased)
+## 2.0.0
 
 Following dependencies are updated and have new minimum requirements:
 
- - sulu/sulu: ^1.6 -> ^2.0
+ - sulu/sulu: ^1.6 -> ^2.2
  - php-task/task-bundle: ^1.2 -> ^2.0
- - jms/serializer-bundle: ^1.1 -> ^2.0
- - friendsofsymfony/rest-bundle: ^1.6 -> ^2.0
+ - jms/serializer-bundle: ^1.1 -> ^3.0
+ - friendsofsymfony/rest-bundle: ^1.6 -> ^2.0 || ^3.0
+
+The bundle was so refractored to be compatible with [Sulu 2.0](https://github.com/sulu/sulu/blob/2.x/UPGRADE.md#200).
 
 ## 1.2.0
 
