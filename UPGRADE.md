@@ -13,7 +13,7 @@ The bundle was so refractored to be compatible with [Sulu 2.0](https://github.co
 
 ### AutomationViewBuilder refactored to AutomationViewBuilderFactory
 
-For more consistency with the core bundle, the `AutomationViewBuilder` has been refactored to the `AutomationViewBuilderFactory`.
+The `AutomationViewBuilder` has been refactored and renamed to `AutomationViewBuilderFactory` to be consistent with the Sulu core.
 
 In order to add the automation tab to a custom view. You now have to inject the `AutomationViewBuilderFactory` into your
 custom admin class.
