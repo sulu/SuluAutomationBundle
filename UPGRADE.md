@@ -11,6 +11,32 @@ Following dependencies are updated and have new minimum requirements:
 
 The bundle was so refractored to be compatible with [Sulu 2.0](https://github.com/sulu/sulu/blob/2.x/UPGRADE.md#200).
 
+### AutomationViewBuilder refactored to AutomationViewBuilderFactory
+
+The `AutomationViewBuilder` has been refactored and renamed to `AutomationViewBuilderFactory` to be consistent with the Sulu core.
+
+In order to add the automation tab to a custom view. You now have to inject the `AutomationViewBuilderFactory` into your
+custom admin class.
+
+#### Custom-Admin class
+
+```diff
+{
++    $viewCollection->add(
+-        (new AutomationViewBuilder(static::EDIT_FORM_AUTOMATION_VIEW, '/automation'))
+-            ->setEntityClass($this->customEntityClass)
+-            ->setParent(static::EDIT_FORM_VIEW)
++        $this->automationViewBuilderFactory->createTaskListViewBuilder(
++            static::EDIT_FORM_AUTOMATION_VIEW,
++            '/automation',
++            $this->customEntityClass
++        )
++            ->setTabOrder(4096)
++            ->setParent(static::EDIT_FORM_VIEW)
++    );
+}
+```
+
 ## 1.2.0
 
 ### Fake-Request for task handlers
