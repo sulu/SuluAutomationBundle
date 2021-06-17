@@ -19,6 +19,7 @@ In order to add the automation tab to a custom view. You now have to inject the 
 custom admin class.
 
 #### Custom-Admin class
+
 ```diff
 {
 +    $viewCollection->add(
