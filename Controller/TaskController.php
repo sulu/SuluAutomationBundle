@@ -280,7 +280,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $locale = $request->query->has('locale') ? (string) $request->query->get('locale') : null;
 
         return $this->handleView($this->view([
-            'count' => $this->automationTaskRepository->countFutureTasks($entityClass, $entityId, $locale),
+            'count' => $this->automationTaskRepository->countPendingTasks($entityClass, $entityId, $locale),
         ]));
     }
 
