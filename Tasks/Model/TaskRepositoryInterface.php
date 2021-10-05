@@ -13,6 +13,8 @@ namespace Sulu\Bundle\AutomationBundle\Tasks\Model;
 
 /**
  * Interface for task-repository.
+ *
+ * @method int countPendingTasks(string $entityClass, string $entityId, string $locale = null)
  */
 interface TaskRepositoryInterface
 {
