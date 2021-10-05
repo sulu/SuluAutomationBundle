@@ -373,7 +373,7 @@ class TaskControllerTest extends SuluTestCase
 
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertEquals(2, $responseData['count']);
+        $this->assertEquals(3, $responseData['count']);
     }
 
     public function testGetWithoutCreator()

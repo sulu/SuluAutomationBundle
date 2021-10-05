@@ -12,8 +12,10 @@
 namespace Sulu\Bundle\AutomationBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface;
+use Task\TaskBundle\Entity\TaskExecution;
 
 /**
  * Task-Repository implementation for doctrine.
@@ -27,7 +29,10 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
     {
         $class = $this->_entityName;
 
-        return new $class();
+        /** @var TaskInterface $entity */
+        $entity = new $class();
+
+        return $entity;
     }
 
     /**
@@ -88,6 +93,33 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
 
         if (null != $locale) {
             $queryBuilder->andWhere('task.locale = :locale')
+                ->setParameter('locale', $locale);
+        }
+
+        $query = $queryBuilder->getQuery();
+
+        return (int) $query->getSingleScalarResult();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function countPendingTasks(string $entityClass, string $entityId, string $locale = null): int
+    {
+        $queryBuilder = $this->_em->createQueryBuilder()
+            ->select('COUNT(taskExecution.uuid)')
+            ->from(TaskExecution::class, 'taskExecution')
+            ->innerJoin('taskExecution.task', 'task')
+            ->innerJoin(Task::class, 'auTask', Join::WITH, 'auTask.taskId = task.uuid')
+            ->where('auTask.entityClass = :entityClass')
+            ->andWhere('auTask.entityId = :entityId')
+            ->andWhere('taskExecution.status = :status')
+            ->setParameter('entityClass', $entityClass)
+            ->setParameter('entityId', $entityId)
+            ->setParameter('status', 'planned');
+
+        if (null != $locale) {
+            $queryBuilder->andWhere('auTask.locale = :locale')
                 ->setParameter('locale', $locale);
         }
 
