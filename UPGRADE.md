@@ -1,5 +1,13 @@
 # Upgrade
 
+# 2.x
+
+A new method has been added to the `TaskRepositoryInterface`
+
+```php
+public function countPendingTasks(string $entityClass, string $entityId, string $locale = null): int
+```
+
 ## 2.0.0
 
 Following dependencies are updated and have new minimum requirements:
