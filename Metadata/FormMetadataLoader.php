@@ -26,7 +26,7 @@ use Task\TaskBundle\Handler\TaskHandlerFactory;
 class FormMetadataLoader implements FormMetadataLoaderInterface
 {
     const TASK_DETAILS_VIEW = 'task_details';
-    
+
     /**
      * @var TranslatorInterface
      */
