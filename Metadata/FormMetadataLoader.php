@@ -25,6 +25,8 @@ use Task\TaskBundle\Handler\TaskHandlerFactory;
  */
 class FormMetadataLoader implements FormMetadataLoaderInterface
 {
+    const TASK_DETAILS_VIEW = 'task_details';
+
     /**
      * @var TranslatorInterface
      */
@@ -48,12 +50,13 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
      */
     public function getMetadata(string $key, string $locale, array $metadataOptions): ?MetadataInterface
     {
-        if ('task_details' !== $key) {
+        if (self::TASK_DETAILS_VIEW !== $key) {
             return null;
         }
 
         /** @var FormMetaData $form */
         $form = new FormMetadata();
+        $form->setKey(self::TASK_DETAILS_VIEW);
 
         // Single Select
         $singleSelectHandler = new FieldMetadata('handlerClass');
