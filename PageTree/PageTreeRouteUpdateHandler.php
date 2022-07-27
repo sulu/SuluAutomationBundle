@@ -79,7 +79,7 @@ class PageTreeRouteUpdateHandler implements AutomationTaskHandlerInterface, Lock
     }
 
     /**
-     * @param array<string, mixed> $workload
+     * @param array{id: string, locale: string} $workload
      */
     public function handle($workload)
     {

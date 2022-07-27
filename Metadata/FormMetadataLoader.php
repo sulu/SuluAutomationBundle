@@ -46,7 +46,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
     }
 
     /**
-     * @param mixed[] $metadataOptions
+     * @param array{entityClass: ?string} $metadataOptions
      */
     public function getMetadata(string $key, string $locale, array $metadataOptions): ?MetadataInterface
     {

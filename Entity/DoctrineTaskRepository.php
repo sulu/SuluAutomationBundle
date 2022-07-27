@@ -98,7 +98,10 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
 
         $query = $queryBuilder->getQuery();
 
-        return (int) $query->getSingleScalarResult();
+        /** @var int|float|string $result */
+        $result = $query->getSingleScalarResult();
+
+        return (int)$result;
     }
 
     /**
@@ -125,7 +128,10 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
 
         $query = $queryBuilder->getQuery();
 
-        return (int) $query->getSingleScalarResult();
+        /** @var int|float|string $result */
+        $result = $query->getSingleScalarResult();
+
+        return (int)$result;
     }
 
     /**

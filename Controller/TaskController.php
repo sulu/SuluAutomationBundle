@@ -145,6 +145,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $fieldDescriptors = $this->getFieldDescriptors(DoctrineFieldDescriptorInterface::class);
 
         $listBuilder = $this->prepareListBuilder($fieldDescriptors, $request, $this->doctrineListBuilderFactory->create(Task::class));
+        /** @var array<string, array<string>> $result */
         $result = $this->executeListBuilder($fieldDescriptors, $request, $listBuilder);
 
         for ($i = 0; $i < count($result); ++$i) {
@@ -206,27 +207,33 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $listBuilder->addSelectField($fieldDescriptors['handlerClass']);
         $listBuilder->addSelectField($fieldDescriptors['taskId']);
 
-        if ($entityClass = $request->get('entityClass')) {
+        /** @var string|null $entityClass */
+        $entityClass = $request->get('entityClass');
+        if ($entityClass) {
             $listBuilder->where($fieldDescriptors['entityClass'], $entityClass);
         }
 
-        if ($entityId = $request->get('entityId')) {
+        /** @var string|null $entityId */
+        $entityId = $request->get('entityId');
+        if ($entityId) {
             $listBuilder->where($fieldDescriptors['entityId'], $entityId);
         }
 
-        if ($locale = $request->get('locale')) {
+        /** @var string|null $locale */
+        $locale = $request->get('locale');
+        if ($locale) {
             $listBuilder->where($fieldDescriptors['locale'], $locale);
         }
 
-        if ($handlerClasses = $request->get('handlerClass')) {
-            $handlerClassList = explode(',', $handlerClasses);
-            if (!empty($handlerClasses)) {
-                $listBuilder->in($fieldDescriptors['handlerClass'], $handlerClassList);
-            }
+        /** @var string|null $handlerClasses */
+        $handlerClasses = $request->get('handlerClass');
+        if ($handlerClasses) {
+            $listBuilder->in($fieldDescriptors['handlerClass'], explode(',', $handlerClasses));
         }
 
-        if (null !== ($schedule = $request->get('schedule'))
-            && in_array($schedule, array_keys(self::$scheduleComparators))
+        /** @var string|null $schedule */
+        $schedule = $request->get('schedule');
+        if ($schedule && array_key_exists($schedule, self::$scheduleComparators)
         ) {
             $listBuilder->where($fieldDescriptors['schedule'], (new \DateTime())->format('Y-m-d\TH:i:s'), self::$scheduleComparators[$schedule]);
         }
@@ -243,11 +250,13 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      */
     private function executeListBuilder(array $fieldDescriptors, Request $request, ListBuilderInterface $listBuilder): array
     {
-        if (null === ($idsParameter = $request->get('ids'))) {
+        /** @var string|null $idsParameter */
+        $idsParameter = $request->get('ids');
+        if (!$idsParameter) {
             return $listBuilder->execute();
         }
 
-        $ids = array_filter(explode(',', $request->get('ids')));
+        $ids = array_filter(explode(',', $idsParameter));
         $listBuilder->in($fieldDescriptors['id'], $ids);
 
         $sorted = [];
@@ -338,6 +347,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $context = DeserializationContext::create();
         $context->setGroups(['api']);
 
+        /** @var TaskInterface $task */
         $task = $this->serializer->deserialize(
             (string) json_encode($data),
             Task::class,
@@ -371,7 +381,9 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      */
     public function cdeleteAction(Request $request): Response
     {
-        $ids = array_filter(explode(',', $request->get('ids')));
+        /** @var string $idsParameter */
+        $idsParameter = $request->get('ids');
+        $ids = array_filter(explode(',', $idsParameter));
         foreach ($ids as $id) {
             $this->taskManager->remove($id);
         }
