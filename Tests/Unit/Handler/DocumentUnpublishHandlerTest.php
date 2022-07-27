@@ -41,9 +41,6 @@ class DocumentUnpublishHandlerTest extends TestCase
      */
     private $unpublishHandler;
 
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
         $this->documentManager = $this->prophesize(DocumentManagerInterface::class);

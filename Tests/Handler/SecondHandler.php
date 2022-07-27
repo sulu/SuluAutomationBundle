@@ -20,35 +20,23 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class SecondHandler implements AutomationTaskHandlerInterface
 {
-    const TITLE = 'sulu_automation.second_handler';
+    public const TITLE = 'sulu_automation.second_handler';
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptionsResolver(OptionsResolver $optionsResolver): OptionsResolver
     {
         return $optionsResolver;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function supports(string $entityClass): bool
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getConfiguration(): TaskHandlerConfiguration
     {
         return TaskHandlerConfiguration::create(self::TITLE);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function handle($workload)
     {
         // do nothing

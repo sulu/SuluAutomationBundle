@@ -24,7 +24,7 @@ use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
  */
 class AutomationAdmin extends Admin
 {
-    const SECURITY_CONTEXT = 'sulu_automation.automation.tasks';
+    public const SECURITY_CONTEXT = 'sulu_automation.automation.tasks';
 
     public static function getPriority(): int
     {

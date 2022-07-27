@@ -23,7 +23,7 @@ class TaskNotFoundException extends \Exception
 
     public function __construct(string $id)
     {
-        parent::__construct(sprintf('Task with id "%s" was not found', $id));
+        parent::__construct(\sprintf('Task with id "%s" was not found', $id));
 
         $this->id = $id;
     }

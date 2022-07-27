@@ -52,9 +52,6 @@ class PageTreeRouteUpdateHandler implements AutomationTaskHandlerInterface, Lock
         $this->entityManager = $entityManager;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptionsResolver(OptionsResolver $optionsResolver): OptionsResolver
     {
         return $optionsResolver->setRequired(['id', 'locale'])
@@ -62,24 +59,18 @@ class PageTreeRouteUpdateHandler implements AutomationTaskHandlerInterface, Lock
             ->setAllowedTypes('locale', 'string');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function supports(string $entityClass): bool
     {
-        return is_subclass_of($entityClass, BasePageDocument::class);
+        return \is_subclass_of($entityClass, BasePageDocument::class);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getConfiguration(): TaskHandlerConfiguration
     {
         return TaskHandlerConfiguration::create('sulu_automation.update_page_tree_route');
     }
 
     /**
-     * @param array<string, mixed> $workload
+     * @param array{id: string, locale: string} $workload
      */
     public function handle($workload)
     {
@@ -99,17 +90,11 @@ class PageTreeRouteUpdateHandler implements AutomationTaskHandlerInterface, Lock
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getLockKey($workload)
     {
         return self::class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getMaximumAttempts()
     {
         return 3;

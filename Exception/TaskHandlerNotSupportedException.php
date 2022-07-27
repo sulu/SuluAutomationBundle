@@ -31,7 +31,7 @@ class TaskHandlerNotSupportedException extends \Exception
 
     public function __construct(TaskHandlerInterface $taskHandler, TaskInterface $task)
     {
-        parent::__construct(sprintf('Task-Handler "%s" is not supported.', get_class($taskHandler)));
+        parent::__construct(\sprintf('Task-Handler "%s" is not supported.', \get_class($taskHandler)));
 
         $this->taskHandler = $taskHandler;
         $this->task = $task;

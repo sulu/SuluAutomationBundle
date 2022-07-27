@@ -25,7 +25,7 @@ use Task\TaskBundle\Handler\TaskHandlerFactory;
  */
 class FormMetadataLoader implements FormMetadataLoaderInterface
 {
-    const TASK_DETAILS_VIEW = 'task_details';
+    public const TASK_DETAILS_VIEW = 'task_details';
 
     /**
      * @var TranslatorInterface
@@ -46,7 +46,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
     }
 
     /**
-     * @param mixed[] $metadataOptions
+     * @param array{entityClass: ?string} $metadataOptions
      */
     public function getMetadata(string $key, string $locale, array $metadataOptions): ?MetadataInterface
     {
@@ -73,7 +73,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
                 $configuration = $handler->getConfiguration();
 
                 $handlerOption = new OptionMetadata();
-                $handlerOption->setName(get_class($handler));
+                $handlerOption->setName(\get_class($handler));
                 $handlerOption->setTitle($this->translator->trans($configuration->getTitle(), [], 'admin', $locale));
 
                 $valuesOption->addValueOption($handlerOption);

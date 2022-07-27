@@ -52,9 +52,6 @@ class TaskManager implements TaskManagerInterface
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function findById(string $id): TaskInterface
     {
         $task = $this->repository->findById($id);
@@ -65,9 +62,6 @@ class TaskManager implements TaskManagerInterface
         return $task;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function create(TaskInterface $task): TaskInterface
     {
         $task->setId(Uuid::uuid4()->toString());
@@ -78,9 +72,6 @@ class TaskManager implements TaskManagerInterface
         return $this->repository->save($task);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function update(TaskInterface $task): TaskInterface
     {
         $event = new TaskUpdateEvent($task);
@@ -94,9 +85,6 @@ class TaskManager implements TaskManagerInterface
         return $task;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function remove(string $id): void
     {
         $task = $this->findById($id);

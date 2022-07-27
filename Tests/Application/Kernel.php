@@ -21,7 +21,7 @@ use Task\TaskBundle\TaskBundle;
  */
 class Kernel extends SuluTestKernel
 {
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         $bundles = parent::registerBundles();
 
@@ -31,10 +31,7 @@ class Kernel extends SuluTestKernel
         return $bundles;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         parent::registerContainerConfiguration($loader);
 
@@ -42,7 +39,7 @@ class Kernel extends SuluTestKernel
         $loader->load(__DIR__ . '/config/config.yml');
     }
 
-    protected function getKernelParameters()
+    protected function getKernelParameters(): array
     {
         $parameters = parent::getKernelParameters();
 

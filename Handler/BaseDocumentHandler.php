@@ -38,12 +38,9 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
         $this->documentManager = $documentManager;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function handle($workload)
     {
-        if (is_array($workload)) {
+        if (\is_array($workload)) {
             /** @var WorkflowStageBehavior $document */
             $document = $this->documentManager->find($workload['id'], $workload['locale']);
             $this->handleDocument($document, $workload['locale']);
@@ -56,9 +53,6 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
      */
     abstract protected function handleDocument(WorkflowStageBehavior $document, string $locale): void;
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptionsResolver(OptionsResolver $optionsResolver): OptionsResolver
     {
         return $optionsResolver->setRequired(['id', 'locale'])
@@ -66,17 +60,11 @@ abstract class BaseDocumentHandler implements AutomationTaskHandlerInterface
             ->setAllowedTypes('locale', 'string');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function supports(string $entityClass): bool
     {
-        return is_subclass_of($entityClass, WorkflowStageBehavior::class);
+        return \is_subclass_of($entityClass, WorkflowStageBehavior::class);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getConfiguration(): TaskHandlerConfiguration
     {
         return TaskHandlerConfiguration::create($this->title);
