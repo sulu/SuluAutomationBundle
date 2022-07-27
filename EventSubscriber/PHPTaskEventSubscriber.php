@@ -39,9 +39,6 @@ class PHPTaskEventSubscriber implements EventSubscriberInterface
         $this->taskRepository = $taskRepository;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function getSubscribedEvents(): array
     {
         return [

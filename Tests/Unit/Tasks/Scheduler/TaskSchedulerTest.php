@@ -56,9 +56,6 @@ class TaskSchedulerTest extends TestCase
      */
     private $taskEventListener;
 
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
         $this->taskRepository = $this->prophesize(TaskRepositoryInterface::class);

@@ -31,9 +31,6 @@ class Kernel extends SuluTestKernel
         return $bundles;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         parent::registerContainerConfiguration($loader);

@@ -27,9 +27,6 @@ class TaskControllerTest extends SuluTestCase
      */
     private $client;
 
-    /**
-     * {@inheritdoc}
-     */
     public function setUp(): void
     {
         $this->client = $this->createAuthenticatedClient();
@@ -47,12 +44,12 @@ class TaskControllerTest extends SuluTestCase
         $this->client->request('GET', '/api/tasks?fields=id,schedule,handlerClass,taskName');
         $this->assertHttpStatusCode(200, $this->client->getResponse(), 1000);
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(3, $responseData['total']);
         $this->assertCount(3, $responseData['_embedded']['tasks']);
 
         $embedded = $responseData['_embedded']['tasks'];
-        for ($i = 0, $length = count($postData); $i < $length; ++$i) {
+        for ($i = 0, $length = \count($postData); $i < $length; ++$i) {
             $this->assertContains(
                 [
                     'id' => $postData[$i]['id'],
@@ -76,15 +73,15 @@ class TaskControllerTest extends SuluTestCase
 
         $ids = [$postData[2]['id'], $postData[0]['id']];
 
-        $this->client->request('GET', '/api/tasks?ids=' . implode(',', $ids));
+        $this->client->request('GET', '/api/tasks?ids=' . \implode(',', $ids));
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(2, $responseData['total']);
         $this->assertCount(2, $responseData['_embedded']['tasks']);
 
         $embedded = $responseData['_embedded']['tasks'];
-        for ($i = 0, $length = count($ids); $i < $length; ++$i) {
+        for ($i = 0, $length = \count($ids); $i < $length; ++$i) {
             $this->assertEquals($ids[$i], $embedded[$i]['id']);
         }
     }
@@ -100,13 +97,13 @@ class TaskControllerTest extends SuluTestCase
         $this->client->request('GET', '/api/tasks?locale=de&fields=id,schedule,handlerClass,taskName');
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(2, $responseData['total']);
         $this->assertCount(2, $responseData['_embedded']['tasks']);
 
         $items = [$postData[0], $postData[2]];
         $embedded = $responseData['_embedded']['tasks'];
-        for ($i = 0, $length = count($items); $i < $length; ++$i) {
+        for ($i = 0, $length = \count($items); $i < $length; ++$i) {
             $this->assertContains(
                 [
                     'id' => $items[$i]['id'],
@@ -131,7 +128,7 @@ class TaskControllerTest extends SuluTestCase
         $this->client->request('GET', '/api/tasks?entityClass=ThisClass&entityId=1');
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(1, $responseData['total']);
         $this->assertCount(1, $responseData['_embedded']['tasks']);
 
@@ -150,13 +147,13 @@ class TaskControllerTest extends SuluTestCase
         $this->client->request('GET', '/api/tasks?fields=id,schedule,handlerClass,taskName&schedule=future');
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(2, $responseData['total']);
         $this->assertCount(2, $responseData['_embedded']['tasks']);
 
         $items = [$postData[0], $postData[2]];
         $embedded = $responseData['_embedded']['tasks'];
-        for ($i = 0, $length = count($items); $i < $length; ++$i) {
+        for ($i = 0, $length = \count($items); $i < $length; ++$i) {
             $this->assertContains(
                 [
                     'id' => $items[$i]['id'],
@@ -181,13 +178,13 @@ class TaskControllerTest extends SuluTestCase
         $this->client->request('GET', '/api/tasks?fields=id,schedule,handlerClass,taskName&schedule=past');
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(2, $responseData['total']);
         $this->assertCount(2, $responseData['_embedded']['tasks']);
 
         $items = [$postData[0], $postData[2]];
         $embedded = $responseData['_embedded']['tasks'];
-        for ($i = 0, $length = count($items); $i < $length; ++$i) {
+        for ($i = 0, $length = \count($items); $i < $length; ++$i) {
             $this->assertContains(
                 [
                     'id' => $items[$i]['id'],
@@ -215,13 +212,13 @@ class TaskControllerTest extends SuluTestCase
         );
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(2, $responseData['total']);
         $this->assertCount(2, $responseData['_embedded']['tasks']);
 
         $items = [$postData[0], $postData[2]];
         $embedded = $responseData['_embedded']['tasks'];
-        for ($i = 0, $length = count($items); $i < $length; ++$i) {
+        for ($i = 0, $length = \count($items); $i < $length; ++$i) {
             $this->assertContains(
                 [
                     'id' => $items[$i]['id'],
@@ -243,12 +240,12 @@ class TaskControllerTest extends SuluTestCase
         );
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals(3, $responseData['total']);
         $this->assertCount(3, $responseData['_embedded']['tasks']);
 
         $embedded = $responseData['_embedded']['tasks'];
-        for ($i = 0, $length = count($postData); $i < $length; ++$i) {
+        for ($i = 0, $length = \count($postData); $i < $length; ++$i) {
             $this->assertContains(
                 [
                     'id' => $postData[$i]['id'],
@@ -284,7 +281,7 @@ class TaskControllerTest extends SuluTestCase
         );
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertArrayHasKey('id', $responseData);
         $this->assertEquals($handlerClass, $responseData['handlerClass']);
@@ -325,7 +322,7 @@ class TaskControllerTest extends SuluTestCase
         );
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertEquals($postData['id'], $responseData['id']);
         $this->assertEquals($handlerClass, $responseData['handlerClass']);
@@ -347,7 +344,7 @@ class TaskControllerTest extends SuluTestCase
         $this->client->request('GET', '/api/tasks/' . $postData['id']);
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertEquals($postData['id'], $responseData['id']);
         $this->assertEquals($postData['handlerClass'], $responseData['handlerClass']);
@@ -371,7 +368,7 @@ class TaskControllerTest extends SuluTestCase
         ]);
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertEquals(3, $responseData['count']);
     }
@@ -395,7 +392,7 @@ class TaskControllerTest extends SuluTestCase
         $this->client->request('GET', '/api/tasks/' . $task->getId());
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertEquals($task->getId(), $responseData['id']);
         $this->assertEquals('', $responseData['creator']);
@@ -431,7 +428,7 @@ class TaskControllerTest extends SuluTestCase
         $this->client->request('GET', '/api/tasks/' . $postData[2]['id']);
         $this->assertHttpStatusCode(200, $this->client->getResponse());
 
-        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $responseData = \json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertEquals($postData[2]['id'], $responseData['id']);
     }

@@ -60,18 +60,12 @@ class TaskScheduler implements TaskSchedulerInterface
         $this->taskScheduler = $taskScheduler;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function schedule(TaskInterface $task): void
     {
         $workload = $this->createWorkload($task);
         $task->setTaskId($this->scheduleTask($task, $workload)->getUuid());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function reschedule(TaskInterface $task): void
     {
         $workload = $this->createWorkload($task);
@@ -100,9 +94,6 @@ class TaskScheduler implements TaskSchedulerInterface
         $task->setTaskId($this->scheduleTask($task, $workload)->getUuid());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function remove(TaskInterface $task): void
     {
         $phpTask = $this->taskRepository->findByUuid((string) $task->getTaskId());

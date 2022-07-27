@@ -53,7 +53,7 @@ class AutomationPageTreeUpdaterTest extends TestCase
 
     public function setUp(): void
     {
-        if (!class_exists(SuluAutomationBundle::class)) {
+        if (!\class_exists(SuluAutomationBundle::class)) {
             $this->markTestSkipped('SuluAutomationBundle is needed for this tests');
         }
 

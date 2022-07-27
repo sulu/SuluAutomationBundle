@@ -22,9 +22,6 @@ use Task\TaskBundle\Entity\TaskExecution;
  */
 class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function create(): TaskInterface
     {
         $class = $this->_entityName;
@@ -35,9 +32,6 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
         return $entity;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function save(TaskInterface $task): TaskInterface
     {
         $this->_em->persist($task);
@@ -45,9 +39,6 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
         return $task;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function remove(TaskInterface $task): TaskInterface
     {
         $this->_em->remove($task);
@@ -55,9 +46,6 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
         return $task;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function findById(string $id): ?TaskInterface
     {
         /** @var TaskInterface $task */
@@ -66,9 +54,6 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
         return $task;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function findByTaskId(string $id): ?TaskInterface
     {
         /** @var TaskInterface $task */
@@ -77,9 +62,6 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
         return $task;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function countFutureTasks(string $entityClass, string $entityId, string $locale = null): int
     {
         $queryBuilder = $this->createQueryBuilder('task')
@@ -101,12 +83,9 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
         /** @var int|float|string $result */
         $result = $query->getSingleScalarResult();
 
-        return (int)$result;
+        return (int) $result;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function countPendingTasks(string $entityClass, string $entityId, string $locale = null): int
     {
         $queryBuilder = $this->_em->createQueryBuilder()
@@ -131,12 +110,9 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
         /** @var int|float|string $result */
         $result = $query->getSingleScalarResult();
 
-        return (int)$result;
+        return (int) $result;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function revert(TaskInterface $task): TaskInterface
     {
         $this->_em->refresh($task);

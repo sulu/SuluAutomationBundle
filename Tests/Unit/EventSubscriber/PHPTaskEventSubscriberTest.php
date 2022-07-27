@@ -56,10 +56,10 @@ class PHPTaskEventSubscriberTest extends TestCase
     {
         $eventNames = [Events::TASK_BEFORE, Events::TASK_AFTER];
         foreach ($this->eventSubscriber->getSubscribedEvents() as $eventName => $functions) {
-            $this->assertTrue(in_array($eventName, $eventNames));
+            $this->assertTrue(\in_array($eventName, $eventNames));
 
             foreach ($functions as $function) {
-                $this->assertTrue(method_exists($this->eventSubscriber, $function));
+                $this->assertTrue(\method_exists($this->eventSubscriber, $function));
             }
         }
     }

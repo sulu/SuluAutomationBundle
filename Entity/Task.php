@@ -21,7 +21,7 @@ class Task implements TaskInterface
 {
     use AuditableTrait;
 
-    const RESOURCE_KEY = 'tasks';
+    public const RESOURCE_KEY = 'tasks';
 
     /**
      * @var string
@@ -68,17 +68,12 @@ class Task implements TaskInterface
      */
     private $scheme;
 
-    /**
-     * {@inheritdoc}
-     */
     public function getId(): string
     {
         return $this->id;
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @return self
      */
     public function setId(string $id): TaskInterface
@@ -88,9 +83,6 @@ class Task implements TaskInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getHandlerClass(): string
     {
         return $this->handlerClass;
@@ -103,9 +95,6 @@ class Task implements TaskInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getSchedule(): \DateTime
     {
         return $this->schedule;
@@ -133,9 +122,6 @@ class Task implements TaskInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getEntityClass(): string
     {
         return $this->entityClass;
@@ -148,9 +134,6 @@ class Task implements TaskInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getEntityId(): string
     {
         return $this->entityId;
@@ -178,9 +161,6 @@ class Task implements TaskInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getHost(): string
     {
         return $this->host;
@@ -193,9 +173,6 @@ class Task implements TaskInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getScheme(): string
     {
         return $this->scheme;
@@ -208,9 +185,6 @@ class Task implements TaskInterface
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getCreatorFullName(): string
     {
         $creator = $this->getCreator();
@@ -221,9 +195,6 @@ class Task implements TaskInterface
         return $creator->getFullName();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getChangerFullName(): string
     {
         $changer = $this->getChanger();

@@ -41,9 +41,6 @@ class DocumentPublishHandlerTest extends TestCase
      */
     private $publishHandler;
 
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp(): void
     {
         $this->documentManager = $this->prophesize(DocumentManagerInterface::class);

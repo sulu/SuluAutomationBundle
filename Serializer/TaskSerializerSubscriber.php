@@ -81,7 +81,7 @@ class TaskSerializerSubscriber implements EventSubscriberInterface
         }
 
         $executions = $this->taskExecutionRepository->findByTaskUuid((string) $object->getTaskId());
-        if (0 < count($executions)) {
+        if (0 < \count($executions)) {
             /** @var SerializationVisitorInterface $serializationVisitor */
             $serializationVisitor = $event->getVisitor();
             $serializationVisitor->visitProperty(
