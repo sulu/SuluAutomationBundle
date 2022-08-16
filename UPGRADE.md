@@ -1,6 +1,6 @@
 # Upgrade
 
-# 2.x
+## 2.0.1
 
 A new method has been added to the `TaskRepositoryInterface`
 
