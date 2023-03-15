@@ -44,6 +44,12 @@
     "autoload": {
         "psr-4": {
             "Sulu\\Bundle\\AutomationBundle\\": ""
+        },
+        "exclude-from-classmap": ["/Tests/"]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sulu\\Bundle\\AutomationBundle\\Tests\\": "Tests/"
         }
     },
     "scripts": {
