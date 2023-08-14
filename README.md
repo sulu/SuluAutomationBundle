@@ -10,7 +10,7 @@
         <img src="https://img.shields.io/github/license/sulu/SuluAutomationBundle.svg" alt="GitHub license">
     </a>
     <a href="https://github.com/sulu/SuluAutomationBundle/actions" target="_blank">
-        <img src="https://img.shields.io/github/workflow/status/sulu/SuluAutomationBundle/Test%20application?label=test-workflow" alt="Test workflow status">
+        <img src="https://img.shields.io/github/actions/workflow/status/sulu/SuluAutomationBundle/test-application.yaml?branch=2.1" alt="Test workflow status">
     </a>
     <a href="https://github.com/sulu/sulu/releases" target="_blank">
         <img src="https://img.shields.io/badge/sulu%20compatibility-%3E=2.0-52b6ca.svg" alt="Sulu compatibility">
@@ -38,7 +38,7 @@ The Documentation is stored in the
 
 ## Installation
 
-All the installation instructions are located in the 
+All the installation instructions are located in the
 [documentation](Resources/doc/installation.md).
 
 ## License
