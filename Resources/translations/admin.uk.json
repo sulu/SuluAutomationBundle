@@ -1,0 +1,12 @@
+{
+    "sulu_automation.automation": "Автоматизація",
+    "sulu_automation.task.name": "Назва задачі",
+    "sulu_automation.task.status": "Статус",
+    "sulu_automation.task.schedule": "Запланувано",
+    "sulu_automation.task.schedule.time": "Час",
+    "sulu_automation.task.schedule.date": "Дата",
+    "sulu_automation.list.creator": "Створено",
+    "sulu_automation.list.changer": "Змінено",
+    "sulu_content.task_handler.publish": "Опублікувати",
+    "sulu_content.task_handler.unpublish": "Зняти з публікації"
+}
