@@ -14,14 +14,12 @@ namespace Sulu\Bundle\AutomationBundle\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
-use JMS\Serializer\DeserializationContext;
 use JMS\Serializer\SerializerInterface;
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
 use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
-use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface as AutomationTaskRepositoryInterface;
 use Sulu\Component\Rest\AbstractRestController;
 use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactoryInterface;
@@ -367,11 +365,9 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     /**
      * Returns field-descriptors for task-entity.
      *
-     * @param string $type
-     *
      * @return FieldDescriptorInterface[]
      */
-    private function getFieldDescriptors(string $type = null): array
+    private function getFieldDescriptors(?string $type = null): array
     {
         $fieldDescriptors = $this->fieldDescriptorFactory->getFieldDescriptors(Task::RESOURCE_KEY);
         if (!$fieldDescriptors) {

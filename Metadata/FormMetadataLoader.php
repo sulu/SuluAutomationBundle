@@ -54,7 +54,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
             return null;
         }
 
-        /** @var FormMetaData $form */
+        /** @var FormMetadata $form */
         $form = new FormMetadata();
         $form->setKey(self::TASK_DETAILS_VIEW);
 

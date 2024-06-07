@@ -12,7 +12,6 @@
 namespace Sulu\Bundle\AutomationBundle\PageTree;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\TaskHandlerConfiguration;
 use Sulu\Bundle\PageBundle\Document\BasePageDocument;
@@ -83,7 +82,7 @@ class PageTreeRouteUpdateHandler implements AutomationTaskHandlerInterface, Lock
 
             $this->documentManager->flush();
             $this->entityManager->commit();
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             $this->entityManager->rollback();
 
             throw $exception;

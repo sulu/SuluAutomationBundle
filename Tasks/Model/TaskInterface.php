@@ -25,8 +25,6 @@ interface TaskInterface extends AuditableInterface
 
     /**
      * Set id.
-     *
-     * @return TaskInterface
      */
     public function setId(string $id): self;
 
@@ -40,9 +38,6 @@ interface TaskInterface extends AuditableInterface
      */
     public function getSchedule(): \DateTime;
 
-    /**
-     * @return TaskInterface
-     */
     public function setSchedule(\DateTime $schedule): self;
 
     /**
@@ -67,8 +62,6 @@ interface TaskInterface extends AuditableInterface
 
     /**
      * Set taskId.
-     *
-     * @return TaskInterface
      */
     public function setTaskId(?string $taskId): self;
 
