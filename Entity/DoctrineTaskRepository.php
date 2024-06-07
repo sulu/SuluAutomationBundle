@@ -19,6 +19,8 @@ use Task\TaskBundle\Entity\TaskExecution;
 
 /**
  * Task-Repository implementation for doctrine.
+ *
+ * @extends EntityRepository<TaskInterface>
  */
 class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryInterface
 {

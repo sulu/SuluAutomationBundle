@@ -21,7 +21,7 @@
             <argument type="service" id="sulu_core.doctrine_rest_helper"/>
             <argument type="service" id="sulu_automation.tasks.manager"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
-            <argument type="service" id="jms_serializer"/>
+            <argument>null</argument>
             <argument type="service" id="sulu_core.list_builder.field_descriptor_factory"/>
             <argument type="service" id="sulu.repository.task"/>
 

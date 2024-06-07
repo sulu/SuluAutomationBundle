@@ -93,7 +93,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     protected $entityManager;
 
     /**
-     * @var SerializerInterface
+     * @var SerializerInterface|null
      */
     protected $serializer;
 
@@ -112,7 +112,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         RestHelperInterface $doctrineRestHelper,
         TaskManagerInterface $taskManager,
         EntityManagerInterface $entityManager,
-        SerializerInterface $serializer,
+        ?SerializerInterface $serializer,
         FieldDescriptorFactoryInterface $fieldDescriptorFactory,
         AutomationTaskRepositoryInterface $automationTaskRepository
     ) {
@@ -298,27 +298,14 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      */
     public function postAction(Request $request): Response
     {
-        $data = \array_merge(
-            [
-                'scheme' => $request->getScheme(),
-                'host' => $request->getHost(),
-                'entityId' => $request->get('entityId'),
-                'entityClass' => $request->get('entityClass'),
-                'locale' => $request->get('locale'),
-            ],
-            \array_filter($request->request->all())
-        );
-
-        $context = DeserializationContext::create();
-        $context->setGroups(['api']);
-
-        /** @var TaskInterface $task */
-        $task = $this->serializer->deserialize(
-            (string) \json_encode($data),
-            Task::class,
-            'json',
-            $context
-        );
+        $task = new Task();
+        $task->setScheme($request->getScheme());
+        $task->setHost($request->getHost());
+        $task->setEntityId((string) $request->query->get('entityId'));
+        $task->setEntityClass((string) $request->query->get('entityClass'));
+        $task->setLocale((string) $request->query->get('locale'));
+        $task->setHandlerClass((string) $request->request->get('handlerClass'));
+        $task->setSchedule(new \DateTime((string) $request->request->get('schedule')));
 
         $this->taskManager->create($task);
 
@@ -332,32 +319,16 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      */
     public function putAction(string $id, Request $request): Response
     {
-        $data = \array_merge(
-            [
-                'id' => $id,
-                'scheme' => $request->getScheme(),
-                'host' => $request->getHost(),
-                'entityId' => $request->get('entityId'),
-                'entityClass' => $request->get('entityClass'),
-                'locale' => $request->get('locale'),
-            ],
-            \array_filter($request->request->all())
-        );
-
-        $context = DeserializationContext::create();
-        $context->setGroups(['api']);
-
-        /** @var TaskInterface $task */
-        $task = $this->serializer->deserialize(
-            (string) \json_encode($data),
-            Task::class,
-            'json',
-            $context
-        );
+        /** @var Task $task */
+        $task = $this->taskManager->findById($id);
+        $task->setScheme($request->getScheme());
+        $task->setHost($request->getHost());
+        $task->setLocale((string) $request->query->get('locale'));
+        $task->setHandlerClass((string) $request->request->get('handlerClass'));
+        $task->setSchedule(new \DateTime((string) $request->request->get('schedule')));
 
         $task = $this->taskManager->update($task);
 
-        $this->entityManager->merge($task);
         $this->entityManager->flush();
 
         return $this->handleView($this->view($task));
