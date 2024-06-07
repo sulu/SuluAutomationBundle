@@ -270,13 +270,10 @@ class TaskControllerTest extends SuluTestCase
 
         $this->client->request(
             'POST',
-            '/api/tasks',
+            '/api/tasks?locale=' . $locale . '&entityClass=' . $entityClass . '&entityId=' . $entityId,
             [
                 'handlerClass' => $handlerClass,
                 'schedule' => $date->format('Y-m-d\TH:i:s'),
-                'entityClass' => $entityClass,
-                'entityId' => $entityId,
-                'locale' => $locale,
             ]
         );
         $this->assertHttpStatusCode(200, $this->client->getResponse());
@@ -310,13 +307,10 @@ class TaskControllerTest extends SuluTestCase
 
         $this->client->request(
             'PUT',
-            '/api/tasks/' . $postData['id'],
+            '/api/tasks/' . $postData['id'] . '?locale=' . $locale . '&entityClass=' . $entityClass . '&entityId=' . $postData['entityId'],
             [
                 'handlerClass' => $handlerClass,
-                'entityId' => $postData['entityId'],
                 'taskId' => $postData['taskId'],
-                'entityClass' => $entityClass,
-                'locale' => $locale,
                 'schedule' => $date->format('Y-m-d\TH:i:s'),
             ]
         );
