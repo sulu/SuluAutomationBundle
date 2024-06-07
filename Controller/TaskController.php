@@ -123,6 +123,11 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $this->taskManager = $taskManager;
         $this->entityManager = $entityManager;
         $this->serializer = $serializer;
+
+        if (null !== $serializer) {
+            @trigger_deprecation('sulu/automation-bundle', '2.1.2', 'The "%s" class not longer should be constructed with a serializer.', self::class);
+        }
+
         $this->fieldDescriptorFactory = $fieldDescriptorFactory;
         $this->automationTaskRepository = $automationTaskRepository;
     }
