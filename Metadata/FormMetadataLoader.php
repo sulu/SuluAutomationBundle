@@ -16,6 +16,7 @@ use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\FormMetadata;
 use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\FormMetadataLoaderInterface;
 use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\OptionMetadata;
 use Sulu\Bundle\AdminBundle\Metadata\MetadataInterface;
+use Sulu\Bundle\AdminBundle\Metadata\SchemaMetadata\SchemaMetadata;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Task\TaskBundle\Handler\TaskHandlerFactory;
@@ -57,6 +58,9 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
         /** @var FormMetadata $form */
         $form = new FormMetadata();
         $form->setKey(self::TASK_DETAILS_VIEW);
+
+        $schemaMetadata = new SchemaMetadata();
+        $form->setSchema($schemaMetadata);
 
         // Single Select
         $singleSelectHandler = new FieldMetadata('handlerClass');
