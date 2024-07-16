@@ -13,6 +13,7 @@ namespace Sulu\Bundle\AutomationBundle\Tests\Unit\Tasks\Manager;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Sulu\Bundle\AutomationBundle\Events\Events;
 use Sulu\Bundle\AutomationBundle\Events\TaskEvent;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManager;
@@ -27,6 +28,8 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class TaskManagerTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var TaskRepositoryInterface
      */

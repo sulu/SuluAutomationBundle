@@ -13,6 +13,7 @@ namespace Sulu\Bundle\AutomationBundle\Tests\Unit\Handler;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Sulu\Bundle\AutomationBundle\Handler\DocumentPublishHandler;
 use Sulu\Bundle\PageBundle\Document\HomeDocument;
 use Sulu\Bundle\PageBundle\Document\PageDocument;
@@ -26,6 +27,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class DocumentPublishHandlerTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var DocumentManagerInterface
      */
