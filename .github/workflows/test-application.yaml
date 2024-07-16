@@ -19,7 +19,7 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                    - php-version: '7.2'
+                    - php-version: '7.3'
                       dependency-versions: 'lowest'
                       phpunit-config: 'phpunit-9.xml.dist'
 
@@ -78,7 +78,7 @@ jobs:
               run: composer bootstrap-test-environment
 
             - name: Execute test cases
-              run: composer test -- --config ${{ matrix.phpunit-config }}
+              run: composer test -- --config ${{ matrix.phpunit-config || 'phpunit.xml.dist' }}
 
     lint:
         name: 'PHP Lint'
