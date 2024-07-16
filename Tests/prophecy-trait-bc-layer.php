@@ -11,6 +11,9 @@
 
 namespace Prophecy\PhpUnit;
 
+/**
+ * @internal
+ */
 trait ProphecyTrait
 {
 }
