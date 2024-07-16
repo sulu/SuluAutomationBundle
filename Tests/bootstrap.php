@@ -16,7 +16,7 @@ if (!\file_exists($file)) {
     throw new RuntimeException('Install dependencies to run test suite.');
 }
 
-if (!\trait_exists(\Prophecy\PhpUnit\ProphecyTrait::class)) {
+if (!\trait_exists(Prophecy\PhpUnit\ProphecyTrait::class)) {
     require __DIR__ . '/prophecy-trait-bc-layer.php';
 }
 
