@@ -13,6 +13,7 @@ namespace Sulu\Bundle\AutomationBundle\Tests\Unit\EventSubscriber;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Sulu\Bundle\AutomationBundle\EventSubscriber\PHPTaskEventSubscriber;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface;
@@ -27,6 +28,8 @@ use Task\TaskInterface as PHPTaskInterface;
  */
 class PHPTaskEventSubscriberTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var RequestStack
      */

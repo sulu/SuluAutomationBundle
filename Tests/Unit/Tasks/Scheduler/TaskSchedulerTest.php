@@ -13,6 +13,7 @@ namespace Sulu\Bundle\AutomationBundle\Tests\Unit\Tasks\Scheduler;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Scheduler\TaskScheduler;
@@ -31,6 +32,8 @@ use Task\TaskStatus;
  */
 class TaskSchedulerTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var TaskRepositoryInterface
      */

@@ -49,12 +49,13 @@ class TaskControllerTest extends SuluTestCase
         $this->assertCount(3, $responseData['_embedded']['tasks']);
 
         $embedded = $responseData['_embedded']['tasks'];
+
         for ($i = 0, $length = \count($postData); $i < $length; ++$i) {
             $this->assertContains(
                 [
                     'id' => $postData[$i]['id'],
-                    'handlerClass' => $postData[$i]['handlerClass'],
                     'schedule' => $postData[$i]['schedule'],
+                    'handlerClass' => $postData[$i]['handlerClass'],
                     'taskName' => $postData[$i]['taskName'],
                     'status' => $postData[$i]['status'],
                 ],

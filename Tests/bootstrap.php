@@ -16,6 +16,10 @@ if (!\file_exists($file)) {
     throw new RuntimeException('Install dependencies to run test suite.');
 }
 
+if (!\trait_exists(Prophecy\PhpUnit\ProphecyTrait::class)) { // backwards compatibility layer for < PHP 7.3
+    require __DIR__ . '/prophecy-trait-bc-layer.php';
+}
+
 require $file;
 
 // Load cached env vars if the .env.local.php file exists

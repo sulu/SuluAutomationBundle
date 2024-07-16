@@ -21,39 +21,33 @@ jobs:
                 include:
                     - php-version: '7.2'
                       dependency-versions: 'lowest'
-                      tools: 'composer:v2'
-                      env:
-                          SYMFONY_DEPRECATIONS_HELPER: disabled
+                      phpunit-config: 'phpunit-9.xml.dist'
+
+                    - php-version: '7.3'
+                      dependency-versions: 'highest'
+                      phpunit-config: 'phpunit-9.xml.dist'
 
                     - php-version: '7.4'
                       dependency-versions: 'highest'
-                      tools: 'composer:v2'
-                      env:
-                          SYMFONY_DEPRECATIONS_HELPER: weak
+                      phpunit-config: 'phpunit-9.xml.dist'
 
                     - php-version: '8.0'
                       dependency-versions: 'highest'
-                      tools: 'composer:v2'
-                      env:
-                          SYMFONY_DEPRECATIONS_HELPER: weak
+                      phpunit-config: 'phpunit-9.xml.dist'
 
                     - php-version: '8.1'
                       dependency-versions: 'highest'
-                      tools: 'composer:v2'
-                      env:
-                          SYMFONY_DEPRECATIONS_HELPER: weak
+                      phpunit-config: 'phpunit-9.xml.dist'
 
                     - php-version: '8.2'
                       dependency-versions: 'highest'
-                      tools: 'composer:v2'
-                      env:
-                          SYMFONY_DEPRECATIONS_HELPER: weak
 
                     - php-version: '8.3'
                       dependency-versions: 'highest'
-                      tools: 'composer:v2'
-                      env:
-                          SYMFONY_DEPRECATIONS_HELPER: weak
+
+                    - php-version: '8.4'
+                      dependency-versions: 'highest'
+                      composer-options: '--ignore-platform-reqs'
 
         services:
             mysql:
@@ -73,10 +67,10 @@ jobs:
               with:
                   php-version: ${{ matrix.php-version }}
                   extensions: 'mysql, gd'
-                  tools: ${{ matrix.tools }}
+                  tools: 'composer:v2'
 
             - name: Remove not required tooling
-              run: composer remove php-cs-fixer/shim "*phpstan*" --dev --no-interaction --no-update
+              run: composer remove "*php-cs-fixer*" "*phpstan*" "*rector*" --dev --no-interaction --no-update
 
             - name: Install composer dependencies
               uses: ramsey/composer-install@v1
@@ -88,8 +82,7 @@ jobs:
               run: composer bootstrap-test-environment
 
             - name: Execute test cases
-              run: composer test
-              env: ${{ matrix.env }}
+              run: composer test -- --config ${{ matrix.phpunit-config || 'phpunit.xml.dist' }}
 
     lint:
         name: 'PHP Lint'
