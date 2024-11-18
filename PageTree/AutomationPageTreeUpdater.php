@@ -41,7 +41,7 @@ class AutomationPageTreeUpdater implements PageTreeUpdaterInterface
     public function __construct(
         TaskManagerInterface $taskManager,
         EntityManagerInterface $entityManager,
-        RequestStack $requestStack
+        RequestStack $requestStack,
     ) {
         $this->taskManager = $taskManager;
         $this->entityManager = $entityManager;

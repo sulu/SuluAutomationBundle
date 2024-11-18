@@ -43,7 +43,7 @@ class AutomationAdmin extends Admin
 
     public function __construct(
         AutomationViewBuilderFactoryInterface $automationViewBuilderFactory,
-        SecurityCheckerInterface $securityChecker
+        SecurityCheckerInterface $securityChecker,
     ) {
         $this->automationViewBuilderFactory = $automationViewBuilderFactory;
         $this->securityChecker = $securityChecker;
