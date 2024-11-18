@@ -45,7 +45,7 @@ class TaskManager implements TaskManagerInterface
     public function __construct(
         TaskRepositoryInterface $repository,
         TaskSchedulerInterface $scheduler,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
     ) {
         $this->repository = $repository;
         $this->scheduler = $scheduler;

@@ -25,7 +25,7 @@ class AutomationViewBuilderFactory implements AutomationViewBuilderFactoryInterf
     protected $viewBuilderFactory;
 
     public function __construct(
-        ViewBuilderFactoryInterface $viewBuilderFactory
+        ViewBuilderFactoryInterface $viewBuilderFactory,
     ) {
         $this->viewBuilderFactory = $viewBuilderFactory;
     }
