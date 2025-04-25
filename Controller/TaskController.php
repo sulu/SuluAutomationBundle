@@ -161,7 +161,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
                     $result,
                     'tasks',
                     $listBuilder->getCurrentPage(),
-                    $listBuilder->getLimit(),
+                    $listBuilder->getLimit() ?: $listBuilder->count(),
                     $listBuilder->count()
                 )
             )
