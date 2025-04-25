@@ -11,7 +11,6 @@
 
 namespace Sulu\Bundle\AutomationBundle\Tasks\Manager;
 
-use Ramsey\Uuid\Uuid;
 use Sulu\Bundle\AutomationBundle\Events\Events;
 use Sulu\Bundle\AutomationBundle\Events\TaskCreateEvent;
 use Sulu\Bundle\AutomationBundle\Events\TaskRemoveEvent;
@@ -21,6 +20,7 @@ use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Scheduler\TaskSchedulerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * Manages task-entities.
@@ -64,7 +64,7 @@ class TaskManager implements TaskManagerInterface
 
     public function create(TaskInterface $task): TaskInterface
     {
-        $task->setId(Uuid::uuid4()->toString());
+        $task->setId(Uuid::v4()->toRfc4122());
         $this->scheduler->schedule($task);
 
         $this->eventDispatcher->dispatch(new TaskCreateEvent($task), Events::TASK_CREATE_EVENT);

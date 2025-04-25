@@ -86,7 +86,6 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
-        $loader->load('page_tree_route.xml');
 
         $this->configurePersistence($config['objects'], $container);
     }
