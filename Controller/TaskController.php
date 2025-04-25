@@ -26,8 +26,8 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactoryInterface
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptorInterface;
 use Sulu\Component\Rest\ListBuilder\FieldDescriptorInterface;
 use Sulu\Component\Rest\ListBuilder\ListBuilderInterface;
-use Sulu\Component\Rest\ListBuilder\ListRepresentation;
 use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
+use Sulu\Component\Rest\ListBuilder\PaginatedRepresentation;
 use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Component\Security\SecuredControllerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -157,13 +157,11 @@ class TaskController extends AbstractRestController implements ClassResourceInte
 
         return $this->handleView(
             $this->view(
-                new ListRepresentation(
+                new PaginatedRepresentation(
                     $result,
                     'tasks',
-                    'get_tasks',
-                    $request->query->all(),
                     $listBuilder->getCurrentPage(),
-                    $listBuilder->getLimit(),
+                    $listBuilder->getLimit() ?: $listBuilder->count(),
                     $listBuilder->count()
                 )
             )
