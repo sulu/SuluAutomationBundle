@@ -265,7 +265,7 @@ class TaskControllerTest extends SuluTestCase
         $schedule = '+1 day',
         $entityClass = 'ThisClass',
         $entityId = 1,
-        $locale = 'de'
+        $locale = 'de',
     ) {
         $date = new \DateTime($schedule);
 
@@ -300,7 +300,7 @@ class TaskControllerTest extends SuluTestCase
         $handlerClass = FirstHandler::class,
         $schedule = '+2 day',
         $entityClass = 'ThisClass',
-        $locale = 'de'
+        $locale = 'de',
     ) {
         $postData = $this->testPost();
 

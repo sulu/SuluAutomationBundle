@@ -112,7 +112,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         EntityManagerInterface $entityManager,
         ?SerializerInterface $serializer,
         FieldDescriptorFactoryInterface $fieldDescriptorFactory,
-        AutomationTaskRepositoryInterface $automationTaskRepository
+        AutomationTaskRepositoryInterface $automationTaskRepository,
     ) {
         parent::__construct($viewHandler, $tokenStorage);
         $this->doctrineListBuilderFactory = $doctrineListBuilderFactory;
