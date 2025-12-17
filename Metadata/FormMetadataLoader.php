@@ -40,7 +40,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
 
     public function __construct(
         TranslatorInterface $translator,
-        TaskHandlerFactory $taskHandlerFactory
+        TaskHandlerFactory $taskHandlerFactory,
     ) {
         $this->translator = $translator;
         $this->taskHandlerFactory = $taskHandlerFactory;

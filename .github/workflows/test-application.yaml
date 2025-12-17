@@ -19,25 +19,8 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                    - php-version: '7.2'
+                    - php-version: '8.2'
                       dependency-versions: 'lowest'
-                      phpunit-config: 'phpunit-9.xml.dist'
-
-                    - php-version: '7.3'
-                      dependency-versions: 'highest'
-                      phpunit-config: 'phpunit-9.xml.dist'
-
-                    - php-version: '7.4'
-                      dependency-versions: 'highest'
-                      phpunit-config: 'phpunit-9.xml.dist'
-
-                    - php-version: '8.0'
-                      dependency-versions: 'highest'
-                      phpunit-config: 'phpunit-9.xml.dist'
-
-                    - php-version: '8.1'
-                      dependency-versions: 'highest'
-                      phpunit-config: 'phpunit-9.xml.dist'
 
                     - php-version: '8.2'
                       dependency-versions: 'highest'

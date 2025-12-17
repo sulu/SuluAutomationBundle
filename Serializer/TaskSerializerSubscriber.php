@@ -38,7 +38,7 @@ class TaskSerializerSubscriber implements EventSubscriberInterface
 
     public function __construct(
         TaskHandlerFactoryInterface $handlerFactory,
-        TaskExecutionRepositoryInterface $taskExecutionRepository
+        TaskExecutionRepositoryInterface $taskExecutionRepository,
     ) {
         $this->handlerFactory = $handlerFactory;
         $this->taskExecutionRepository = $taskExecutionRepository;

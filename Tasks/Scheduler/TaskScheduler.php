@@ -52,7 +52,7 @@ class TaskScheduler implements TaskSchedulerInterface
         TaskRepositoryInterface $phpTaskRepository,
         TaskExecutionRepositoryInterface $phpTaskExecutionRepository,
         TaskHandlerFactoryInterface $taskHandlerFactory,
-        PHPTaskSchedulerInterface $taskScheduler
+        PHPTaskSchedulerInterface $taskScheduler,
     ) {
         $this->taskRepository = $phpTaskRepository;
         $this->taskExecutionRepository = $phpTaskExecutionRepository;
