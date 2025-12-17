@@ -26,8 +26,6 @@
         "symfony/uid": "^6.4 || ^7.1"
     },
     "require-dev": {
-        "handcraftedinthealps/zendsearch": "^2.0",
-        "jackalope/jackalope-doctrine-dbal": "^1.6 || ^2.0",
         "jangregor/phpstan-prophecy": "^1.0",
         "php-cs-fixer/shim": "^3.6",
         "phpspec/prophecy": "^1.18",
