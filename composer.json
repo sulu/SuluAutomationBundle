@@ -30,7 +30,7 @@
         "jangregor/phpstan-prophecy": "^1.0",
         "php-cs-fixer/shim": "^3.0",
         "phpspec/prophecy": "^1.8",
-        "phpspec/prophecy-phpunit": "^1.1 || ^2.0",
+        "phpspec/prophecy-phpunit": "^2.0",
         "phpstan/phpstan": "^1.0",
         "phpstan/phpstan-doctrine": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
