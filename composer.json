@@ -35,7 +35,7 @@
         "phpstan/phpstan-doctrine": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpstan/phpstan-symfony": "^1.0",
-        "phpunit/phpunit": "^8.5.39 || ^9.6.20 || ^10.0",
+        "phpunit/phpunit": "^10.0 || ^11.0",
         "symfony/browser-kit": "^4.3 || ^5.4 || ^6.3 || ^7.0",
         "symfony/dotenv": "^4.3 || ^5.4 || ^6.3 || ^7.0",
         "symfony/monolog-bundle": "^3.1",
