@@ -73,9 +73,13 @@ class TaskScheduler implements TaskSchedulerInterface
         $phpTask = $this->taskRepository->findByUuid((string) $task->getTaskId());
         $executions = $this->taskExecutionRepository->findByTask($phpTask);
 
-        if ($task->getSchedule() == $phpTask->getFirstExecution()
-            && $task->getHandlerClass() == $phpTask->getHandlerClass()
-            && $workload == $phpTask->getWorkload()
+        // Compare timestamps since php-task uses DateTime and we use DateTimeImmutable
+        $scheduleTimestamp = $task->getSchedule()->getTimestamp();
+        $firstExecutionTimestamp = $phpTask->getFirstExecution()->getTimestamp();
+
+        if ($scheduleTimestamp === $firstExecutionTimestamp
+            && $task->getHandlerClass() === $phpTask->getHandlerClass()
+            && $workload === $phpTask->getWorkload()
         ) {
             return;
         }
@@ -107,8 +111,11 @@ class TaskScheduler implements TaskSchedulerInterface
      */
     private function scheduleTask(TaskInterface $task, array $workload): PHPTaskInterface
     {
+        // php-task library requires DateTime, convert from DateTimeImmutable
+        $schedule = \DateTime::createFromImmutable($task->getSchedule());
+
         return $this->taskScheduler->createTask($task->getHandlerClass(), $workload)
-            ->executeAt($task->getSchedule())
+            ->executeAt($schedule)
             ->schedule();
     }
 

@@ -65,11 +65,13 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
         // Single Select
         $singleSelectHandler = new FieldMetadata('handlerClass');
         $singleSelectHandler->setType('single_select');
-        $singleSelectHandler->setLabel($this->translator->trans('sulu_automation.task.name', [], 'admin', $locale));
+        $singleSelectHandler->setLabel($this->translator->trans('sulu_automation.task.name', [], 'admin', $locale), $locale);
         $singleSelectHandler->setRequired(true);
 
         $valuesOption = new OptionMetadata();
         $valuesOption->setName('values');
+        $valuesOption->setType(OptionMetadata::TYPE_COLLECTION);
+        $valuesOption->setValue([]);
 
         foreach ($this->taskHandlerFactory->getHandlers() as $handler) {
             if ($handler instanceof AutomationTaskHandlerInterface
@@ -78,7 +80,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
 
                 $handlerOption = new OptionMetadata();
                 $handlerOption->setName(\get_class($handler));
-                $handlerOption->setTitle($this->translator->trans($configuration->getTitle(), [], 'admin', $locale));
+                $handlerOption->setTitle($this->translator->trans($configuration->getTitle(), [], 'admin', $locale), $locale);
 
                 $valuesOption->addValueOption($handlerOption);
             }
@@ -90,7 +92,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
         $scheduleField = new FieldMetadata('schedule');
         $scheduleField->setType('datetime');
         $scheduleField->setRequired(true);
-        $scheduleField->setLabel($this->translator->trans('sulu_automation.task.schedule', [], 'admin', $locale));
+        $scheduleField->setLabel($this->translator->trans('sulu_automation.task.schedule', [], 'admin', $locale), $locale);
         $form->addItem($scheduleField);
 
         return $form;

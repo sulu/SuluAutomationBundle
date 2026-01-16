@@ -14,10 +14,10 @@ namespace Sulu\Bundle\AutomationBundle\Admin;
 use Sulu\Bundle\AdminBundle\Admin\Admin;
 use Sulu\Bundle\AdminBundle\Admin\View\ViewCollection;
 use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactoryInterface;
-use Sulu\Bundle\PageBundle\Admin\PageAdmin;
-use Sulu\Bundle\PageBundle\Document\BasePageDocument;
 use Sulu\Component\Security\Authorization\PermissionTypes;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
+use Sulu\Page\Domain\Model\PageInterface;
+use Sulu\Page\Infrastructure\Sulu\Admin\PageAdmin;
 
 /**
  * Admin integration of the bundle.
@@ -58,7 +58,7 @@ class AutomationAdmin extends Admin
                 $this->automationViewBuilderFactory->createTaskListViewBuilder(
                     PageAdmin::EDIT_FORM_VIEW . '.automation',
                     '/automation',
-                    BasePageDocument::class
+                    PageInterface::class
                 )
                     ->setTabOrder(4096)
                     ->setParent(PageAdmin::EDIT_FORM_VIEW)
@@ -69,7 +69,7 @@ class AutomationAdmin extends Admin
     /**
      * @return mixed[]
      */
-    public function getSecurityContexts()
+    public function getSecurityContexts(): array
     {
         return [
             'Sulu' => [

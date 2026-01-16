@@ -12,7 +12,6 @@
 namespace Sulu\Bundle\AutomationBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use JMS\Serializer\SerializerInterface;
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
@@ -40,7 +39,7 @@ use Task\Storage\TaskRepositoryInterface;
 /**
  * Provides api for tasks.
  */
-class TaskController extends AbstractRestController implements ClassResourceInterface, SecuredControllerInterface
+class TaskController extends AbstractRestController implements SecuredControllerInterface
 {
     /**
      * @var string[]
@@ -159,10 +158,10 @@ class TaskController extends AbstractRestController implements ClassResourceInte
             $this->view(
                 new PaginatedRepresentation(
                     $result,
-                    'tasks',
-                    $listBuilder->getCurrentPage(),
-                    $listBuilder->getLimit() ?: $listBuilder->count(),
-                    $listBuilder->count()
+                    Task::RESOURCE_KEY,
+                    (int) $listBuilder->getCurrentPage(),
+                    (int) $listBuilder->getLimit(),
+                    (int) $listBuilder->count()
                 )
             )
         );
@@ -236,7 +235,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $schedule = $request->get('schedule');
         if ($schedule && \array_key_exists($schedule, self::$scheduleComparators)
         ) {
-            $listBuilder->where($fieldDescriptors['schedule'], (new \DateTime())->format('Y-m-d\TH:i:s'), self::$scheduleComparators[$schedule]);
+            $listBuilder->where($fieldDescriptors['schedule'], (new \DateTimeImmutable())->format('Y-m-d\TH:i:s'), self::$scheduleComparators[$schedule]);
         }
 
         return $listBuilder;
@@ -306,7 +305,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $task->setEntityClass((string) $request->query->get('entityClass'));
         $task->setLocale((string) $request->query->get('locale'));
         $task->setHandlerClass((string) $request->request->get('handlerClass'));
-        $task->setSchedule(new \DateTime((string) $request->request->get('schedule')));
+        $task->setSchedule(new \DateTimeImmutable((string) $request->request->get('schedule')));
 
         $this->taskManager->create($task);
 
@@ -326,7 +325,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $task->setHost($request->getHost());
         $task->setLocale((string) $request->query->get('locale'));
         $task->setHandlerClass((string) $request->request->get('handlerClass'));
-        $task->setSchedule(new \DateTime((string) $request->request->get('schedule')));
+        $task->setSchedule(new \DateTimeImmutable((string) $request->request->get('schedule')));
 
         $task = $this->taskManager->update($task);
 
@@ -380,10 +379,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         return $fieldDescriptors;
     }
 
-    /**
-     * @return string
-     */
-    public function getSecurityContext()
+    public function getSecurityContext(): string
     {
         return AutomationAdmin::SECURITY_CONTEXT;
     }

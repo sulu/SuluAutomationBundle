@@ -34,7 +34,7 @@ class Task implements TaskInterface
     private $handlerClass;
 
     /**
-     * @var \DateTime
+     * @var \DateTimeImmutable
      */
     private $schedule;
 
@@ -95,7 +95,7 @@ class Task implements TaskInterface
         return $this;
     }
 
-    public function getSchedule(): \DateTime
+    public function getSchedule(): \DateTimeImmutable
     {
         return $this->schedule;
     }
@@ -103,7 +103,7 @@ class Task implements TaskInterface
     /**
      * @return self
      */
-    public function setSchedule(\DateTime $schedule): TaskInterface
+    public function setSchedule(\DateTimeImmutable $schedule): TaskInterface
     {
         $this->schedule = $schedule;
 

@@ -4,14 +4,14 @@
         <property name="id" type="string" expose="true" groups="fullTask,partialTask,api"/>
         <property name="handlerClass" type="string" expose="true" groups="fullTask,partialTask,api"/>
         <property name="schedule" expose="true" groups="fullTask,partialTask,api">
-            <type><![CDATA[DateTime]]></type>
+            <type><![CDATA[DateTimeImmutable]]></type>
         </property>
         <property name="entityClass" type="string" expose="true" groups="fullTask,partialTask,api"/>
         <property name="entityId" type="string" expose="true" groups="fullTask,partialTask,api"/>
         <property name="taskId" type="string" expose="true" groups="fullTask,partialTask,api"/>
         <property name="locale" type="string" expose="true" groups="fullTask,partialTask,api"/>
-        <property name="created" type="DateTime" expose="true" groups="fullTask,partialTask"/>
-        <property name="changed" type="DateTime" expose="true" groups="fullTask,partialTask"/>
+        <property name="created" type="DateTimeImmutable" expose="true" groups="fullTask,partialTask"/>
+        <property name="changed" type="DateTimeImmutable" expose="true" groups="fullTask,partialTask"/>
 
         <property name="scheme" type="string" expose="true" groups="fullTask,partialTask,api"/>
         <property name="host" type="string" expose="true" groups="fullTask,partialTask,api"/>

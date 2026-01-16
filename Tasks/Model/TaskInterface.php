@@ -36,9 +36,9 @@ interface TaskInterface extends AuditableInterface
     /**
      * Returns schedule.
      */
-    public function getSchedule(): \DateTime;
+    public function getSchedule(): \DateTimeImmutable;
 
-    public function setSchedule(\DateTime $schedule): self;
+    public function setSchedule(\DateTimeImmutable $schedule): self;
 
     /**
      * Returns locale.

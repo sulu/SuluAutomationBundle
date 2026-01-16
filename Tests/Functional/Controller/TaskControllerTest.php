@@ -267,7 +267,7 @@ class TaskControllerTest extends SuluTestCase
         $entityId = 1,
         $locale = 'de',
     ) {
-        $date = new \DateTime($schedule);
+        $date = new \DateTimeImmutable($schedule);
 
         $this->client->request(
             'POST',
@@ -304,7 +304,7 @@ class TaskControllerTest extends SuluTestCase
     ) {
         $postData = $this->testPost();
 
-        $date = new \DateTime($schedule);
+        $date = new \DateTimeImmutable($schedule);
 
         $this->client->request(
             'PUT',
@@ -375,7 +375,7 @@ class TaskControllerTest extends SuluTestCase
         $task->setEntityId(1);
         $task->setLocale('de');
         $task->setHandlerClass(FirstHandler::class);
-        $task->setSchedule(new \DateTime());
+        $task->setSchedule(new \DateTimeImmutable());
         $task->setScheme('http');
         $task->setHost('sulu.io');
 

@@ -79,17 +79,18 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="sulu_content.automation.publish_handler"
-                 class="Sulu\Bundle\AutomationBundle\Handler\DocumentPublishHandler">
-            <argument type="service" id="sulu_document_manager.document_manager"/>
+
+        <service id="sulu_automation.handler.page_publish"
+                 class="Sulu\Bundle\AutomationBundle\Handler\PagePublishHandler">
+            <argument type="service" id="messenger.default_bus"/>
             <argument type="service" id="translator"/>
 
             <tag name="task.handler"/>
         </service>
 
-        <service id="sulu_content.automation.unpublish_handler"
-                 class="Sulu\Bundle\AutomationBundle\Handler\DocumentUnpublishHandler">
-            <argument type="service" id="sulu_document_manager.document_manager"/>
+        <service id="sulu_automation.handler.page_unpublish"
+                 class="Sulu\Bundle\AutomationBundle\Handler\PageUnpublishHandler">
+            <argument type="service" id="messenger.default_bus"/>
             <argument type="service" id="translator"/>
 
             <tag name="task.handler"/>

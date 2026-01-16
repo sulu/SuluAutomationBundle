@@ -11,7 +11,7 @@
         <field name="entityId" type="string" column="entityId"/>
 
         <field name="handlerClass" type="string" column="handlerClass"/>
-        <field name="schedule" type="datetime" column="schedule"/>
+        <field name="schedule" type="datetime_immutable" column="schedule"/>
         <field name="locale" type="string" column="locale" length="5"/>
 
         <field name="scheme" type="string" column="scheme" length="5"/>
