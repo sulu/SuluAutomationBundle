@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Sulu.
  *
@@ -12,7 +14,6 @@
 namespace Sulu\Bundle\AutomationBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
 use JMS\Serializer\SerializerInterface;
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
@@ -21,6 +22,7 @@ use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface as AutomationTaskRepositoryInterface;
+use Sulu\Bundle\SecurityBundle\Entity\User;
 use Sulu\Component\Rest\AbstractRestController;
 use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactoryInterface;
 use Sulu\Component\Rest\ListBuilder\Doctrine\FieldDescriptor\DoctrineFieldDescriptorInterface;
@@ -33,6 +35,7 @@ use Sulu\Component\Security\SecuredControllerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Task\Handler\TaskHandlerFactoryInterface;
 use Task\Storage\TaskExecutionRepositoryInterface;
 use Task\Storage\TaskRepositoryInterface;
@@ -40,7 +43,7 @@ use Task\Storage\TaskRepositoryInterface;
 /**
  * Provides api for tasks.
  */
-class TaskController extends AbstractRestController implements ClassResourceInterface, SecuredControllerInterface
+class TaskController extends AbstractRestController implements SecuredControllerInterface
 {
     /**
      * @var string[]
@@ -100,6 +103,16 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      */
     protected $fieldDescriptorFactory;
 
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
+    /**
+     * @var TokenStorageInterface
+     */
+    protected $tokenStorage;
+
     public function __construct(
         ViewHandlerInterface $viewHandler,
         TokenStorageInterface $tokenStorage,
@@ -113,6 +126,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         ?SerializerInterface $serializer,
         FieldDescriptorFactoryInterface $fieldDescriptorFactory,
         AutomationTaskRepositoryInterface $automationTaskRepository,
+        TranslatorInterface $translator,
     ) {
         parent::__construct($viewHandler, $tokenStorage);
         $this->doctrineListBuilderFactory = $doctrineListBuilderFactory;
@@ -123,6 +137,8 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $this->taskManager = $taskManager;
         $this->entityManager = $entityManager;
         $this->serializer = $serializer;
+        $this->translator = $translator;
+        $this->tokenStorage = $tokenStorage;
 
         if (null !== $serializer) {
             @trigger_deprecation('sulu/automation-bundle', '2.1.2', 'The "%s" class not longer should be constructed with a serializer.', self::class);
@@ -150,9 +166,12 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $listBuilder = $this->prepareListBuilder($fieldDescriptors, $request, $this->doctrineListBuilderFactory->create(Task::class));
         /** @var array<string, array<string>> $result */
         $result = $this->executeListBuilder($fieldDescriptors, $request, $listBuilder);
+        /** @var User $user */
+        $user = $this->tokenStorage->getToken()?->getUser();
+        $userLocale = $user->getLocale();
 
         for ($i = 0; $i < \count($result); ++$i) {
-            $result[$i] = $this->extendResponseItem($result[$i]);
+            $result[$i] = $this->extendResponseItem($result[$i], $userLocale);
         }
 
         return $this->handleView(
@@ -160,11 +179,11 @@ class TaskController extends AbstractRestController implements ClassResourceInte
                 new PaginatedRepresentation(
                     $result,
                     'tasks',
-                    $listBuilder->getCurrentPage(),
-                    $listBuilder->getLimit() ?: $listBuilder->count(),
-                    $listBuilder->count()
-                )
-            )
+                    (int) $listBuilder->getCurrentPage(),
+                    (int) $listBuilder->getLimit() ?: $listBuilder->count(),
+                    $listBuilder->count(),
+                ),
+            ),
         );
     }
 
@@ -177,13 +196,13 @@ class TaskController extends AbstractRestController implements ClassResourceInte
      *
      * @throws \Task\Handler\TaskHandlerNotExistsException
      */
-    private function extendResponseItem(array $item): array
+    private function extendResponseItem(array $item, string $userLocale): array
     {
         $handlerFactory = $this->taskHandlerFactory;
         $handler = $handlerFactory->create($item['handlerClass']);
 
         if ($handler instanceof AutomationTaskHandlerInterface) {
-            $item['taskName'] = $handler->getConfiguration()->getTitle();
+            $item['taskName'] = $this->translator->trans($handler->getConfiguration()->getTitle(), [], 'admin', $userLocale);
         }
 
         $task = $this->taskRepository->findByUuid($item['taskId']);
@@ -209,34 +228,34 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $listBuilder->addSelectField($fieldDescriptors['taskId']);
 
         /** @var string|null $entityClass */
-        $entityClass = $request->get('entityClass');
+        $entityClass = $request->query->getString('entityClass');
         if ($entityClass) {
             $listBuilder->where($fieldDescriptors['entityClass'], $entityClass);
         }
 
         /** @var string|null $entityId */
-        $entityId = $request->get('entityId');
+        $entityId = $request->query->getString('entityId');
         if ($entityId) {
             $listBuilder->where($fieldDescriptors['entityId'], $entityId);
         }
 
         /** @var string|null $locale */
-        $locale = $request->get('locale');
+        $locale = $request->query->getString('locale');
         if ($locale) {
             $listBuilder->where($fieldDescriptors['locale'], $locale);
         }
 
         /** @var string|null $handlerClasses */
-        $handlerClasses = $request->get('handlerClass');
+        $handlerClasses = $request->query->getString('handlerClass');
         if ($handlerClasses) {
             $listBuilder->in($fieldDescriptors['handlerClass'], \explode(',', $handlerClasses));
         }
 
         /** @var string|null $schedule */
-        $schedule = $request->get('schedule');
+        $schedule = $request->query->getString('schedule');
         if ($schedule && \array_key_exists($schedule, self::$scheduleComparators)
         ) {
-            $listBuilder->where($fieldDescriptors['schedule'], (new \DateTime())->format('Y-m-d\TH:i:s'), self::$scheduleComparators[$schedule]);
+            $listBuilder->where($fieldDescriptors['schedule'], (new \DateTimeImmutable())->format('Y-m-d\TH:i:s'), self::$scheduleComparators[$schedule]);
         }
 
         return $listBuilder;
@@ -252,7 +271,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     private function executeListBuilder(array $fieldDescriptors, Request $request, ListBuilderInterface $listBuilder): array
     {
         /** @var string|null $idsParameter */
-        $idsParameter = $request->get('ids');
+        $idsParameter = $request->query->getString('ids');
         if (!$idsParameter) {
             return $listBuilder->execute();
         }
@@ -262,7 +281,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
 
         $sorted = [];
         foreach ($listBuilder->execute() as $item) {
-            $sorted[\array_search($item['id'], $ids)] = $item;
+            $sorted[\array_search($item['id'], $ids, true)] = $item;
         }
 
         \ksort($sorted);
@@ -306,7 +325,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $task->setEntityClass((string) $request->query->get('entityClass'));
         $task->setLocale((string) $request->query->get('locale'));
         $task->setHandlerClass((string) $request->request->get('handlerClass'));
-        $task->setSchedule(new \DateTime((string) $request->request->get('schedule')));
+        $task->setSchedule(new \DateTimeImmutable((string) $request->request->get('schedule')));
 
         $this->taskManager->create($task);
 
@@ -326,7 +345,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
         $task->setHost($request->getHost());
         $task->setLocale((string) $request->query->get('locale'));
         $task->setHandlerClass((string) $request->request->get('handlerClass'));
-        $task->setSchedule(new \DateTime((string) $request->request->get('schedule')));
+        $task->setSchedule(new \DateTimeImmutable((string) $request->request->get('schedule')));
 
         $task = $this->taskManager->update($task);
 
@@ -354,7 +373,7 @@ class TaskController extends AbstractRestController implements ClassResourceInte
     public function cdeleteAction(Request $request): Response
     {
         /** @var string $idsParameter */
-        $idsParameter = $request->get('ids');
+        $idsParameter = $request->query->getString('ids');
         $ids = \array_filter(\explode(',', $idsParameter));
         foreach ($ids as $id) {
             $this->taskManager->remove($id);

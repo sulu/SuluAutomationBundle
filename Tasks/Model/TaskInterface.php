@@ -12,6 +12,7 @@
 namespace Sulu\Bundle\AutomationBundle\Tasks\Model;
 
 use Sulu\Component\Persistence\Model\AuditableInterface;
+use Task\TaskInterface as PHPTaskInterface;
 
 /**
  * Interface for tasks it contains functions which are necessary for managing tasks.
@@ -36,9 +37,9 @@ interface TaskInterface extends AuditableInterface
     /**
      * Returns schedule.
      */
-    public function getSchedule(): \DateTime;
+    public function getSchedule(): \DateTimeImmutable;
 
-    public function setSchedule(\DateTime $schedule): self;
+    public function setSchedule(\DateTimeImmutable $schedule): self;
 
     /**
      * Returns locale.
@@ -55,15 +56,9 @@ interface TaskInterface extends AuditableInterface
      */
     public function getEntityId(): string;
 
-    /**
-     * Returns taskId.
-     */
-    public function getTaskId(): ?string;
+    public function getTask(): ?PHPTaskInterface;
 
-    /**
-     * Set taskId.
-     */
-    public function setTaskId(?string $taskId): self;
+    public function setTask(?PHPTaskInterface $task): self;
 
     /**
      * Returns host.

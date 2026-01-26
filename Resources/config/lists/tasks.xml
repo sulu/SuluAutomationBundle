@@ -22,6 +22,12 @@
             <field-name>%sulu.model.user.class%.contact</field-name>
         </join>
     </joins>
+    <joins name="phpTask">
+        <join>
+            <entity-name>phpTask</entity-name>
+            <field-name>%sulu.model.task.class%.task</field-name>
+        </join>
+    </joins>
 
     <properties>
         <property name="id" translation="sulu_admin.id" visibility="no" sortable="false">
@@ -62,8 +68,10 @@
                   visibility="always" sortable="false"/>
 
         <property name="taskId" visibility="never">
-            <field-name>taskId</field-name>
-            <entity-name>%sulu.model.task.class%</entity-name>
+            <field-name>uuid</field-name>
+            <entity-name>phpTask</entity-name>
+
+            <joins ref="phpTask"/>
         </property>
 
         <property name="schedule" translation="sulu_automation.task.schedule" visibility="always"

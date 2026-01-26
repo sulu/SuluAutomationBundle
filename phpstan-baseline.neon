@@ -1,0 +1,6 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Property Sulu\\\\Bundle\\\\AutomationBundle\\\\Entity\\\\Task\\:\\:\\$task type mapping mismatch\\: property can contain Task\\\\TaskInterface\\|null but database expects Task\\\\TaskBundle\\\\Entity\\\\Task\\|null\\.$#"
+			count: 1
+			path: Entity/Task.php

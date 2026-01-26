@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Sulu.
  *
@@ -11,13 +13,18 @@
 
 namespace Sulu\Bundle\AutomationBundle\Admin;
 
+use Sulu\Article\Domain\Model\Article;
+use Sulu\Article\Infrastructure\Sulu\Admin\ArticleAdmin;
 use Sulu\Bundle\AdminBundle\Admin\Admin;
 use Sulu\Bundle\AdminBundle\Admin\View\ViewCollection;
+use Sulu\Bundle\AdminBundle\Metadata\GroupProviderInterface;
 use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactoryInterface;
-use Sulu\Bundle\PageBundle\Admin\PageAdmin;
-use Sulu\Bundle\PageBundle\Document\BasePageDocument;
 use Sulu\Component\Security\Authorization\PermissionTypes;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
+use Sulu\Page\Domain\Model\Page;
+use Sulu\Page\Infrastructure\Sulu\Admin\PageAdmin;
+use Sulu\Snippet\Domain\Model\Snippet;
+use Sulu\Snippet\Infrastructure\Sulu\Admin\SnippetAdmin;
 
 /**
  * Admin integration of the bundle.
@@ -31,25 +38,21 @@ class AutomationAdmin extends Admin
         return PageAdmin::getPriority() - 1;
     }
 
-    /**
-     * @var AutomationViewBuilderFactoryInterface
-     */
-    protected $automationViewBuilderFactory;
-
-    /**
-     * @var SecurityCheckerInterface
-     */
-    protected $securityChecker;
-
     public function __construct(
-        AutomationViewBuilderFactoryInterface $automationViewBuilderFactory,
-        SecurityCheckerInterface $securityChecker,
+        private readonly AutomationViewBuilderFactoryInterface $automationViewBuilderFactory,
+        private readonly SecurityCheckerInterface $securityChecker,
+        private readonly GroupProviderInterface $groupProvider,
     ) {
-        $this->automationViewBuilderFactory = $automationViewBuilderFactory;
-        $this->securityChecker = $securityChecker;
     }
 
     public function configureViews(ViewCollection $viewCollection): void
+    {
+        $this->configurePageView($viewCollection);
+        $this->configureSnippetView($viewCollection);
+        $this->configureArticleView($viewCollection);
+    }
+
+    private function configurePageView(ViewCollection $viewCollection): void
     {
         if ($viewCollection->has(PageAdmin::EDIT_FORM_VIEW)
             && $this->securityChecker->hasPermission(static::SECURITY_CONTEXT, PermissionTypes::EDIT)
@@ -58,11 +61,51 @@ class AutomationAdmin extends Admin
                 $this->automationViewBuilderFactory->createTaskListViewBuilder(
                     PageAdmin::EDIT_FORM_VIEW . '.automation',
                     '/automation',
-                    BasePageDocument::class
+                    Page::class,
                 )
                     ->setTabOrder(4096)
-                    ->setParent(PageAdmin::EDIT_FORM_VIEW)
+                    ->setParent(PageAdmin::EDIT_FORM_VIEW),
             );
+        }
+    }
+
+    private function configureSnippetView(ViewCollection $viewCollection): void
+    {
+        if ($viewCollection->has(SnippetAdmin::EDIT_TABS_VIEW)
+            && $this->securityChecker->hasPermission(static::SECURITY_CONTEXT, PermissionTypes::EDIT)
+        ) {
+            $viewCollection->add(
+                $this->automationViewBuilderFactory->createTaskListViewBuilder(
+                    SnippetAdmin::EDIT_TABS_VIEW . '.automation',
+                    '/automation',
+                    Snippet::class,
+                )
+                    ->setTabOrder(4096)
+                    ->setParent(SnippetAdmin::EDIT_TABS_VIEW),
+            );
+        }
+    }
+
+    private function configureArticleView(ViewCollection $viewCollection): void
+    {
+        $groups = $this->groupProvider->getGroups();
+
+        foreach ($groups as $group) {
+            $groupIdentifier = $group->identifier;
+
+            if ($viewCollection->has(ArticleAdmin::EDIT_TABS_VIEW . '_' . $groupIdentifier)
+                && $this->securityChecker->hasPermission(static::SECURITY_CONTEXT, PermissionTypes::EDIT)
+            ) {
+                $viewCollection->add(
+                    $this->automationViewBuilderFactory->createTaskListViewBuilder(
+                        ArticleAdmin::EDIT_TABS_VIEW . '.automation',
+                        '/automation',
+                        Article::class,
+                    )
+                        ->setTabOrder(4096)
+                        ->setParent(ArticleAdmin::EDIT_TABS_VIEW . '_default'),
+                );
+            }
         }
     }
 

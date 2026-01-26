@@ -13,6 +13,7 @@ namespace Sulu\Bundle\AutomationBundle\Tests\Application;
 
 use Sulu\Bundle\AutomationBundle\SuluAutomationBundle;
 use Sulu\Bundle\TestBundle\Kernel\SuluTestKernel;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Task\TaskBundle\TaskBundle;
 
@@ -28,6 +29,10 @@ class Kernel extends SuluTestKernel
         $bundles[] = new TaskBundle();
         $bundles[] = new SuluAutomationBundle();
 
+        if (self::CONTEXT_WEBSITE === $this->getContext()) {
+            $bundles[] = new SecurityBundle();
+        }
+
         return $bundles;
     }
 
@@ -35,7 +40,12 @@ class Kernel extends SuluTestKernel
     {
         parent::registerContainerConfiguration($loader);
 
-        $context = $this->getContext();
+        if (self::CONTEXT_WEBSITE === $this->getContext()) {
+            $loader->load(__DIR__ . '/config/config_' . $this->getContext() . '.yml');
+
+            return;
+        }
+
         $loader->load(__DIR__ . '/config/config.yml');
     }
 

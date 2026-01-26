@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Sulu.
  *
@@ -16,6 +18,7 @@ use Doctrine\ORM\Query\Expr\Join;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface;
 use Task\TaskBundle\Entity\TaskExecution;
+use Task\TaskInterface as PHPTaskInterface;
 
 /**
  * Task-Repository implementation for doctrine.
@@ -26,7 +29,7 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
 {
     public function create(): TaskInterface
     {
-        $class = $this->_entityName;
+        $class = $this->getEntityName();
 
         /** @var TaskInterface $entity */
         $entity = new $class();
@@ -36,14 +39,14 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
 
     public function save(TaskInterface $task): TaskInterface
     {
-        $this->_em->persist($task);
+        $this->getEntityManager()->persist($task);
 
         return $task;
     }
 
     public function remove(TaskInterface $task): TaskInterface
     {
-        $this->_em->remove($task);
+        $this->getEntityManager()->remove($task);
 
         return $task;
     }
@@ -56,12 +59,12 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
         return $task;
     }
 
-    public function findByTaskId(string $id): ?TaskInterface
+    public function findByTask(PHPTaskInterface $task): ?TaskInterface
     {
-        /** @var TaskInterface $task */
-        $task = $this->findOneBy(['taskId' => $id]);
+        /** @var TaskInterface|null $result */
+        $result = $this->findOneBy(['task' => $task]);
 
-        return $task;
+        return $result;
     }
 
     public function countFutureTasks(string $entityClass, string $entityId, ?string $locale = null): int
@@ -73,9 +76,9 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
             ->andWhere('task.schedule >= :schedule')
             ->setParameter('entityClass', $entityClass)
             ->setParameter('entityId', $entityId)
-            ->setParameter('schedule', new \DateTime());
+            ->setParameter('schedule', new \DateTimeImmutable());
 
-        if (null != $locale) {
+        if (null !== $locale) {
             $queryBuilder->andWhere('task.locale = :locale')
                 ->setParameter('locale', $locale);
         }
@@ -90,11 +93,11 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
 
     public function countPendingTasks(string $entityClass, string $entityId, ?string $locale = null): int
     {
-        $queryBuilder = $this->_em->createQueryBuilder()
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder()
             ->select('COUNT(taskExecution.uuid)')
             ->from(TaskExecution::class, 'taskExecution')
             ->innerJoin('taskExecution.task', 'task')
-            ->innerJoin(Task::class, 'auTask', Join::WITH, 'auTask.taskId = task.uuid')
+            ->innerJoin(Task::class, 'auTask', Join::WITH, 'auTask.task = task')
             ->where('auTask.entityClass = :entityClass')
             ->andWhere('auTask.entityId = :entityId')
             ->andWhere('taskExecution.status = :status')
@@ -102,7 +105,7 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
             ->setParameter('entityId', $entityId)
             ->setParameter('status', 'planned');
 
-        if (null != $locale) {
+        if (null !== $locale) {
             $queryBuilder->andWhere('auTask.locale = :locale')
                 ->setParameter('locale', $locale);
         }
@@ -117,7 +120,7 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
 
     public function revert(TaskInterface $task): TaskInterface
     {
-        $this->_em->refresh($task);
+        $this->getEntityManager()->refresh($task);
 
         return $task;
     }

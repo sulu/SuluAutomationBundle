@@ -52,7 +52,7 @@ class PHPTaskEventSubscriber implements EventSubscriberInterface
      */
     public function pushRequest(TaskEvent $event): void
     {
-        $task = $this->taskRepository->findByTaskId($event->getTask()->getUuid());
+        $task = $this->taskRepository->findByTask($event->getTask());
         if (!$task) {
             // current task is not managed by this bundle
 

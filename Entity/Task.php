@@ -13,6 +13,7 @@ namespace Sulu\Bundle\AutomationBundle\Entity;
 
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Component\Persistence\Model\AuditableTrait;
+use Task\TaskInterface as PHPTaskInterface;
 
 /**
  * Represents a task-entity.
@@ -34,7 +35,7 @@ class Task implements TaskInterface
     private $handlerClass;
 
     /**
-     * @var \DateTime
+     * @var \DateTimeImmutable
      */
     private $schedule;
 
@@ -54,9 +55,9 @@ class Task implements TaskInterface
     private $entityId;
 
     /**
-     * @var string|null
+     * @var PHPTaskInterface|null
      */
-    private $taskId;
+    private $task;
 
     /**
      * @var string
@@ -95,7 +96,7 @@ class Task implements TaskInterface
         return $this;
     }
 
-    public function getSchedule(): \DateTime
+    public function getSchedule(): \DateTimeImmutable
     {
         return $this->schedule;
     }
@@ -103,7 +104,7 @@ class Task implements TaskInterface
     /**
      * @return self
      */
-    public function setSchedule(\DateTime $schedule): TaskInterface
+    public function setSchedule(\DateTimeImmutable $schedule): TaskInterface
     {
         $this->schedule = $schedule;
 
@@ -146,17 +147,22 @@ class Task implements TaskInterface
         return $this;
     }
 
-    public function getTaskId(): ?string
+    public function getTask(): ?PHPTaskInterface
     {
-        return $this->taskId;
+        return $this->task;
     }
 
     /**
-     * @return self
+     * Returns the UUID of the linked php-task.
      */
-    public function setTaskId(?string $taskId): TaskInterface
+    public function getTaskId(): ?string
     {
-        $this->taskId = $taskId;
+        return $this->task?->getUuid();
+    }
+
+    public function setTask(?PHPTaskInterface $task): self
+    {
+        $this->task = $task;
 
         return $this;
     }
