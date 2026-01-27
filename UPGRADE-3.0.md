@@ -2,7 +2,7 @@
 
 ## 3.0.0
 
-The upgrade from SuluAutomationBundle 2.6 to 3.0 is a major upgrade that requires Sulu 3.0 and includes several breaking changes.
+The upgrade from SuluAutomationBundle 2.x to 3.0 is a major upgrade that requires Sulu 3.0 and includes several breaking changes.
 
 ### Pre Update Requirements
 
