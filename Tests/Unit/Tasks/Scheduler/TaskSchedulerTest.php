@@ -19,13 +19,13 @@ use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Exception\TaskExpiredException;
 use Sulu\Bundle\AutomationBundle\Tasks\Scheduler\TaskScheduler;
 use Sulu\Bundle\AutomationBundle\Tests\Handler\FirstHandler;
-use Task\Builder\TaskBuilderInterface;
-use Task\Execution\TaskExecutionInterface;
+use Task\Builder\TaskBuilder;
+use Task\Execution\TaskExecution;
 use Task\Handler\TaskHandlerFactoryInterface;
 use Task\Scheduler\TaskSchedulerInterface as PHPTaskSchedulerInterface;
 use Task\Storage\TaskExecutionRepositoryInterface;
 use Task\Storage\TaskRepositoryInterface;
-use Task\TaskInterface as PHPTaskInterface;
+use Task\Task as PHPTask;
 use Task\TaskStatus;
 
 /**
@@ -71,57 +71,64 @@ class TaskSchedulerTest extends TestCase
         $handler = new FirstHandler();
         $this->taskHandlerFactory->create(FirstHandler::class)->willReturn($handler);
 
-        $taskBuilder = $this->prophesize(TaskBuilderInterface::class);
-        $phpTask = $this->prophesize(PHPTaskInterface::class);
-        $phpTask->getUuid()->willReturn('test-uuid-123');
+        $phpTask = new PHPTask(FirstHandler::class, null, 'test-uuid-123');
+        $taskBuilder = new TaskBuilder($phpTask, $this->phpTaskScheduler->reveal());
 
         $this->phpTaskScheduler
             ->createTask(FirstHandler::class, Argument::type('array'))
-            ->willReturn($taskBuilder->reveal());
+            ->willReturn($taskBuilder);
 
-        $taskBuilder->executeAt($task->getSchedule())->willReturn($taskBuilder->reveal());
-        $taskBuilder->schedule()->willReturn($phpTask->reveal());
+        $this->phpTaskScheduler
+            ->addTask($phpTask)
+            ->shouldBeCalled();
 
         $this->taskScheduler->schedule($task);
 
-        $this->assertSame($phpTask->reveal(), $task->getTask());
+        $this->assertSame($phpTask, $task->getTask());
     }
 
     public function testRescheduleWithDifferentSchedule(): void
     {
         $task = $this->createTask();
-        $existingPhpTask = $this->prophesize(PHPTaskInterface::class);
-        $existingPhpTask->getUuid()->willReturn('existing-uuid');
-        $existingPhpTask->getFirstExecution()->willReturn(new \DateTimeImmutable('-1 day'));
-        $existingPhpTask->getHandlerClass()->willReturn(FirstHandler::class);
-        $existingPhpTask->getWorkload()->willReturn(['class' => 'TestClass', 'id' => '1', 'locale' => 'de']);
-        $task->setTask($existingPhpTask->reveal());
+        $existingPhpTask = new PHPTask(
+            FirstHandler::class,
+            ['class' => 'TestClass', 'id' => '1', 'locale' => 'de'],
+            'existing-uuid'
+        );
+        $existingPhpTask->setFirstExecution(new \DateTimeImmutable('-1 day'));
+        $task->setTask($existingPhpTask);
 
-        $this->taskRepository->findByUuid('existing-uuid')->willReturn($existingPhpTask->reveal());
+        $this->taskRepository->findByUuid('existing-uuid')->willReturn($existingPhpTask);
 
-        $execution = $this->prophesize(TaskExecutionInterface::class);
-        $execution->getStatus()->willReturn(TaskStatus::PLANNED);
-        $this->taskExecutionRepository->findByTask($existingPhpTask->reveal())->willReturn([$execution->reveal()]);
-        $this->taskExecutionRepository->remove($execution->reveal())->shouldBeCalled();
-        $this->taskRepository->remove($existingPhpTask->reveal())->shouldBeCalled();
+        $execution = new TaskExecution(
+            $existingPhpTask,
+            FirstHandler::class,
+            new \DateTimeImmutable(),
+            ['class' => 'TestClass', 'id' => '1', 'locale' => 'de']
+        );
+        $execution->setStatus(TaskStatus::PLANNED);
+        $this->taskExecutionRepository->findByTask($existingPhpTask)->willReturn([$execution]);
+        $this->taskExecutionRepository->remove($execution)->shouldBeCalled();
+        $this->taskRepository->remove($existingPhpTask)->shouldBeCalled();
 
         $handler = new FirstHandler();
         $this->taskHandlerFactory->create(FirstHandler::class)->willReturn($handler);
 
-        $taskBuilder = $this->prophesize(TaskBuilderInterface::class);
-        $newPhpTask = $this->prophesize(PHPTaskInterface::class);
-        $newPhpTask->getUuid()->willReturn('new-uuid-123');
+        $newPhpTask = new PHPTask(FirstHandler::class, null, 'new-uuid-123');
+
+        $taskBuilder = new TaskBuilder($newPhpTask, $this->phpTaskScheduler->reveal());
 
         $this->phpTaskScheduler
             ->createTask(FirstHandler::class, Argument::type('array'))
-            ->willReturn($taskBuilder->reveal());
+            ->willReturn($taskBuilder);
 
-        $taskBuilder->executeAt($task->getSchedule())->willReturn($taskBuilder->reveal());
-        $taskBuilder->schedule()->willReturn($newPhpTask->reveal());
+        $this->phpTaskScheduler
+            ->addTask($newPhpTask)
+            ->shouldBeCalled();
 
         $this->taskScheduler->reschedule($task);
 
-        $this->assertSame($newPhpTask->reveal(), $task->getTask());
+        $this->assertSame($newPhpTask, $task->getTask());
     }
 
     public function testRescheduleWithSameParametersDoesNothing(): void
@@ -129,19 +136,19 @@ class TaskSchedulerTest extends TestCase
         $schedule = new \DateTimeImmutable('+1 day');
         $task = $this->createTask($schedule);
 
-        $existingPhpTask = $this->prophesize(PHPTaskInterface::class);
-        $existingPhpTask->getUuid()->willReturn('existing-uuid');
-        $existingPhpTask->getFirstExecution()->willReturn($schedule);
-        $existingPhpTask->getHandlerClass()->willReturn(FirstHandler::class);
-        $existingPhpTask->getWorkload()->willReturn(['class' => 'TestClass', 'id' => '1', 'locale' => 'de']);
-        $task->setTask($existingPhpTask->reveal());
+        $existingPhpTask = new PHPTask(
+            FirstHandler::class,
+            ['class' => 'TestClass', 'id' => '1', 'locale' => 'de'],
+            'existing-uuid'
+        );
+        $existingPhpTask->setFirstExecution($schedule);
+        $task->setTask($existingPhpTask);
 
         $handler = new FirstHandler();
         $this->taskHandlerFactory->create(FirstHandler::class)->willReturn($handler);
 
-        $this->taskRepository->findByUuid('existing-uuid')->willReturn($existingPhpTask->reveal());
-        $this->taskExecutionRepository->findByTask($existingPhpTask->reveal())->willReturn(null)->shouldBeCalled();
-        $this->taskExecutionRepository->remove($existingPhpTask->reveal())->shouldNotBeCalled();
+        $this->taskRepository->findByUuid('existing-uuid')->willReturn($existingPhpTask);
+        $this->taskExecutionRepository->findByTask($existingPhpTask)->willReturn([])->shouldBeCalled();
 
         $this->taskScheduler->reschedule($task);
     }
@@ -149,18 +156,24 @@ class TaskSchedulerTest extends TestCase
     public function testRescheduleThrowsExceptionWhenTaskIsNotPlanned(): void
     {
         $task = $this->createTask();
-        $existingPhpTask = $this->prophesize(PHPTaskInterface::class);
-        $existingPhpTask->getUuid()->willReturn('existing-uuid');
-        $existingPhpTask->getFirstExecution()->willReturn(new \DateTimeImmutable('-1 day'));
-        $existingPhpTask->getHandlerClass()->willReturn(FirstHandler::class);
-        $existingPhpTask->getWorkload()->willReturn(['class' => 'TestClass', 'id' => '1', 'locale' => 'de']);
-        $task->setTask($existingPhpTask->reveal());
+        $existingPhpTask = new PHPTask(
+            FirstHandler::class,
+            ['class' => 'TestClass', 'id' => '1', 'locale' => 'de'],
+            'existing-uuid'
+        );
+        $existingPhpTask->setFirstExecution(new \DateTimeImmutable('-1 day'));
+        $task->setTask($existingPhpTask);
 
-        $this->taskRepository->findByUuid('existing-uuid')->willReturn($existingPhpTask->reveal());
+        $this->taskRepository->findByUuid('existing-uuid')->willReturn($existingPhpTask);
 
-        $execution = $this->prophesize(TaskExecutionInterface::class);
-        $execution->getStatus()->willReturn(TaskStatus::COMPLETED); // Not PLANNED
-        $this->taskExecutionRepository->findByTask($existingPhpTask->reveal())->willReturn([$execution->reveal()]);
+        $execution = new TaskExecution(
+            $existingPhpTask,
+            FirstHandler::class,
+            new \DateTimeImmutable(),
+            ['class' => 'TestClass', 'id' => '1', 'locale' => 'de']
+        );
+        $execution->setStatus(TaskStatus::COMPLETED); // Not PLANNED
+        $this->taskExecutionRepository->findByTask($existingPhpTask)->willReturn([$execution]);
 
         $handler = new FirstHandler();
         $this->taskHandlerFactory->create(FirstHandler::class)->willReturn($handler);
@@ -172,12 +185,11 @@ class TaskSchedulerTest extends TestCase
     public function testRemove(): void
     {
         $task = $this->createTask();
-        $existingPhpTask = $this->prophesize(PHPTaskInterface::class);
-        $existingPhpTask->getUuid()->willReturn('existing-uuid');
-        $task->setTask($existingPhpTask->reveal());
+        $existingPhpTask = new PHPTask(FirstHandler::class, null, 'existing-uuid');
+        $task->setTask($existingPhpTask);
 
-        $this->taskRepository->findByUuid('existing-uuid')->willReturn($existingPhpTask->reveal());
-        $this->taskRepository->remove($existingPhpTask->reveal())->shouldBeCalled();
+        $this->taskRepository->findByUuid('existing-uuid')->willReturn($existingPhpTask);
+        $this->taskRepository->remove($existingPhpTask)->shouldBeCalled();
 
         $this->taskScheduler->remove($task);
     }

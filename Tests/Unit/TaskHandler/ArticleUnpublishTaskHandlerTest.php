@@ -18,7 +18,7 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Sulu\Article\Application\Message\ApplyWorkflowTransitionArticleMessage;
-use Sulu\Article\Domain\Model\Article;
+use Sulu\Article\Domain\Model\ArticleInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\ArticleUnpublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\TaskHandlerConfiguration;
 use Sulu\Content\Domain\Model\WorkflowInterface;
@@ -43,7 +43,7 @@ class ArticleUnpublishTaskHandlerTest extends TestCase
 
     public function testSupportsArticleClass(): void
     {
-        $this->assertTrue($this->handler->supports(Article::class));
+        $this->assertTrue($this->handler->supports(ArticleInterface::class));
         $this->assertFalse($this->handler->supports(\stdClass::class));
     }
 
@@ -63,12 +63,12 @@ class ArticleUnpublishTaskHandlerTest extends TestCase
         $this->assertSame($optionsResolver, $result);
 
         $resolved = $optionsResolver->resolve([
-            'class' => Article::class,
+            'class' => ArticleInterface::class,
             'id' => 'test-uuid-123',
             'locale' => 'en',
         ]);
 
-        $this->assertEquals(Article::class, $resolved['class']);
+        $this->assertEquals(ArticleInterface::class, $resolved['class']);
         $this->assertEquals('test-uuid-123', $resolved['id']);
         $this->assertEquals('en', $resolved['locale']);
     }

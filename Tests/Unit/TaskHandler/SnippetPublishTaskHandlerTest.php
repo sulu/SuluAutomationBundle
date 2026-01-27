@@ -22,7 +22,7 @@ use Sulu\Bundle\AutomationBundle\TaskHandler\TaskHandlerConfiguration;
 use Sulu\Content\Domain\Model\WorkflowInterface;
 use Sulu\Messenger\Infrastructure\Symfony\Messenger\FlushMiddleware\EnableFlushStamp;
 use Sulu\Snippet\Application\Message\ApplyWorkflowTransitionSnippetMessage;
-use Sulu\Snippet\Domain\Model\Snippet;
+use Sulu\Snippet\Domain\Model\SnippetInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -43,7 +43,7 @@ class SnippetPublishTaskHandlerTest extends TestCase
 
     public function testSupportsSnippetClass(): void
     {
-        $this->assertTrue($this->handler->supports(Snippet::class));
+        $this->assertTrue($this->handler->supports(SnippetInterface::class));
         $this->assertFalse($this->handler->supports(\stdClass::class));
     }
 
@@ -63,12 +63,12 @@ class SnippetPublishTaskHandlerTest extends TestCase
         $this->assertSame($optionsResolver, $result);
 
         $resolved = $optionsResolver->resolve([
-            'class' => Snippet::class,
+            'class' => SnippetInterface::class,
             'id' => 'test-uuid-123',
             'locale' => 'en',
         ]);
 
-        $this->assertEquals(Snippet::class, $resolved['class']);
+        $this->assertEquals(SnippetInterface::class, $resolved['class']);
         $this->assertEquals('test-uuid-123', $resolved['id']);
         $this->assertEquals('en', $resolved['locale']);
     }

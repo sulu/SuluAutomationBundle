@@ -15,7 +15,7 @@ use Sulu\Article\Domain\Model\Article;
 use Sulu\Content\Domain\Model\WorkflowInterface;
 use Sulu\Messenger\Infrastructure\Symfony\Messenger\FlushMiddleware\EnableFlushStamp;
 use Sulu\Snippet\Application\Message\ApplyWorkflowTransitionSnippetMessage;
-use Sulu\Snippet\Domain\Model\Snippet;
+use Sulu\Snippet\Domain\Model\SnippetInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -44,7 +44,7 @@ class SnippetPublishTaskHandler implements AutomationTaskHandlerInterface
 
     public function supports(string $entityClass): bool
     {
-        return Snippet::class === $entityClass;
+        return SnippetInterface::class === $entityClass;
     }
 
     public function getConfiguration(): TaskHandlerConfiguration

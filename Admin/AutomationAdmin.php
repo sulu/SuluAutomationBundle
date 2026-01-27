@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Sulu\Bundle\AutomationBundle\Admin;
 
-use Sulu\Article\Domain\Model\Article;
+use Sulu\Article\Domain\Model\ArticleInterface;
 use Sulu\Article\Infrastructure\Sulu\Admin\ArticleAdmin;
 use Sulu\Bundle\AdminBundle\Admin\Admin;
 use Sulu\Bundle\AdminBundle\Admin\View\ViewCollection;
@@ -21,9 +21,9 @@ use Sulu\Bundle\AdminBundle\Metadata\GroupProviderInterface;
 use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactoryInterface;
 use Sulu\Component\Security\Authorization\PermissionTypes;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
-use Sulu\Page\Domain\Model\Page;
+use Sulu\Page\Domain\Model\PageInterface;
 use Sulu\Page\Infrastructure\Sulu\Admin\PageAdmin;
-use Sulu\Snippet\Domain\Model\Snippet;
+use Sulu\Snippet\Domain\Model\SnippetInterface;
 use Sulu\Snippet\Infrastructure\Sulu\Admin\SnippetAdmin;
 
 /**
@@ -39,9 +39,9 @@ class AutomationAdmin extends Admin
     }
 
     public function __construct(
-        private readonly AutomationViewBuilderFactoryInterface $automationViewBuilderFactory,
-        private readonly SecurityCheckerInterface $securityChecker,
-        private readonly GroupProviderInterface $groupProvider,
+        private AutomationViewBuilderFactoryInterface $automationViewBuilderFactory,
+        private SecurityCheckerInterface $securityChecker,
+        private GroupProviderInterface $groupProvider,
     ) {
     }
 
@@ -61,7 +61,7 @@ class AutomationAdmin extends Admin
                 $this->automationViewBuilderFactory->createTaskListViewBuilder(
                     PageAdmin::EDIT_FORM_VIEW . '.automation',
                     '/automation',
-                    Page::class,
+                    PageInterface::class,
                 )
                     ->setTabOrder(4096)
                     ->setParent(PageAdmin::EDIT_FORM_VIEW),
@@ -78,7 +78,7 @@ class AutomationAdmin extends Admin
                 $this->automationViewBuilderFactory->createTaskListViewBuilder(
                     SnippetAdmin::EDIT_TABS_VIEW . '.automation',
                     '/automation',
-                    Snippet::class,
+                    SnippetInterface::class,
                 )
                     ->setTabOrder(4096)
                     ->setParent(SnippetAdmin::EDIT_TABS_VIEW),
@@ -100,7 +100,7 @@ class AutomationAdmin extends Admin
                     $this->automationViewBuilderFactory->createTaskListViewBuilder(
                         ArticleAdmin::EDIT_TABS_VIEW . '.automation',
                         '/automation',
-                        Article::class,
+                        ArticleInterface::class,
                     )
                         ->setTabOrder(4096)
                         ->setParent(ArticleAdmin::EDIT_TABS_VIEW . '_default'),

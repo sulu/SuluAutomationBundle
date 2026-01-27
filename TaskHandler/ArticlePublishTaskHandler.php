@@ -13,6 +13,7 @@ namespace Sulu\Bundle\AutomationBundle\TaskHandler;
 
 use Sulu\Article\Application\Message\ApplyWorkflowTransitionArticleMessage;
 use Sulu\Article\Domain\Model\Article;
+use Sulu\Article\Domain\Model\ArticleInterface;
 use Sulu\Content\Domain\Model\WorkflowInterface;
 use Sulu\Messenger\Infrastructure\Symfony\Messenger\FlushMiddleware\EnableFlushStamp;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -43,7 +44,7 @@ class ArticlePublishTaskHandler implements AutomationTaskHandlerInterface
 
     public function supports(string $entityClass): bool
     {
-        return Article::class === $entityClass;
+        return ArticleInterface::class === $entityClass;
     }
 
     public function getConfiguration(): TaskHandlerConfiguration

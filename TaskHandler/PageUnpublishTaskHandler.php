@@ -17,6 +17,7 @@ use Sulu\Content\Domain\Model\WorkflowInterface;
 use Sulu\Messenger\Infrastructure\Symfony\Messenger\FlushMiddleware\EnableFlushStamp;
 use Sulu\Page\Application\Message\ApplyWorkflowTransitionPageMessage;
 use Sulu\Page\Domain\Model\Page;
+use Sulu\Page\Domain\Model\PageInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -45,7 +46,7 @@ class PageUnpublishTaskHandler implements AutomationTaskHandlerInterface
 
     public function supports(string $entityClass): bool
     {
-        return Page::class === $entityClass;
+        return PageInterface::class === $entityClass;
     }
 
     public function getConfiguration(): TaskHandlerConfiguration

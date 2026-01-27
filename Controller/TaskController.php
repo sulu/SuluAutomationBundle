@@ -15,7 +15,6 @@ namespace Sulu\Bundle\AutomationBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
-use JMS\Serializer\SerializerInterface;
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
 use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
@@ -53,99 +52,21 @@ class TaskController extends AbstractRestController implements SecuredController
         'past' => ListBuilderInterface::WHERE_COMPARATOR_LESS,
     ];
 
-    /**
-     * @var DoctrineListBuilderFactoryInterface
-     */
-    protected $doctrineListBuilderFactory;
-
-    /**
-     * @var TaskHandlerFactoryInterface
-     */
-    protected $taskHandlerFactory;
-
-    /**
-     * @var TaskRepositoryInterface
-     */
-    protected $taskRepository;
-
-    /**
-     * @var TaskExecutionRepositoryInterface
-     */
-    protected $taskExecutionRepository;
-
-    /**
-     * @var RestHelperInterface
-     */
-    protected $restHelper;
-
-    /**
-     * @var TaskManagerInterface
-     */
-    protected $taskManager;
-
-    /**
-     * @var AutomationTaskRepositoryInterface
-     */
-    protected $automationTaskRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $entityManager;
-
-    /**
-     * @var SerializerInterface|null
-     */
-    protected $serializer;
-
-    /**
-     * @var FieldDescriptorFactoryInterface
-     */
-    protected $fieldDescriptorFactory;
-
-    /**
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    protected $tokenStorage;
-
     public function __construct(
         ViewHandlerInterface $viewHandler,
-        TokenStorageInterface $tokenStorage,
-        DoctrineListBuilderFactoryInterface $doctrineListBuilderFactory,
-        TaskHandlerFactoryInterface $taskHandlerFactory,
-        TaskRepositoryInterface $taskRepository,
-        TaskExecutionRepositoryInterface $taskExecutionRepository,
-        RestHelperInterface $doctrineRestHelper,
-        TaskManagerInterface $taskManager,
-        EntityManagerInterface $entityManager,
-        ?SerializerInterface $serializer,
-        FieldDescriptorFactoryInterface $fieldDescriptorFactory,
-        AutomationTaskRepositoryInterface $automationTaskRepository,
-        TranslatorInterface $translator,
+        protected TokenStorageInterface $tokenStorage,
+        protected DoctrineListBuilderFactoryInterface $doctrineListBuilderFactory,
+        protected TaskHandlerFactoryInterface $taskHandlerFactory,
+        protected TaskRepositoryInterface $taskRepository,
+        protected TaskExecutionRepositoryInterface $taskExecutionRepository,
+        protected RestHelperInterface $doctrineRestHelper,
+        protected TaskManagerInterface $taskManager,
+        protected EntityManagerInterface $entityManager,
+        protected FieldDescriptorFactoryInterface $fieldDescriptorFactory,
+        protected AutomationTaskRepositoryInterface $automationTaskRepository,
+        protected TranslatorInterface $translator,
     ) {
         parent::__construct($viewHandler, $tokenStorage);
-        $this->doctrineListBuilderFactory = $doctrineListBuilderFactory;
-        $this->taskHandlerFactory = $taskHandlerFactory;
-        $this->taskRepository = $taskRepository;
-        $this->taskExecutionRepository = $taskExecutionRepository;
-        $this->restHelper = $doctrineRestHelper;
-        $this->taskManager = $taskManager;
-        $this->entityManager = $entityManager;
-        $this->serializer = $serializer;
-        $this->translator = $translator;
-        $this->tokenStorage = $tokenStorage;
-
-        if (null !== $serializer) {
-            @trigger_deprecation('sulu/automation-bundle', '2.1.2', 'The "%s" class not longer should be constructed with a serializer.', self::class);
-        }
-
-        $this->fieldDescriptorFactory = $fieldDescriptorFactory;
-        $this->automationTaskRepository = $automationTaskRepository;
     }
 
     /**
@@ -223,7 +144,7 @@ class TaskController extends AbstractRestController implements SecuredController
      */
     private function prepareListBuilder(array $fieldDescriptors, Request $request, ListBuilderInterface $listBuilder): ListBuilderInterface
     {
-        $this->restHelper->initializeListBuilder($listBuilder, $fieldDescriptors);
+        $this->doctrineRestHelper->initializeListBuilder($listBuilder, $fieldDescriptors);
         $listBuilder->addSelectField($fieldDescriptors['handlerClass']);
         $listBuilder->addSelectField($fieldDescriptors['taskId']);
 

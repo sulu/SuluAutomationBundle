@@ -22,7 +22,7 @@ use Sulu\Bundle\AutomationBundle\TaskHandler\TaskHandlerConfiguration;
 use Sulu\Content\Domain\Model\WorkflowInterface;
 use Sulu\Messenger\Infrastructure\Symfony\Messenger\FlushMiddleware\EnableFlushStamp;
 use Sulu\Page\Application\Message\ApplyWorkflowTransitionPageMessage;
-use Sulu\Page\Domain\Model\Page;
+use Sulu\Page\Domain\Model\PageInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -43,7 +43,7 @@ class PagePublishTaskHandlerTest extends TestCase
 
     public function testSupportsPageClass(): void
     {
-        $this->assertTrue($this->handler->supports(Page::class));
+        $this->assertTrue($this->handler->supports(PageInterface::class));
         $this->assertFalse($this->handler->supports(\stdClass::class));
     }
 
@@ -63,12 +63,12 @@ class PagePublishTaskHandlerTest extends TestCase
         $this->assertSame($optionsResolver, $result);
 
         $resolved = $optionsResolver->resolve([
-            'class' => Page::class,
+            'class' => PageInterface::class,
             'id' => 'test-uuid-123',
             'locale' => 'en',
         ]);
 
-        $this->assertEquals(Page::class, $resolved['class']);
+        $this->assertEquals(PageInterface::class, $resolved['class']);
         $this->assertEquals('test-uuid-123', $resolved['id']);
         $this->assertEquals('en', $resolved['locale']);
     }
