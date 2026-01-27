@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Sulu.
  *
@@ -76,17 +78,17 @@ class TaskSerializerSubscriber implements EventSubscriberInterface
             $serializationVisitor = $event->getVisitor();
             $serializationVisitor->visitProperty(
                 new StaticPropertyMetadata('', 'taskName', $handler->getConfiguration()->getTitle()),
-                $handler->getConfiguration()->getTitle()
+                $handler->getConfiguration()->getTitle(),
             );
         }
 
-        $executions = $this->taskExecutionRepository->findByTaskUuid((string) $object->getTaskId());
+        $executions = $this->taskExecutionRepository->findByTaskUuid((string) $object->getTask()?->getUuid());
         if (0 < \count($executions)) {
             /** @var SerializationVisitorInterface $serializationVisitor */
             $serializationVisitor = $event->getVisitor();
             $serializationVisitor->visitProperty(
                 new StaticPropertyMetadata('', 'status', $executions[0]->getStatus()),
-                $executions[0]->getStatus()
+                $executions[0]->getStatus(),
             );
         }
     }

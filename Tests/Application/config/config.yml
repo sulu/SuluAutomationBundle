@@ -18,4 +18,3 @@ doctrine:
                 dir: "%gedmo_directory%/Tree/Entity"
                 alias: GedmoTree
                 is_bundle: false
-

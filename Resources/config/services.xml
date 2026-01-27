@@ -21,9 +21,9 @@
             <argument type="service" id="sulu_core.doctrine_rest_helper"/>
             <argument type="service" id="sulu_automation.tasks.manager"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
-            <argument>null</argument>
             <argument type="service" id="sulu_core.list_builder.field_descriptor_factory"/>
             <argument type="service" id="sulu.repository.task"/>
+            <argument type="service" id="translator"/>
 
             <tag name="sulu.context" context="admin"/>
         </service>
@@ -44,6 +44,7 @@
         <service id="sulu_automation.admin" class="Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin">
             <argument type="service" id="sulu_automation.automation_view_builder_factory"/>
             <argument type="service" id="sulu_security.security_checker"/>
+            <argument type="service" id="sulu_admin.metadata_group_provider"/>
 
             <tag name="sulu.admin"/>
             <tag name="sulu.context" context="admin"/>
@@ -79,18 +80,44 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="sulu_content.automation.publish_handler"
-                 class="Sulu\Bundle\AutomationBundle\Handler\DocumentPublishHandler">
-            <argument type="service" id="sulu_document_manager.document_manager"/>
-            <argument type="service" id="translator"/>
+        <service id="sulu_automation.page_publish_handler"
+                 class="Sulu\Bundle\AutomationBundle\TaskHandler\PagePublishTaskHandler">
+            <argument type="service" id="sulu_message_bus"/>
 
             <tag name="task.handler"/>
         </service>
 
-        <service id="sulu_content.automation.unpublish_handler"
-                 class="Sulu\Bundle\AutomationBundle\Handler\DocumentUnpublishHandler">
-            <argument type="service" id="sulu_document_manager.document_manager"/>
-            <argument type="service" id="translator"/>
+        <service id="sulu_automation.page_unpublish_handler"
+                 class="Sulu\Bundle\AutomationBundle\TaskHandler\PageUnpublishTaskHandler">
+            <argument type="service" id="sulu_message_bus"/>
+
+            <tag name="task.handler"/>
+        </service>
+
+        <service id="sulu_automation.article_publish_handler"
+                 class="Sulu\Bundle\AutomationBundle\TaskHandler\ArticlePublishTaskHandler">
+            <argument type="service" id="sulu_message_bus"/>
+
+            <tag name="task.handler"/>
+        </service>
+
+        <service id="sulu_automation.article_unpublish_handler"
+                 class="Sulu\Bundle\AutomationBundle\TaskHandler\ArticleUnpublishTaskHandler">
+            <argument type="service" id="sulu_message_bus"/>
+
+            <tag name="task.handler"/>
+        </service>
+
+        <service id="sulu_automation.snippet_publish_handler"
+                 class="Sulu\Bundle\AutomationBundle\TaskHandler\SnippetPublishTaskHandler">
+            <argument type="service" id="sulu_message_bus"/>
+
+            <tag name="task.handler"/>
+        </service>
+
+        <service id="sulu_automation.snippet_unpublish_handler"
+                 class="Sulu\Bundle\AutomationBundle\TaskHandler\SnippetUnpublishTaskHandler">
+            <argument type="service" id="sulu_message_bus"/>
 
             <tag name="task.handler"/>
         </service>

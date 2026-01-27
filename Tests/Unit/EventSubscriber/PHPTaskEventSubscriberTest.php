@@ -74,7 +74,7 @@ class PHPTaskEventSubscriberTest extends TestCase
         $task = $this->prophesize(TaskInterface::class);
         $task->getScheme()->willReturn('http');
         $task->getHost()->willReturn('sulu.io');
-        $this->taskRepository->findByTaskId($event->getTask()->getUuid())->willReturn($task->reveal());
+        $this->taskRepository->findByTask($event->getTask())->willReturn($task->reveal());
 
         $this->requestStack->push(
             Argument::that(
@@ -96,7 +96,7 @@ class PHPTaskEventSubscriberTest extends TestCase
         $task = $this->prophesize(TaskInterface::class);
         $task->getScheme()->willReturn('https');
         $task->getHost()->willReturn('sulu.io');
-        $this->taskRepository->findByTaskId($event->getTask()->getUuid())->willReturn($task->reveal());
+        $this->taskRepository->findByTask($event->getTask())->willReturn($task->reveal());
 
         $this->requestStack->push(
             Argument::that(
@@ -115,7 +115,7 @@ class PHPTaskEventSubscriberTest extends TestCase
     {
         $event = $this->createEvent();
 
-        $this->taskRepository->findByTaskId($event->getTask()->getUuid())->willReturn(null);
+        $this->taskRepository->findByTask($event->getTask())->willReturn(null);
 
         $this->requestStack->push(Argument::any())->shouldNotBeCalled();
 

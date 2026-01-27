@@ -1,6 +1,79 @@
-sulu_automation.tasks:
-    type: rest
-    name_prefix: sulu_automation.
-    resource: sulu_automation.task_controller
+sulu_automation.get_tasks:
+    path: /tasks.{_format}
+    controller: sulu_automation.task_controller::cgetAction
+    methods: [GET]
+    format: json
+    requirements:
+        _format: json
+    options:
+        expose: true
+
+sulu_automation.get_task_fields:
+    path: /tasks/fields.{_format}
+    controller: sulu_automation.task_controller::cgetFieldsAction
+    methods: [GET]
+    format: json
+    requirements:
+        _format: json
+    options:
+        expose: true
+
+sulu_automation.get_task_count:
+    path: /task/count.{_format}
+    controller: sulu_automation.task_controller::getCountAction
+    methods: [GET]
+    format: json
+    requirements:
+        _format: json
+    options:
+        expose: true
+
+sulu_automation.get_task:
+    path: /tasks/{id}.{_format}
+    controller: sulu_automation.task_controller::getAction
+    methods: [GET]
+    format: json
+    requirements:
+        _format: json
+    options:
+        expose: true
+
+sulu_automation.post_task:
+    path: /tasks.{_format}
+    controller: sulu_automation.task_controller::postAction
+    methods: [POST]
+    format: json
+    requirements:
+        _format: json
+    options:
+        expose: true
+
+sulu_automation.put_task:
+    path: /tasks/{id}.{_format}
+    controller: sulu_automation.task_controller::putAction
+    methods: [PUT]
+    format: json
+    requirements:
+        _format: json
+    options:
+        expose: true
+
+sulu_automation.delete_task:
+    path: /tasks/{id}.{_format}
+    controller: sulu_automation.task_controller::deleteAction
+    methods: [DELETE]
+    format: json
+    requirements:
+        _format: json
+    options:
+        expose: true
+
+sulu_automation.delete_tasks:
+    path: /tasks.{_format}
+    controller: sulu_automation.task_controller::cdeleteAction
+    methods: [DELETE]
+    format: json
+    requirements:
+        _format: json
     options:
         expose: true

@@ -20,6 +20,7 @@ use Task\Handler\TaskHandlerFactoryInterface;
 use Task\Scheduler\TaskSchedulerInterface as PHPTaskSchedulerInterface;
 use Task\Storage\TaskExecutionRepositoryInterface;
 use Task\Storage\TaskRepositoryInterface;
+use Task\TaskBundle\Entity\Task as PHPTask;
 use Task\TaskInterface as PHPTaskInterface;
 use Task\TaskStatus;
 
@@ -63,14 +64,16 @@ class TaskScheduler implements TaskSchedulerInterface
     public function schedule(TaskInterface $task): void
     {
         $workload = $this->createWorkload($task);
-        $task->setTaskId($this->scheduleTask($task, $workload)->getUuid());
+        /** @var PHPTask $phpTask */
+        $phpTask = $this->scheduleTask($task, $workload);
+        $task->setTask($phpTask);
     }
 
     public function reschedule(TaskInterface $task): void
     {
         $workload = $this->createWorkload($task);
 
-        $phpTask = $this->taskRepository->findByUuid((string) $task->getTaskId());
+        $phpTask = $this->taskRepository->findByUuid((string) $task->getTask()?->getUuid());
         $executions = $this->taskExecutionRepository->findByTask($phpTask);
 
         if ($task->getSchedule() == $phpTask->getFirstExecution()
@@ -91,12 +94,14 @@ class TaskScheduler implements TaskSchedulerInterface
         }
 
         $this->taskRepository->remove($phpTask);
-        $task->setTaskId($this->scheduleTask($task, $workload)->getUuid());
+        /** @var PHPTask $phpTask */
+        $phpTask = $this->scheduleTask($task, $workload);
+        $task->setTask($phpTask);
     }
 
     public function remove(TaskInterface $task): void
     {
-        $phpTask = $this->taskRepository->findByUuid((string) $task->getTaskId());
+        $phpTask = $this->taskRepository->findByUuid((string) $task->getTask()?->getUuid());
         $this->taskRepository->remove($phpTask);
     }
 

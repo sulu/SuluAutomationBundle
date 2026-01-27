@@ -11,6 +11,8 @@
 
 namespace Sulu\Bundle\AutomationBundle\Tasks\Model;
 
+use Task\TaskInterface as PHPTaskInterface;
+
 /**
  * Interface for task-repository.
  */
@@ -37,9 +39,9 @@ interface TaskRepositoryInterface
     public function findById(string $id): ?TaskInterface;
 
     /**
-     * Find task-entity with given php-task id.
+     * Find task-entity with given php-task.
      */
-    public function findByTaskId(string $id): ?TaskInterface;
+    public function findByTask(PHPTaskInterface $task): ?TaskInterface;
 
     /**
      * @deprecated
