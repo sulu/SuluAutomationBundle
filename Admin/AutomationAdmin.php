@@ -103,7 +103,7 @@ class AutomationAdmin extends Admin
                         ArticleInterface::class,
                     )
                         ->setTabOrder(4096)
-                        ->setParent(ArticleAdmin::EDIT_TABS_VIEW . '_default'),
+                        ->setParent(ArticleAdmin::EDIT_TABS_VIEW . '_' . $groupIdentifier),
                 );
             }
         }
