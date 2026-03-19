@@ -1,3 +1,0 @@
-sulu_automation.import:
-    path: /task-handler
-    defaults: { _controller: sulu_automation.task_handler_controller:getAction }

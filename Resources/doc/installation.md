@@ -29,13 +29,8 @@ Add the required routes to the `config/routes/sulu_admin.yaml` configuration fil
 
 ```yaml
 sulu_automation_api:
-    resource: '@SuluAutomationBundle/Resources/config/routing_api.yml'
+    resource: '@SuluAutomationBundle/Resources/config/routing_api.yaml'
     prefix: /admin/api
-
-sulu_automation:
-    type: rest
-    resource: '@SuluAutomationBundle/Resources/config/routing.yml'
-    prefix: /admin/automation
 ```
 
 ## Step 4: Update the database schema
