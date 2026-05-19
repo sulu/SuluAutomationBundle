@@ -1,0 +1,71 @@
+sulu_automation.get_tasks_fields:
+    path: '/tasks/fields.{_format}'
+    options: { expose: true }
+    methods: GET
+    controller: 'sulu_automation.task_controller::cgetFieldsAction'
+    format: json
+    defaults: { _format: json }
+    requirements: { _format: json|csv }
+
+sulu_automation.get_tasks:
+    path: '/tasks.{_format}'
+    options: { expose: true }
+    methods: GET
+    controller: 'sulu_automation.task_controller::cgetAction'
+    format: json
+    defaults: { _format: json }
+    requirements: { _format: json|csv }
+
+sulu_automation.get_task:
+    path: '/tasks/{id}.{_format}'
+    options: { expose: true }
+    methods: GET
+    controller: 'sulu_automation.task_controller::getAction'
+    format: json
+    defaults: { _format: json }
+    requirements: { _format: json|csv }
+
+sulu_automation.get_task_count:
+    path: '/task/count.{_format}'
+    options: { expose: true }
+    methods: GET
+    controller: 'sulu_automation.task_controller::getCountAction'
+    format: json
+    defaults: { _format: json }
+    requirements: { _format: json|csv }
+
+sulu_automation.post_task:
+    path: '/tasks.{_format}'
+    options: { expose: true }
+    methods: POST
+    controller: 'sulu_automation.task_controller::postAction'
+    format: json
+    defaults: { _format: json }
+    requirements: { _format: json|csv }
+
+sulu_automation.put_task:
+    path: '/tasks/{id}.{_format}'
+    options: { expose: true }
+    methods: PUT
+    controller: 'sulu_automation.task_controller::putAction'
+    format: json
+    defaults: { _format: json }
+    requirements: { _format: json|csv }
+
+sulu_automation.delete_task:
+    path: '/tasks/{id}.{_format}'
+    options: { expose: true }
+    methods: DELETE
+    controller: 'sulu_automation.task_controller::deleteAction'
+    format: json
+    defaults: { _format: json }
+    requirements: { _format: json|csv }
+
+sulu_automation.delete_tasks:
+    path: '/tasks.{_format}'
+    options: { expose: true }
+    methods: DELETE
+    controller: 'sulu_automation.task_controller::cdeleteAction'
+    format: json
+    defaults: { _format: json }
+    requirements: { _format: json|csv }

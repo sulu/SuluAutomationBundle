@@ -1,3 +1,4 @@
+# Deprecated use the routing_api.yaml file
 sulu_automation.tasks:
     type: rest
     name_prefix: sulu_automation.

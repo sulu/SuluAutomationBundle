@@ -1,5 +1,24 @@
 # Upgrade
 
+## 2.2.0
+
+### Deprecate usage of fos rest routing
+
+We are no longer considering the [fos rest routing](https://github.com/handcraftedinthealps/RestRoutingBundle) as a best practice.
+All bundles should use the Symfony routing system instead.
+
+Inside your `config/routes/sulu_admin.yaml` and `config/routes/sulu_website.yaml`, you can remove the fos rest routing configuration.
+First, remove all instances of `type: rest` and also replace `.yml` with `.yaml`:
+
+```diff
+# config/routes/sulu_admin.yaml`
+ sulu_automation_api:
+-    type: rest
+-    resource: '@SuluAutomationBundle/Resources/config/routing_api.yml'
++    resource: '@SuluAutomationBundle/Resources/config/routing_api.yaml'
+     prefix: /admin/api
+```
+
 ## 2.0.1
 
 A new method has been added to the `TaskRepositoryInterface`
