@@ -21,6 +21,28 @@ The following dependencies have been updated and have new minimum requirements:
 - **php-task/php-task**: `^1.3.3 || ^2.0` → `^3.0.1`
 - **php-task/task-bundle**: `^2.0 || ^3.0` → `^4.0.1`
 
+### Removal FOSRest Routing
+
+We are no longer considering the [fos rest routing](https://github.com/handcraftedinthealps/RestRoutingBundle) as a best practice.
+All bundles should use the Symfony routing system instead.
+
+Inside your `config/routes/sulu_automation.yaml`, you can remove the fos rest routing configuration.
+First, remove all instances of `type: rest` and also replace `.yml` with `.yaml`. Also the additional
+routing.yml include can be removed:
+
+```diff
+# config/routes/sulu_admin.yaml`
+ sulu_automation_api:
+-    type: rest
+-    resource: '@SuluAutomationBundle/Resources/config/routing_api.yml'
++    resource: '@SuluAutomationBundle/Resources/config/routing_api.yaml'
+     prefix: /admin/api
+     
+-sulu_automation:
+-    resource: "@SuluAutomationBundle/Resources/config/routing.yml"
+-    prefix: /admin/automation
+```
+
 ### DateTime to DateTimeImmutable Migration
 
 All `DateTime` instances have been replaced with `DateTimeImmutable` throughout the bundle. This affects:
