@@ -13,6 +13,7 @@ namespace Sulu\Bundle\AutomationBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\View\ViewHandlerInterface;
+use HandcraftedInTheAlps\RestRoutingBundle\Routing\ClassResourceInterface;
 use JMS\Serializer\SerializerInterface;
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
 use Sulu\Bundle\AutomationBundle\Entity\Task;
@@ -39,7 +40,7 @@ use Task\Storage\TaskRepositoryInterface;
 /**
  * Provides api for tasks.
  */
-class TaskController extends AbstractRestController implements SecuredControllerInterface
+class TaskController extends AbstractRestController implements ClassResourceInterface, SecuredControllerInterface
 {
     /**
      * @var string[]

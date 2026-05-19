@@ -1,5 +1,5 @@
-sulu_automation.get_fields:
-    path: '/fields.{_format}'
+sulu_automation.get_tasks_fields:
+    path: '/tasks/fields.{_format}'
     controller: 'sulu_automation.task_controller::cgetFieldsAction'
     methods: GET
     format: json
@@ -8,8 +8,18 @@ sulu_automation.get_fields:
     options:
         expose: true
 
-sulu_automation.get:
-    path: '/{id}.{_format}'
+sulu_automation.get_tasks:
+    path: '/tasks.{_format}'
+    controller: 'sulu_automation.task_controller::cgetAction'
+    methods: GET
+    format: json
+    requirements:
+        _format: json|csv
+    options:
+        expose: true
+
+sulu_automation.get_task:
+    path: '/tasks/{id}.{_format}'
     controller: 'sulu_automation.task_controller::getAction'
     methods: GET
     format: json
@@ -18,18 +28,18 @@ sulu_automation.get:
     options:
         expose: true
 
-sulu_automation.get_count:
-    path: '/count.{_format}'
-    methods: GET
+sulu_automation.get_task_count:
+    path: '/task/count.{_format}'
     controller: 'sulu_automation.task_controller::getCountAction'
+    methods: GET
     format: json
     requirements:
         _format: json|csv
     options:
         expose: true
 
-sulu_automation.post:
-    path: '/.{_format}'
+sulu_automation.post_task:
+    path: '/tasks.{_format}'
     controller: 'sulu_automation.task_controller::postAction'
     methods: POST
     format: json
@@ -38,8 +48,8 @@ sulu_automation.post:
     options:
         expose: true
 
-sulu_automation.put:
-    path: '/{id}.{_format}'
+sulu_automation.put_task:
+    path: '/tasks/{id}.{_format}'
     controller: 'sulu_automation.task_controller::putAction'
     methods: PUT
     format: json
@@ -48,10 +58,20 @@ sulu_automation.put:
     options:
         expose: true
 
-sulu_automation.delete:
-    path: '/.{_format}'
+sulu_automation.delete_task:
+    path: '/tasks/{id}.{_format}'
+    controller: 'sulu_automation.task_controller::deleteAction'
     methods: DELETE
+    format: json
+    requirements:
+        _format: json|csv
+    options:
+        expose: true
+
+sulu_automation.delete_tasks:
+    path: '/tasks.{_format}'
     controller: 'sulu_automation.task_controller::cdeleteAction'
+    methods: DELETE
     format: json
     requirements:
         _format: json|csv
