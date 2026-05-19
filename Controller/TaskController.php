@@ -74,7 +74,7 @@ class TaskController extends AbstractRestController implements SecuredController
      */
     public function cgetAction(Request $request): Response
     {
-        $fieldDescriptors = $this->fieldDescriptorFactory->getFieldDescriptors(Task::RESOURCE_KEY);
+        $fieldDescriptors = $this->fieldDescriptorFactory->getFieldDescriptors(Task::RESOURCE_KEY) ?? [];
 
         $listBuilder = $this->prepareListBuilder($fieldDescriptors, $request, $this->doctrineListBuilderFactory->create(Task::class));
         /** @var array<string, array<string>> $result */
