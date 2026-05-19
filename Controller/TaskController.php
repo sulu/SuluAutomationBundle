@@ -70,19 +70,11 @@ class TaskController extends AbstractRestController implements SecuredController
     }
 
     /**
-     * Returns fields for tasks.
-     */
-    public function cgetFieldsAction(): Response
-    {
-        return $this->handleView($this->view(\array_values($this->getFieldDescriptors())));
-    }
-
-    /**
      * Returns list of tasks.
      */
     public function cgetAction(Request $request): Response
     {
-        $fieldDescriptors = $this->getFieldDescriptors(DoctrineFieldDescriptorInterface::class);
+        $fieldDescriptors = $this->fieldDescriptorFactory->getFieldDescriptors(Task::RESOURCE_KEY);
 
         $listBuilder = $this->prepareListBuilder($fieldDescriptors, $request, $this->doctrineListBuilderFactory->create(Task::class));
         /** @var array<string, array<string>> $result */
@@ -303,21 +295,6 @@ class TaskController extends AbstractRestController implements SecuredController
         $this->entityManager->flush();
 
         return $this->handleView($this->view());
-    }
-
-    /**
-     * Returns field-descriptors for task-entity.
-     *
-     * @return FieldDescriptorInterface[]
-     */
-    private function getFieldDescriptors(?string $type = null): array
-    {
-        $fieldDescriptors = $this->fieldDescriptorFactory->getFieldDescriptors(Task::RESOURCE_KEY);
-        if (!$fieldDescriptors) {
-            return [];
-        }
-
-        return $fieldDescriptors;
     }
 
     /**
