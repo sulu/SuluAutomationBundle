@@ -30,7 +30,9 @@ jobs:
 
                     - php-version: '8.4'
                       dependency-versions: 'highest'
-                      composer-options: '--ignore-platform-reqs'
+
+                    - php-version: '8.5'
+                      dependency-versions: 'highest'
 
         services:
             mysql:
