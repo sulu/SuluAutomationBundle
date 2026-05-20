@@ -67,30 +67,6 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
         return $result;
     }
 
-    public function countFutureTasks(string $entityClass, string $entityId, ?string $locale = null): int
-    {
-        $queryBuilder = $this->createQueryBuilder('task')
-            ->select('COUNT(task.id)')
-            ->where('task.entityClass = :entityClass')
-            ->andWhere('task.entityId = :entityId')
-            ->andWhere('task.schedule >= :schedule')
-            ->setParameter('entityClass', $entityClass)
-            ->setParameter('entityId', $entityId)
-            ->setParameter('schedule', new \DateTimeImmutable());
-
-        if (null !== $locale) {
-            $queryBuilder->andWhere('task.locale = :locale')
-                ->setParameter('locale', $locale);
-        }
-
-        $query = $queryBuilder->getQuery();
-
-        /** @var int|float|string $result */
-        $result = $query->getSingleScalarResult();
-
-        return (int) $result;
-    }
-
     public function countPendingTasks(string $entityClass, string $entityId, ?string $locale = null): int
     {
         $queryBuilder = $this->getEntityManager()->createQueryBuilder()

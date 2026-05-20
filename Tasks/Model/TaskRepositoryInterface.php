@@ -44,13 +44,6 @@ interface TaskRepositoryInterface
     public function findByTask(PHPTaskInterface $task): ?TaskInterface;
 
     /**
-     * @deprecated
-     *
-     * Count tasks which have a schedule date in the future
-     */
-    public function countFutureTasks(string $entityClass, string $entityId, ?string $locale = null): int;
-
-    /**
      * Count pending tasks which have not been executed yet.
      */
     public function countPendingTasks(string $entityClass, string $entityId, ?string $locale = null): int;
