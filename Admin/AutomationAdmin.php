@@ -98,7 +98,7 @@ class AutomationAdmin extends Admin
             ) {
                 $viewCollection->add(
                     $this->automationViewBuilderFactory->createTaskListViewBuilder(
-                        ArticleAdmin::EDIT_TABS_VIEW . '.automation' . '_' . $groupIdentifier,
+                        ArticleAdmin::EDIT_TABS_VIEW . '.automation_' . $groupIdentifier,
                         '/automation',
                         ArticleInterface::class,
                     )
