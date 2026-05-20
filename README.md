@@ -25,9 +25,6 @@ To schedule tasks this bundle uses the [php-task library](https://github.com/php
 ## Requirements
 
 * Composer
-* PHP `^8.2`
-* Sulu `^3.0`
-* PHP-Task `^3.0`
 
 For detailed requirements see [composer.json](composer.json).
 

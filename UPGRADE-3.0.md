@@ -56,7 +56,8 @@ The `Sulu\Bundle\AutomationBundle\Entity\Task` entity now has a direct relation 
 -    * @var string|null
 +    * @var Task\TaskInterface|null
      */
-    private $taskId;
+-   private $taskId;
++   private $task;
 ```
 
 ```diff
