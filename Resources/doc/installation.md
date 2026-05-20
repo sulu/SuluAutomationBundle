@@ -1,14 +1,5 @@
 # Installation
 
-## Requirements
-
-Before installing the bundle, ensure your project matches the supported versions from `composer.json`:
-
-- PHP `^8.2`
-- Sulu `^3.0`
-- `php-task/php-task` `^3.0`
-- `php-task/task-bundle` `^4.0`
-
 ## Step 1: Download the Bundle
 
 Open a command console, enter your project directory and execute the following
