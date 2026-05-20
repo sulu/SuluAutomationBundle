@@ -49,23 +49,15 @@ All `DateTime` instances have been replaced with `DateTimeImmutable` throughout 
 
 ### Task Changes
 
-The `Sulu\Bundle\AutomationBundle\Entity\Task` entity now has a direct relation to the PhpTask entity instead of storing a task ID. The `getTaskId()` method has been removed and replaced with `getTask()`, which returns a `Task\TaskInterface`. The `setTask()` method signature has also been updated accordingly.
+The `Sulu\Bundle\AutomationBundle\Entity\Task` entity now has a direct relation to the PhpTask entity instead of storing a task ID. The `getTask()` and `setTask()` methods work with `Task\TaskInterface`. The `getTaskId()` helper remains available and still returns the linked php-task UUID.
 
 ```diff
     /**
 -    * @var string|null
 +    * @var Task\TaskInterface|null
      */
-    private $taskId;
-```
-
-```diff
--    public function getTaskId(): ?string
-+    public function getTask(): ?Task\TaskInterface
-     {
--        return $this->taskId;
-+        return $this->task;
-     }
+-   private $taskId;
++   private $task;
 ```
 
 ```diff
@@ -79,11 +71,12 @@ The `Sulu\Bundle\AutomationBundle\Entity\Task` entity now has a direct relation 
 
 ### TaskRepositoryInterface Changes
 
-The `TaskRepositoryInterface` has now a findByTask instead of findByTaskId.
+The `TaskRepositoryInterface` now uses `findByTask()` instead of `findByTaskId()`. The deprecated `countFutureTasks()` method has also been removed.
 
 ```diff
 -    public function findByTaskId(string $id): ?TaskInterface;
 +    public function findByTask(PHPTaskInterface $task): ?TaskInterface;
+-    public function countFutureTasks(string $entityClass, string $entityId, ?string $locale = null): int;
 ```
 
 ### Handler Architecture Refactoring
