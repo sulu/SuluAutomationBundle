@@ -88,7 +88,7 @@ class AutomationAdmin extends Admin
 
     private function configureArticleView(ViewCollection $viewCollection): void
     {
-        $groups = $this->groupProvider->getGroups();
+        $groups = $this->groupProvider->getGroups(ArticleInterface::TEMPLATE_TYPE);
 
         foreach ($groups as $group) {
             $groupIdentifier = $group->identifier;
