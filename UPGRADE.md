@@ -4,7 +4,7 @@
 
 ### Task handlers can require a permission
 
-A handler implementing the new `SecuredTaskHandlerInterface` names the permission a user needs on the entity,
+A handler implementing the new `SecuredAutomationTaskHandlerInterface` names the permission a user needs on the entity,
 for example `live` to publish or `delete` to remove. The bundle's own publish and unpublish handlers require `live`.
 Handlers without the interface are not checked, as before.
 

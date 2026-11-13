@@ -23,7 +23,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Handles automation tasks for article workflow transitions.
  */
-class SnippetUnpublishTaskHandler implements SecuredTaskHandlerInterface
+class SnippetUnpublishTaskHandler implements SecuredAutomationTaskHandlerInterface
 {
     public const TITLE = 'sulu_content.task_handler.unpublish';
 

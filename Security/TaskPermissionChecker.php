@@ -16,7 +16,7 @@ namespace Sulu\Bundle\AutomationBundle\Security;
 use Sulu\Article\Domain\Model\ArticleInterface;
 use Sulu\Article\Infrastructure\Sulu\Admin\ArticleAdmin;
 use Sulu\Bundle\AutomationBundle\Exception\TaskPermissionDeniedException;
-use Sulu\Bundle\AutomationBundle\TaskHandler\SecuredTaskHandlerInterface;
+use Sulu\Bundle\AutomationBundle\TaskHandler\SecuredAutomationTaskHandlerInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
 use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Component\Security\Authorization\AccessControl\AccessControlManagerInterface;
@@ -46,7 +46,7 @@ class TaskPermissionChecker
 
     public function isCurrentUserAllowed(object $handler, string $entityClass, string $entityId, string $locale): bool
     {
-        if (!$handler instanceof SecuredTaskHandlerInterface) {
+        if (!$handler instanceof SecuredAutomationTaskHandlerInterface) {
             return true;
         }
 
@@ -62,7 +62,7 @@ class TaskPermissionChecker
     public function checkCurrentUser(string $handlerClass, string $entityClass, string $entityId, string $locale): void
     {
         $handler = $this->taskHandlerFactory->create($handlerClass);
-        if (!$handler instanceof SecuredTaskHandlerInterface) {
+        if (!$handler instanceof SecuredAutomationTaskHandlerInterface) {
             return;
         }
 
@@ -83,7 +83,7 @@ class TaskPermissionChecker
     public function checkUser(int|string $userId, string $handlerClass, string $entityClass, string $entityId, string $locale): void
     {
         $handler = $this->taskHandlerFactory->create($handlerClass);
-        if (!$handler instanceof SecuredTaskHandlerInterface) {
+        if (!$handler instanceof SecuredAutomationTaskHandlerInterface) {
             return;
         }
 
@@ -113,7 +113,7 @@ class TaskPermissionChecker
      *
      * @throws \InvalidArgumentException
      */
-    private function createCondition(SecuredTaskHandlerInterface $handler, string $entityClass, string $entityId, string $locale): SecurityCondition
+    private function createCondition(SecuredAutomationTaskHandlerInterface $handler, string $entityClass, string $entityId, string $locale): SecurityCondition
     {
         if (!$handler->supports($entityClass)) {
             throw new \InvalidArgumentException(\sprintf('Task handler "%s" does not support "%s".', $handler::class, $entityClass));

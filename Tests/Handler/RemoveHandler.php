@@ -11,7 +11,7 @@
 
 namespace Sulu\Bundle\AutomationBundle\Tests\Handler;
 
-use Sulu\Bundle\AutomationBundle\TaskHandler\SecuredTaskHandlerInterface;
+use Sulu\Bundle\AutomationBundle\TaskHandler\SecuredAutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\TaskHandlerConfiguration;
 use Sulu\Component\Security\Authorization\PermissionTypes;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -19,7 +19,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Represents a handler which needs another permission than "live".
  */
-class RemoveHandler implements SecuredTaskHandlerInterface
+class RemoveHandler implements SecuredAutomationTaskHandlerInterface
 {
     public const TITLE = 'sulu_automation.remove_handler';
 

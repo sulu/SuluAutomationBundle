@@ -25,7 +25,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Handles automation tasks for page workflow transitions.
  */
-class PageUnpublishTaskHandler implements SecuredTaskHandlerInterface
+class PageUnpublishTaskHandler implements SecuredAutomationTaskHandlerInterface
 {
     public const TITLE = 'sulu_content.task_handler.unpublish';
 

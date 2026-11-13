@@ -20,7 +20,7 @@ use Sulu\Bundle\AdminBundle\Admin\View\ViewCollection;
 use Sulu\Bundle\AdminBundle\Metadata\GroupProviderInterface;
 use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactoryInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
-use Sulu\Bundle\AutomationBundle\TaskHandler\SecuredTaskHandlerInterface;
+use Sulu\Bundle\AutomationBundle\TaskHandler\SecuredAutomationTaskHandlerInterface;
 use Sulu\Component\Security\Authorization\PermissionTypes;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 use Sulu\Component\Webspace\Manager\WebspaceManagerInterface;
@@ -134,7 +134,7 @@ class AutomationAdmin extends Admin
                 continue;
             }
 
-            if (!$handler instanceof SecuredTaskHandlerInterface) {
+            if (!$handler instanceof SecuredAutomationTaskHandlerInterface) {
                 return true;
             }
 
