@@ -15,5 +15,8 @@ use Sulu\Bundle\AdminBundle\Admin\View\FormOverlayListViewBuilderInterface;
 
 interface AutomationViewBuilderFactoryInterface
 {
-    public function createTaskListViewBuilder(string $name, string $path, string $entityClass): FormOverlayListViewBuilderInterface;
+    /**
+     * @param bool $addable without it the list has no add action, because the user may use no handler
+     */
+    public function createTaskListViewBuilder(string $name, string $path, string $entityClass, bool $addable = true): FormOverlayListViewBuilderInterface;
 }

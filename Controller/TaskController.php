@@ -18,6 +18,7 @@ use FOS\RestBundle\View\ViewHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
 use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
+use Sulu\Bundle\AutomationBundle\Security\TaskPermissionChecker;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface as AutomationTaskRepositoryInterface;
@@ -64,6 +65,7 @@ class TaskController extends AbstractRestController implements SecuredController
         protected FieldDescriptorFactoryInterface $fieldDescriptorFactory,
         protected AutomationTaskRepositoryInterface $automationTaskRepository,
         protected TranslatorInterface $translator,
+        protected TaskPermissionChecker $permissionChecker,
     ) {
         parent::__construct($viewHandler, $tokenStorage);
     }
@@ -239,6 +241,8 @@ class TaskController extends AbstractRestController implements SecuredController
         $task->setHandlerClass((string) $request->request->get('handlerClass'));
         $task->setSchedule(new \DateTimeImmutable((string) $request->request->get('schedule')));
 
+        $this->permissionChecker->checkCurrentUser($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale());
+
         $this->taskManager->create($task);
 
         $this->entityManager->flush();
@@ -258,6 +262,8 @@ class TaskController extends AbstractRestController implements SecuredController
         $task->setLocale((string) $request->query->get('locale'));
         $task->setHandlerClass((string) $request->request->get('handlerClass'));
         $task->setSchedule(new \DateTimeImmutable((string) $request->request->get('schedule')));
+
+        $this->permissionChecker->checkCurrentUser($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale());
 
         $task = $this->taskManager->update($task);
 

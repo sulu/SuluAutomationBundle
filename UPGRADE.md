@@ -1,5 +1,30 @@
 # Upgrade
 
+## 3.0.2
+
+### Task handlers can require a permission
+
+A handler implementing the new `SecuredTaskHandlerInterface` names the permission a user needs on the entity,
+for example `live` to publish or `delete` to remove. The bundle's own publish and unpublish handlers require `live`.
+Handlers without the interface are not checked, as before.
+
+The permission is needed to create or change a task. The "add" overlay offers only the handlers the user may use.
+The automation tab stays visible. Its add action is removed if the user may use no handler for that entity type in
+any webspace or group.
+
+`AutomationViewBuilderFactoryInterface::createTaskListViewBuilder()` got an optional fourth argument `$addable`.
+Implementations of the interface have to add it.
+
+The task runs with the user who scheduled it and checks the permission again right before it runs. It fails if that
+user lost the permission, was deactivated or locked.
+
+Roles that could schedule publish tasks without `live` lose that.
+
+Tasks scheduled before this update have no user in their workload. They still run without the check and trigger a
+deprecation. Schedule them again to add the user.
+
+Entities of other bundles have no known security context, so their handlers have to check themselves.
+
 ## 2.2.0
 
 ### Deprecate usage of fos rest routing

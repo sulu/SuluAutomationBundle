@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Sulu\Bundle\AutomationBundle\TaskHandler;
 
+use Sulu\Component\Security\Authorization\PermissionTypes;
 use Sulu\Content\Domain\Model\WorkflowInterface;
 use Sulu\Messenger\Infrastructure\Symfony\Messenger\FlushMiddleware\EnableFlushStamp;
 use Sulu\Page\Application\Message\ApplyWorkflowTransitionPageMessage;
@@ -24,7 +25,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Handles automation tasks for page workflow transitions.
  */
-class PageUnpublishTaskHandler implements AutomationTaskHandlerInterface
+class PageUnpublishTaskHandler implements SecuredTaskHandlerInterface
 {
     public const TITLE = 'sulu_content.task_handler.unpublish';
 
@@ -52,6 +53,11 @@ class PageUnpublishTaskHandler implements AutomationTaskHandlerInterface
     public function getConfiguration(): TaskHandlerConfiguration
     {
         return TaskHandlerConfiguration::create(self::TITLE);
+    }
+
+    public function getPermissionType(): string
+    {
+        return PermissionTypes::LIVE;
     }
 
     /**
