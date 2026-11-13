@@ -23,7 +23,8 @@ Roles that could schedule publish tasks without `live` lose that.
 Tasks scheduled before this update have no user in their workload. They still run without the check and trigger a
 deprecation. Schedule them again to add the user.
 
-Entities of other bundles have no known security context, so their handlers have to check themselves.
+A secured handler is refused for an entity it does not support and for entities of other bundles, because there is no
+known security context to check against. Such handlers should not implement the interface and check themselves.
 
 ## 2.2.0
 

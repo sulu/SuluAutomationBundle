@@ -27,6 +27,7 @@ use Sulu\Page\Domain\Model\PageInterface;
 use Sulu\Page\Domain\Repository\PageRepositoryInterface;
 use Sulu\Snippet\Domain\Model\SnippetInterface;
 use Sulu\Snippet\Infrastructure\Sulu\Admin\SnippetAdmin;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Task\Handler\TaskHandlerFactoryInterface;
 
 /**
@@ -53,25 +54,34 @@ class TaskPermissionChecker
             return true;
         }
 
-        $condition = $this->createCondition($entityClass, $entityId, $locale);
+        try {
+            $condition = $this->createCondition($handler, $entityClass, $entityId, $locale);
+        } catch (\InvalidArgumentException) {
+            return false;
+        }
 
-        return null === $condition || $this->securityChecker->hasPermission($condition, $handler->getPermissionType());
+        return $this->securityChecker->hasPermission($condition, $handler->getPermissionType());
     }
 
     /**
      * Checks the logged in user, used when a task is scheduled.
      *
-     * @throws \Symfony\Component\Security\Core\Exception\AccessDeniedException
+     * @throws AccessDeniedException
      */
     public function checkCurrentUser(string $handlerClass, string $entityClass, string $entityId, string $locale): void
     {
-        $permission = $this->getPermission($handlerClass);
-        $condition = null === $permission ? null : $this->createCondition($entityClass, $entityId, $locale);
-        if (null === $permission || null === $condition) {
+        $handler = $this->taskHandlerFactory->create($handlerClass);
+        if (!$handler instanceof SecuredTaskHandlerInterface) {
             return;
         }
 
-        $this->securityChecker->checkPermission($condition, $permission);
+        try {
+            $condition = $this->createCondition($handler, $entityClass, $entityId, $locale);
+        } catch (\InvalidArgumentException $exception) {
+            throw new AccessDeniedException($exception->getMessage(), $exception);
+        }
+
+        $this->securityChecker->checkPermission($condition, $handler->getPermissionType());
     }
 
     /**
@@ -82,18 +92,24 @@ class TaskPermissionChecker
      */
     public function checkUser(int|string $userId, string $handlerClass, string $entityClass, string $entityId, string $locale): void
     {
+        $handler = $this->taskHandlerFactory->create($handlerClass);
+        if (!$handler instanceof SecuredTaskHandlerInterface) {
+            return;
+        }
+
         $user = $this->userRepository->findUserById((int) $userId);
 
         if (!$user instanceof UserInterface || !$user->getEnabled() || $user->getLocked()) {
             throw new TaskPermissionDeniedException(\sprintf('User "%s" of the task does not exist or is not active anymore.', $userId));
         }
 
-        $permission = $this->getPermission($handlerClass);
-        $condition = null === $permission ? null : $this->createCondition($entityClass, $entityId, $locale);
-        if (null === $permission || null === $condition) {
-            return;
+        try {
+            $condition = $this->createCondition($handler, $entityClass, $entityId, $locale);
+        } catch (\InvalidArgumentException $exception) {
+            throw new TaskPermissionDeniedException($exception->getMessage(), 0, $exception);
         }
 
+        $permission = $handler->getPermissionType();
         $permissions = $this->accessControlManager->getUserPermissions($condition, $user);
 
         if (!($permissions[$permission] ?? false)) {
@@ -101,18 +117,18 @@ class TaskPermissionChecker
         }
     }
 
-    private function getPermission(string $handlerClass): ?string
-    {
-        $handler = $this->taskHandlerFactory->create($handlerClass);
-
-        return $handler instanceof SecuredTaskHandlerInterface ? $handler->getPermissionType() : null;
-    }
-
     /**
-     * Entities of other bundles have no known context, so their handlers have to check themselves.
+     * The handler must belong to the entity, because the request names both independently. A secured handler for an
+     * entity of another bundle is refused, as there is no known context to check against.
+     *
+     * @throws \InvalidArgumentException
      */
-    private function createCondition(string $entityClass, string $entityId, string $locale): ?SecurityCondition
+    private function createCondition(SecuredTaskHandlerInterface $handler, string $entityClass, string $entityId, string $locale): SecurityCondition
     {
+        if (!$handler->supports($entityClass)) {
+            throw new \InvalidArgumentException(\sprintf('Task handler "%s" does not support "%s".', $handler::class, $entityClass));
+        }
+
         if (PageInterface::class === $entityClass) {
             // the webspace of a page decides its security context
             return new SecurityCondition(
@@ -131,6 +147,6 @@ class TaskPermissionChecker
             return new SecurityCondition(ArticleAdmin::SECURITY_CONTEXT, $locale);
         }
 
-        return null;
+        throw new \InvalidArgumentException(\sprintf('No security context known for "%s".', $entityClass));
     }
 }

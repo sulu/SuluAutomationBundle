@@ -21,7 +21,9 @@ use Sulu\Article\Domain\Model\ArticleInterface;
 use Sulu\Article\Infrastructure\Sulu\Admin\ArticleAdmin;
 use Sulu\Bundle\AutomationBundle\Exception\TaskPermissionDeniedException;
 use Sulu\Bundle\AutomationBundle\Security\TaskPermissionChecker;
+use Sulu\Bundle\AutomationBundle\TaskHandler\ArticlePublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\PagePublishTaskHandler;
+use Sulu\Bundle\AutomationBundle\TaskHandler\SnippetPublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\Tests\Handler\FirstHandler;
 use Sulu\Bundle\AutomationBundle\Tests\Handler\RemoveHandler;
 use Sulu\Bundle\SecurityBundle\Entity\User;
@@ -36,6 +38,7 @@ use Sulu\Page\Domain\Repository\PageRepositoryInterface;
 use Sulu\Snippet\Domain\Model\SnippetInterface;
 use Sulu\Snippet\Infrastructure\Sulu\Admin\SnippetAdmin;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Task\Handler\TaskHandlerFactoryInterface;
 
 class TaskPermissionCheckerTest extends TestCase
@@ -68,6 +71,12 @@ class TaskPermissionCheckerTest extends TestCase
         $this->taskHandlerFactory = $this->prophesize(TaskHandlerFactoryInterface::class);
         $this->taskHandlerFactory->create('publish')->willReturn(
             new PagePublishTaskHandler($this->prophesize(MessageBusInterface::class)->reveal())
+        );
+        $this->taskHandlerFactory->create('snippet')->willReturn(
+            new SnippetPublishTaskHandler($this->prophesize(MessageBusInterface::class)->reveal())
+        );
+        $this->taskHandlerFactory->create('article')->willReturn(
+            new ArticlePublishTaskHandler($this->prophesize(MessageBusInterface::class)->reveal())
         );
         $this->taskHandlerFactory->create('remove')->willReturn(new RemoveHandler());
         $this->taskHandlerFactory->create('plain')->willReturn(new FirstHandler());
@@ -105,17 +114,56 @@ class TaskPermissionCheckerTest extends TestCase
             PermissionTypes::LIVE,
         )->shouldBeCalled();
 
-        $this->checker->checkCurrentUser('publish', SnippetInterface::class, 'snippet-uuid', 'en');
+        $this->checker->checkCurrentUser('snippet', SnippetInterface::class, 'snippet-uuid', 'en');
     }
 
-    public function testCheckOfUnknownClassIsSkipped(): void
+    public function testSecuredHandlerIsRefusedForEntityWithoutKnownContext(): void
     {
         $this->securityChecker->checkPermission(Argument::cetera())->shouldNotBeCalled();
-        $this->accessControlManager->getUserPermissions(Argument::cetera())->shouldNotBeCalled();
         $this->userRepository->findUserById(5)->willReturn(new User());
 
-        $this->checker->checkCurrentUser('publish', \stdClass::class, '1', 'en');
-        $this->checker->checkUser(5, 'publish', \stdClass::class, '1', 'en');
+        $this->assertFalse($this->checker->isCurrentUserAllowed(new RemoveHandler(), \stdClass::class, '1', 'en'));
+
+        try {
+            $this->checker->checkCurrentUser('remove', \stdClass::class, '1', 'en');
+            $this->fail('Expected an exception');
+        } catch (AccessDeniedException) {
+            $this->addToAssertionCount(1);
+        }
+
+        $this->expectException(TaskPermissionDeniedException::class);
+
+        $this->checker->checkUser(5, 'remove', \stdClass::class, '1', 'en');
+    }
+
+    public function testHandlerOfAnotherEntityIsRefused(): void
+    {
+        $this->securityChecker->checkPermission(Argument::cetera())->shouldNotBeCalled();
+        $this->pageRepository->getOneBy(Argument::cetera())->shouldNotBeCalled();
+        $this->userRepository->findUserById(5)->willReturn(new User());
+
+        $publish = new PagePublishTaskHandler($this->prophesize(MessageBusInterface::class)->reveal());
+        $this->assertFalse($this->checker->isCurrentUserAllowed($publish, SnippetInterface::class, 'snippet-uuid', 'en'));
+
+        try {
+            $this->checker->checkCurrentUser('publish', SnippetInterface::class, 'snippet-uuid', 'en');
+            $this->fail('Expected an exception');
+        } catch (AccessDeniedException) {
+            $this->addToAssertionCount(1);
+        }
+
+        $this->expectException(TaskPermissionDeniedException::class);
+
+        $this->checker->checkUser(5, 'publish', 'Spoofed\\Class', 'page-uuid', 'en');
+    }
+
+    public function testUnsecuredHandlerIgnoresDisabledUser(): void
+    {
+        $user = new User();
+        $user->setEnabled(false);
+        $this->userRepository->findUserById(5)->willReturn($user);
+
+        $this->checker->checkUser(5, 'plain', 'Entity', '1', 'en');
 
         $this->addToAssertionCount(1);
     }
@@ -178,7 +226,7 @@ class TaskPermissionCheckerTest extends TestCase
             $user,
         )->willReturn([PermissionTypes::LIVE => true]);
 
-        $this->checker->checkUser(5, 'publish', ArticleInterface::class, 'article-uuid', 'en');
+        $this->checker->checkUser(5, 'article', ArticleInterface::class, 'article-uuid', 'en');
 
         $this->addToAssertionCount(1);
     }
@@ -192,7 +240,7 @@ class TaskPermissionCheckerTest extends TestCase
 
         $this->expectException(TaskPermissionDeniedException::class);
 
-        $this->checker->checkUser(5, 'publish', SnippetInterface::class, 'snippet-uuid', 'en');
+        $this->checker->checkUser(5, 'snippet', SnippetInterface::class, 'snippet-uuid', 'en');
     }
 
     public function testCheckUserWithoutAnyPermission(): void
@@ -203,7 +251,7 @@ class TaskPermissionCheckerTest extends TestCase
 
         $this->expectException(TaskPermissionDeniedException::class);
 
-        $this->checker->checkUser(5, 'publish', SnippetInterface::class, 'snippet-uuid', 'en');
+        $this->checker->checkUser(5, 'snippet', SnippetInterface::class, 'snippet-uuid', 'en');
     }
 
     public function testCheckUserDisabled(): void
@@ -215,7 +263,7 @@ class TaskPermissionCheckerTest extends TestCase
 
         $this->expectException(TaskPermissionDeniedException::class);
 
-        $this->checker->checkUser(5, 'publish', SnippetInterface::class, 'snippet-uuid', 'en');
+        $this->checker->checkUser(5, 'snippet', SnippetInterface::class, 'snippet-uuid', 'en');
     }
 
     public function testCheckUserLocked(): void
@@ -227,7 +275,7 @@ class TaskPermissionCheckerTest extends TestCase
 
         $this->expectException(TaskPermissionDeniedException::class);
 
-        $this->checker->checkUser(5, 'publish', SnippetInterface::class, 'snippet-uuid', 'en');
+        $this->checker->checkUser(5, 'snippet', SnippetInterface::class, 'snippet-uuid', 'en');
     }
 
     public function testCheckUserDeleted(): void
@@ -236,6 +284,6 @@ class TaskPermissionCheckerTest extends TestCase
 
         $this->expectException(TaskPermissionDeniedException::class);
 
-        $this->checker->checkUser(5, 'publish', SnippetInterface::class, 'snippet-uuid', 'en');
+        $this->checker->checkUser(5, 'snippet', SnippetInterface::class, 'snippet-uuid', 'en');
     }
 }
