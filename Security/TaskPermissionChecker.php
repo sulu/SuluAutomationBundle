@@ -31,8 +31,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Task\Handler\TaskHandlerFactoryInterface;
 
 /**
- * Every handler names the permission it needs, so scheduling and running a task needs the same permission as doing
- * the same directly.
+ * Checks the permission the handler of a task names, for the user who schedules and for the user who runs it.
  */
 class TaskPermissionChecker
 {
@@ -45,9 +44,6 @@ class TaskPermissionChecker
     ) {
     }
 
-    /**
-     * Tells if the logged in user may use the handler on the entity, used to offer only fitting handlers.
-     */
     public function isCurrentUserAllowed(object $handler, string $entityClass, string $entityId, string $locale): bool
     {
         if (!$handler instanceof SecuredTaskHandlerInterface) {
@@ -63,11 +59,6 @@ class TaskPermissionChecker
         return $this->securityChecker->hasPermission($condition, $handler->getPermissionType());
     }
 
-    /**
-     * Checks the logged in user, used when a task is scheduled.
-     *
-     * @throws AccessDeniedException
-     */
     public function checkCurrentUser(string $handlerClass, string $entityClass, string $entityId, string $locale): void
     {
         $handler = $this->taskHandlerFactory->create($handlerClass);
@@ -85,8 +76,7 @@ class TaskPermissionChecker
     }
 
     /**
-     * Checks a stored user without a token, because a task runs from the console and the security checker would
-     * grant everything there.
+     * Without a token, because a task runs from the console and the security checker would grant everything there.
      *
      * @throws TaskPermissionDeniedException
      */
@@ -118,8 +108,8 @@ class TaskPermissionChecker
     }
 
     /**
-     * The handler must belong to the entity, because the request names both independently. A secured handler for an
-     * entity of another bundle is refused, as there is no known context to check against.
+     * The request names handler and entity independently, so they have to fit. An entity without a known context is
+     * refused for a secured handler.
      *
      * @throws \InvalidArgumentException
      */
@@ -130,7 +120,6 @@ class TaskPermissionChecker
         }
 
         if (PageInterface::class === $entityClass) {
-            // the webspace of a page decides its security context
             return new SecurityCondition(
                 $this->pageRepository->getOneBy(['uuid' => $entityId])->getSecurityContext(),
                 $locale,

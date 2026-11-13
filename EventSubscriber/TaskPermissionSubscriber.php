@@ -32,7 +32,6 @@ class TaskPermissionSubscriber implements EventSubscriberInterface
 
     public static function getSubscribedEvents(): array
     {
-        // before PHPTaskEventSubscriber::pushRequest, because a throwing listener skips the TASK_AFTER pop
         return [
             Events::TASK_BEFORE => ['checkPermission', 10],
         ];
@@ -44,7 +43,6 @@ class TaskPermissionSubscriber implements EventSubscriberInterface
             return;
         }
 
-        // the declared type is Serializable|string, but the bundle always schedules an array
         /** @var mixed $workload */
         $workload = $event->getTask()->getWorkload();
         if (!\is_array($workload) || !isset($workload['userId'])) {

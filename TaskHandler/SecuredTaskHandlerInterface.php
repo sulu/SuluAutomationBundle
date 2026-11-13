@@ -14,8 +14,7 @@ declare(strict_types=1);
 namespace Sulu\Bundle\AutomationBundle\TaskHandler;
 
 /**
- * A handler implementing this interface names the permission a user needs on the entity to schedule it and to
- * have it run. Handlers without it are not checked.
+ * Names the permission a user needs on the entity to schedule the task and to have it run.
  */
 interface SecuredTaskHandlerInterface extends AutomationTaskHandlerInterface
 {

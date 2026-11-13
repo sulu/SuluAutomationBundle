@@ -103,8 +103,6 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
     }
 
     /**
-     * Only handlers the user may use on the entity are offered, the others would be refused when saving.
-     *
      * @param array{entityClass?: ?string, entityId?: ?string} $metadataOptions
      */
     private function isAllowed(AutomationTaskHandlerInterface $handler, array $metadataOptions, string $locale): bool

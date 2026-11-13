@@ -119,8 +119,7 @@ class AutomationAdmin extends Admin
     }
 
     /**
-     * The tab stays for everybody, but adding a task makes no sense if no handler is usable anywhere.
-     * Which one is usable on a single entity is decided when the form of the overlay is loaded.
+     * The tab stays for everybody. Only the add action goes away if no handler is usable for the entity type.
      *
      * @param string[] $securityContexts
      */
