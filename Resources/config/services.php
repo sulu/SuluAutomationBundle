@@ -64,14 +64,16 @@ return static function(ContainerConfigurator $container) {
             service('sulu_security.user_repository'),
             service('sulu_page.page_repository'),
             service('task.handler.factory'),
-        ]);
+        ])
+        ->tag('sulu.context', ['context' => 'admin']);
 
     $services->set('sulu_automation.task_permission_subscriber', TaskPermissionSubscriber::class)
         ->args([
             service('sulu.repository.task'),
             service('sulu_automation.task_permission_checker'),
         ])
-        ->tag('kernel.event_subscriber');
+        ->tag('kernel.event_subscriber')
+        ->tag('sulu.context', ['context' => 'admin']);
 
     $services->set('sulu_automation.metadata.form_metadata_loader', FormMetadataLoader::class)
         ->args([
@@ -79,7 +81,8 @@ return static function(ContainerConfigurator $container) {
             service('task.handler.factory'),
             service('sulu_automation.task_permission_checker'),
         ])
-        ->tag('sulu_admin.form_metadata_loader');
+        ->tag('sulu_admin.form_metadata_loader')
+        ->tag('sulu.context', ['context' => 'admin']);
 
     $services->set('sulu_automation.automation_view_builder_factory', AutomationViewBuilderFactory::class)
         ->args([
