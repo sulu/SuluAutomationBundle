@@ -8,7 +8,7 @@ A handler implementing the new `SecuredAutomationTaskHandlerInterface` names the
 for example `live` to publish or `delete` to remove. The bundle's own publish and unpublish handlers require `live`.
 Handlers without the interface are not checked, as before.
 
-The permission is needed to create or change a task. The "add" overlay offers only the handlers the user may use.
+The permission is needed to create, change or delete a task. The "add" overlay offers only the handlers the user may use.
 The automation tab stays visible. Its add action is removed if the user may use no handler for that entity type in
 any webspace.
 

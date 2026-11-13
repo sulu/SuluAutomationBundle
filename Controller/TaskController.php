@@ -277,8 +277,9 @@ class TaskController extends AbstractRestController implements SecuredController
      */
     public function deleteAction(string $id): Response
     {
-        $manager = $this->taskManager;
-        $manager->remove($id);
+        $this->checkRemovable($id);
+
+        $this->taskManager->remove($id);
 
         $this->entityManager->flush();
 
@@ -294,12 +295,28 @@ class TaskController extends AbstractRestController implements SecuredController
         $idsParameter = $request->query->getString('ids');
         $ids = \array_filter(\explode(',', $idsParameter));
         foreach ($ids as $id) {
+            $this->checkRemovable($id);
+        }
+
+        foreach ($ids as $id) {
             $this->taskManager->remove($id);
         }
 
         $this->entityManager->flush();
 
         return $this->handleView($this->view());
+    }
+
+    private function checkRemovable(string $id): void
+    {
+        $task = $this->taskManager->findById($id);
+
+        $this->permissionChecker->checkCurrentUserForRemoval(
+            $task->getHandlerClass(),
+            $task->getEntityClass(),
+            $task->getEntityId(),
+            $task->getLocale(),
+        );
     }
 
     /**
