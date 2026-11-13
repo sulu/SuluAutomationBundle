@@ -296,6 +296,16 @@ class TaskControllerTest extends SuluTestCase
         return $responseData;
     }
 
+    public function testPostStoresUserInWorkload(): void
+    {
+        $responseData = $this->testPost();
+
+        $task = $this->getContainer()->get('sulu_automation.tasks.manager')->findById($responseData['id']);
+
+        $this->assertArrayHasKey('userId', $task->getTask()->getWorkload());
+        $this->assertNotNull($task->getTask()->getWorkload()['userId']);
+    }
+
     public function testPut(
         $handlerClass = FirstHandler::class,
         $schedule = '+2 day',
