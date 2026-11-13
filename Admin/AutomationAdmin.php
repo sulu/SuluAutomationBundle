@@ -17,7 +17,6 @@ use Sulu\Article\Domain\Model\ArticleInterface;
 use Sulu\Article\Infrastructure\Sulu\Admin\ArticleAdmin;
 use Sulu\Bundle\AdminBundle\Admin\Admin;
 use Sulu\Bundle\AdminBundle\Admin\View\ViewCollection;
-use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\FormGroup;
 use Sulu\Bundle\AdminBundle\Metadata\GroupProviderInterface;
 use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactoryInterface;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
@@ -110,7 +109,7 @@ class AutomationAdmin extends Admin
                         ArticleAdmin::EDIT_TABS_VIEW . '.automation_' . $groupIdentifier,
                         '/automation',
                         ArticleInterface::class,
-                        $this->hasUsableHandler(ArticleInterface::class, $this->getArticleSecurityContexts($groups, $group)),
+                        $this->hasUsableHandler(ArticleInterface::class, [ArticleAdmin::SECURITY_CONTEXT]),
                     )
                         ->setTabOrder(4096)
                         ->setParent(ArticleAdmin::EDIT_TABS_VIEW . '_' . $groupIdentifier),
@@ -162,23 +161,6 @@ class AutomationAdmin extends Admin
         $securityContexts = [];
         foreach ($this->webspaceManager->getWebspaceCollection() as $webspace) {
             $securityContexts[] = PageAdmin::getPageSecurityContext($webspace->getKey());
-        }
-
-        return $securityContexts;
-    }
-
-    /**
-     * @param array<string, FormGroup> $groups
-     *
-     * @return string[]
-     */
-    private function getArticleSecurityContexts(array $groups, FormGroup $group): array
-    {
-        $securityContexts = [ArticleAdmin::SECURITY_CONTEXT];
-
-        // only Sulu 3.1 has a security context per group
-        if (\method_exists(ArticleAdmin::class, 'getGroupSecurityContext')) {
-            $securityContexts[] = ArticleAdmin::getGroupSecurityContext($groups, $group);
         }
 
         return $securityContexts;

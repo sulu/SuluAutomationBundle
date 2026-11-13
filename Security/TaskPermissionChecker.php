@@ -49,10 +49,13 @@ class TaskPermissionChecker
      */
     public function isCurrentUserAllowed(object $handler, string $entityClass, string $entityId, string $locale): bool
     {
-        $permission = $handler instanceof SecuredTaskHandlerInterface ? $handler->getPermissionType() : null;
-        $condition = null === $permission ? null : $this->createCondition($entityClass, $entityId, $locale);
+        if (!$handler instanceof SecuredTaskHandlerInterface) {
+            return true;
+        }
 
-        return null === $condition || $this->securityChecker->hasPermission($condition, $permission);
+        $condition = $this->createCondition($entityClass, $entityId, $locale);
+
+        return null === $condition || $this->securityChecker->hasPermission($condition, $handler->getPermissionType());
     }
 
     /**

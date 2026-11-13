@@ -10,7 +10,7 @@ Handlers without the interface are not checked, as before.
 
 The permission is needed to create or change a task. The "add" overlay offers only the handlers the user may use.
 The automation tab stays visible. Its add action is removed if the user may use no handler for that entity type in
-any webspace or group.
+any webspace.
 
 `AutomationViewBuilderFactoryInterface::createTaskListViewBuilder()` got an optional fourth argument `$addable`.
 Implementations of the interface have to add it.
