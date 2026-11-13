@@ -30,7 +30,7 @@ class AutomationViewBuilderFactory implements AutomationViewBuilderFactoryInterf
         $this->viewBuilderFactory = $viewBuilderFactory;
     }
 
-    public function createTaskListViewBuilder(string $name, string $path, string $entityClass): FormOverlayListViewBuilderInterface
+    public function createTaskListViewBuilder(string $name, string $path, string $entityClass, bool $addable = true): FormOverlayListViewBuilderInterface
     {
         $taskCountBadge = (new Badge('sulu_automation.get_task_count', '/count', 'value != 0'))
             ->addRequestParameters(['entityClass' => $entityClass])
@@ -42,14 +42,15 @@ class AutomationViewBuilderFactory implements AutomationViewBuilderFactoryInterf
             ->setListKey(Task::RESOURCE_KEY)
             ->setFormKey('task_details')
             ->setTabTitle('sulu_automation.automation')
-            ->addToolbarActions([
-                new ToolbarAction('sulu_admin.add'),
+            ->addToolbarActions(\array_values(\array_filter([
+                $addable ? new ToolbarAction('sulu_admin.add') : null,
                 new ToolbarAction('sulu_admin.delete'),
-            ])
+            ])))
             ->addTabBadges([$taskCountBadge])
             ->addListAdapters(['table'])
             ->addRequestParameters(['entityClass' => $entityClass])
             ->addMetadataRequestParameters(['entityClass' => $entityClass])
+            ->addRouterAttributesToFormMetadata(['id' => 'entityId'])
             ->addRouterAttributesToFormRequest(['id' => 'entityId'])
             ->addRouterAttributesToListRequest(['id' => 'entityId'])
             ->setOption('itemDisabledCondition', 'status != "planned"');

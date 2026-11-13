@@ -17,7 +17,9 @@ use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactoryInterfac
 use Sulu\Bundle\AutomationBundle\Controller\TaskController;
 use Sulu\Bundle\AutomationBundle\Events\Events;
 use Sulu\Bundle\AutomationBundle\EventSubscriber\PHPTaskEventSubscriber;
+use Sulu\Bundle\AutomationBundle\EventSubscriber\TaskPermissionSubscriber;
 use Sulu\Bundle\AutomationBundle\Metadata\FormMetadataLoader;
+use Sulu\Bundle\AutomationBundle\Security\TaskPermissionChecker;
 use Sulu\Bundle\AutomationBundle\Serializer\TaskSerializerSubscriber;
 use Sulu\Bundle\AutomationBundle\TaskHandler\ArticlePublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\ArticleUnpublishTaskHandler;
@@ -51,15 +53,36 @@ return static function(ContainerConfigurator $container) {
             service('sulu_core.list_builder.field_descriptor_factory'),
             service('sulu.repository.task'),
             service('translator'),
+            service('sulu_automation.task_permission_checker'),
         ])
+        ->tag('sulu.context', ['context' => 'admin']);
+
+    $services->set('sulu_automation.task_permission_checker', TaskPermissionChecker::class)
+        ->args([
+            service('sulu_security.security_checker'),
+            service('sulu_security.access_control_manager'),
+            service('sulu_security.user_repository'),
+            service('sulu_page.page_repository'),
+            service('task.handler.factory'),
+        ])
+        ->tag('sulu.context', ['context' => 'admin']);
+
+    $services->set('sulu_automation.task_permission_subscriber', TaskPermissionSubscriber::class)
+        ->args([
+            service('sulu.repository.task'),
+            service('sulu_automation.task_permission_checker'),
+        ])
+        ->tag('kernel.event_subscriber')
         ->tag('sulu.context', ['context' => 'admin']);
 
     $services->set('sulu_automation.metadata.form_metadata_loader', FormMetadataLoader::class)
         ->args([
             service('translator'),
             service('task.handler.factory'),
+            service('sulu_automation.task_permission_checker'),
         ])
-        ->tag('sulu_admin.form_metadata_loader');
+        ->tag('sulu_admin.form_metadata_loader')
+        ->tag('sulu.context', ['context' => 'admin']);
 
     $services->set('sulu_automation.automation_view_builder_factory', AutomationViewBuilderFactory::class)
         ->args([
@@ -73,6 +96,8 @@ return static function(ContainerConfigurator $container) {
             service('sulu_automation.automation_view_builder_factory'),
             service('sulu_security.security_checker'),
             service('sulu_admin.metadata_group_provider'),
+            service('task.handler.factory'),
+            service('sulu_core.webspace.webspace_manager'),
         ])
         ->tag('sulu.admin')
         ->tag('sulu.context', ['context' => 'admin']);
@@ -91,6 +116,7 @@ return static function(ContainerConfigurator $container) {
             service('task.storage.task_execution'),
             service('task.handler.factory'),
             service('task.scheduler'),
+            service('security.token_storage'),
         ]);
 
     $services->set('sulu_automation.serializer.task', TaskSerializerSubscriber::class)

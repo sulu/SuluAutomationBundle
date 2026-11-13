@@ -18,6 +18,7 @@ use FOS\RestBundle\View\ViewHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
 use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
+use Sulu\Bundle\AutomationBundle\Security\TaskPermissionChecker;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface as AutomationTaskRepositoryInterface;
@@ -64,6 +65,7 @@ class TaskController extends AbstractRestController implements SecuredController
         protected FieldDescriptorFactoryInterface $fieldDescriptorFactory,
         protected AutomationTaskRepositoryInterface $automationTaskRepository,
         protected TranslatorInterface $translator,
+        protected TaskPermissionChecker $permissionChecker,
     ) {
         parent::__construct($viewHandler, $tokenStorage);
     }
@@ -239,6 +241,8 @@ class TaskController extends AbstractRestController implements SecuredController
         $task->setHandlerClass((string) $request->request->get('handlerClass'));
         $task->setSchedule(new \DateTimeImmutable((string) $request->request->get('schedule')));
 
+        $this->permissionChecker->checkCurrentUser($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale());
+
         $this->taskManager->create($task);
 
         $this->entityManager->flush();
@@ -259,6 +263,8 @@ class TaskController extends AbstractRestController implements SecuredController
         $task->setHandlerClass((string) $request->request->get('handlerClass'));
         $task->setSchedule(new \DateTimeImmutable((string) $request->request->get('schedule')));
 
+        $this->permissionChecker->checkCurrentUser($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale());
+
         $task = $this->taskManager->update($task);
 
         $this->entityManager->flush();
@@ -271,8 +277,9 @@ class TaskController extends AbstractRestController implements SecuredController
      */
     public function deleteAction(string $id): Response
     {
-        $manager = $this->taskManager;
-        $manager->remove($id);
+        $this->checkRemovable($id);
+
+        $this->taskManager->remove($id);
 
         $this->entityManager->flush();
 
@@ -288,12 +295,28 @@ class TaskController extends AbstractRestController implements SecuredController
         $idsParameter = $request->query->getString('ids');
         $ids = \array_filter(\explode(',', $idsParameter));
         foreach ($ids as $id) {
+            $this->checkRemovable($id);
+        }
+
+        foreach ($ids as $id) {
             $this->taskManager->remove($id);
         }
 
         $this->entityManager->flush();
 
         return $this->handleView($this->view());
+    }
+
+    private function checkRemovable(string $id): void
+    {
+        $task = $this->taskManager->findById($id);
+
+        $this->permissionChecker->checkCurrentUserForRemoval(
+            $task->getHandlerClass(),
+            $task->getEntityClass(),
+            $task->getEntityId(),
+            $task->getLocale(),
+        );
     }
 
     /**

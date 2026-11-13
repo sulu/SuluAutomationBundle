@@ -12,6 +12,7 @@
 namespace Sulu\Bundle\AutomationBundle\TaskHandler;
 
 use Sulu\Article\Domain\Model\Article;
+use Sulu\Component\Security\Authorization\PermissionTypes;
 use Sulu\Content\Domain\Model\WorkflowInterface;
 use Sulu\Messenger\Infrastructure\Symfony\Messenger\FlushMiddleware\EnableFlushStamp;
 use Sulu\Snippet\Application\Message\ApplyWorkflowTransitionSnippetMessage;
@@ -22,7 +23,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Handles automation tasks for article workflow transitions.
  */
-class SnippetUnpublishTaskHandler implements AutomationTaskHandlerInterface
+class SnippetUnpublishTaskHandler implements SecuredAutomationTaskHandlerInterface
 {
     public const TITLE = 'sulu_content.task_handler.unpublish';
 
@@ -50,6 +51,11 @@ class SnippetUnpublishTaskHandler implements AutomationTaskHandlerInterface
     public function getConfiguration(): TaskHandlerConfiguration
     {
         return TaskHandlerConfiguration::create(self::TITLE);
+    }
+
+    public function getPermissionType(): string
+    {
+        return PermissionTypes::LIVE;
     }
 
     /**
