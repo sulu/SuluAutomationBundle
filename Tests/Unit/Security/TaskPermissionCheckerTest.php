@@ -32,6 +32,7 @@ use Sulu\Component\Security\Authorization\AccessControl\AccessControlManagerInte
 use Sulu\Component\Security\Authorization\PermissionTypes;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 use Sulu\Component\Security\Authorization\SecurityCondition;
+use Sulu\Page\Domain\Exception\PageNotFoundException;
 use Sulu\Page\Domain\Model\Page;
 use Sulu\Page\Domain\Model\PageInterface;
 use Sulu\Page\Domain\Repository\PageRepositoryInterface;
@@ -40,6 +41,7 @@ use Sulu\Snippet\Infrastructure\Sulu\Admin\SnippetAdmin;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Task\Handler\TaskHandlerFactoryInterface;
+use Task\Handler\TaskHandlerNotExistsException;
 
 class TaskPermissionCheckerTest extends TestCase
 {
@@ -164,6 +166,36 @@ class TaskPermissionCheckerTest extends TestCase
         $this->userRepository->findUserById(5)->willReturn($user);
 
         $this->checker->checkUser(5, 'plain', 'Entity', '1', 'en');
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function testRemovalUsesPermissionOfHandler(): void
+    {
+        $this->securityChecker->checkPermission(Argument::type(SecurityCondition::class), PermissionTypes::DELETE)
+            ->willThrow(new AccessDeniedException());
+
+        $this->expectException(AccessDeniedException::class);
+
+        $this->checker->checkCurrentUserForRemoval('remove', SnippetInterface::class, 'snippet-uuid', 'en');
+    }
+
+    public function testRemovalOfTaskOfDeletedPageIsNotChecked(): void
+    {
+        $this->pageRepository->getOneBy(['uuid' => 'gone'])->willThrow(new PageNotFoundException(['uuid' => 'gone']));
+        $this->securityChecker->checkPermission(Argument::cetera())->shouldNotBeCalled();
+
+        $this->checker->checkCurrentUserForRemoval('publish', PageInterface::class, 'gone', 'en');
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function testRemovalOfTaskOfUnknownHandlerIsNotChecked(): void
+    {
+        $this->taskHandlerFactory->create('missing')->willThrow(new TaskHandlerNotExistsException('missing'));
+        $this->securityChecker->checkPermission(Argument::cetera())->shouldNotBeCalled();
+
+        $this->checker->checkCurrentUserForRemoval('missing', PageInterface::class, 'page-uuid', 'en');
 
         $this->addToAssertionCount(1);
     }
