@@ -77,7 +77,7 @@ class FormMetadataLoaderTest extends TestCase
 
         return \array_values(\array_map(
             static fn ($option) => $option->getName(),
-            $select->getOptions()['values']->getValue() ?? [],
+            $select->getOptions()['values']->getValue(),
         ));
     }
 }

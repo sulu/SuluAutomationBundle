@@ -72,6 +72,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
 
         $valuesOption = new OptionMetadata();
         $valuesOption->setName('values');
+        $valuesOption->setValue([]);
 
         foreach ($this->taskHandlerFactory->getHandlers() as $handler) {
             if ($handler instanceof AutomationTaskHandlerInterface

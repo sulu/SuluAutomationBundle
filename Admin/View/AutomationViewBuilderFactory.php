@@ -30,11 +30,13 @@ class AutomationViewBuilderFactory implements AutomationViewBuilderFactoryInterf
         $this->viewBuilderFactory = $viewBuilderFactory;
     }
 
-    public function createTaskListViewBuilder(string $name, string $path, string $entityClass, bool $addable = true): FormOverlayListViewBuilderInterface
+    public function createTaskListViewBuilder(string $name, string $path, string $entityClass /* , bool $addable = true */): FormOverlayListViewBuilderInterface
     {
         if (\func_num_args() < 4) {
             trigger_deprecation('sulu/automation-bundle', '3.0.2', 'Calling "%s()" without the "$addable" argument is deprecated, it will be required in the next minor release.', __METHOD__);
         }
+
+        $addable = 3 < \func_num_args() ? (bool) \func_get_arg(3) : true;
 
         $taskCountBadge = (new Badge('sulu_automation.get_task_count', '/count', 'value != 0'))
             ->addRequestParameters(['entityClass' => $entityClass])

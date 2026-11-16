@@ -17,11 +17,17 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
+use Sulu\Article\Domain\Model\ArticleInterface;
+use Sulu\Article\Infrastructure\Sulu\Admin\ArticleAdmin;
+use Sulu\Bundle\AdminBundle\Admin\View\FormOverlayListViewBuilderInterface;
 use Sulu\Bundle\AdminBundle\Admin\View\ViewBuilderFactory;
 use Sulu\Bundle\AdminBundle\Admin\View\ViewCollection;
+use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\FormGroup;
 use Sulu\Bundle\AdminBundle\Metadata\GroupProviderInterface;
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
-use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactoryInterface;
+use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactory;
+use Sulu\Bundle\AutomationBundle\TaskHandler\ArticlePublishTaskHandler;
+use Sulu\Bundle\AutomationBundle\TaskHandler\PagePublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\SnippetPublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\Tests\Handler\FirstHandler;
 use Sulu\Bundle\AutomationBundle\Tests\Handler\RemoveHandler;
@@ -29,6 +35,9 @@ use Sulu\Component\Security\Authorization\PermissionTypes;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 use Sulu\Component\Webspace\Manager\WebspaceCollection;
 use Sulu\Component\Webspace\Manager\WebspaceManagerInterface;
+use Sulu\Component\Webspace\Webspace;
+use Sulu\Page\Domain\Model\PageInterface;
+use Sulu\Page\Infrastructure\Sulu\Admin\PageAdmin;
 use Sulu\Snippet\Domain\Model\SnippetInterface;
 use Sulu\Snippet\Infrastructure\Sulu\Admin\SnippetAdmin;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -41,94 +50,130 @@ class AutomationAdminTest extends TestCase
     /** @var ObjectProphecy<SecurityCheckerInterface> */
     private ObjectProphecy $securityChecker;
 
-    /** @var ObjectProphecy<AutomationViewBuilderFactoryInterface> */
-    private ObjectProphecy $automationViewBuilderFactory;
-
     protected function setUp(): void
     {
         $this->securityChecker = $this->prophesize(SecurityCheckerInterface::class);
+        $this->securityChecker->hasPermission(Argument::cetera())->willReturn(false);
         $this->securityChecker->hasPermission(AutomationAdmin::SECURITY_CONTEXT, PermissionTypes::EDIT)->willReturn(true);
-        $this->automationViewBuilderFactory = $this->prophesize(AutomationViewBuilderFactoryInterface::class);
     }
 
-    public function testAddIsOfferedIfAHandlerIsUsable(): void
+    public function testAddIsOfferedForEveryTypeWithAUsableHandler(): void
     {
-        $this->securityChecker->hasPermission(SnippetAdmin::SECURITY_CONTEXT, PermissionTypes::LIVE)->willReturn(true);
+        $this->grant(PageAdmin::getPageSecurityContext('example'), PermissionTypes::LIVE);
+        $this->grant(SnippetAdmin::SECURITY_CONTEXT, PermissionTypes::LIVE);
+        $this->grant(ArticleAdmin::SECURITY_CONTEXT, PermissionTypes::LIVE);
 
-        $this->assertSame([true], $this->configureSnippetViews([$this->createPublishHandler()]));
+        $this->assertEquals(
+            [PageInterface::class => true, SnippetInterface::class => true, ArticleInterface::class => true],
+            $this->configureViews($this->createPublishHandlers()),
+        );
     }
 
-    public function testAddIsRemovedIfNoHandlerIsUsable(): void
+    public function testAddIsRemovedOnlyForTheTypesWithoutUsableHandler(): void
     {
-        $this->securityChecker->hasPermission(SnippetAdmin::SECURITY_CONTEXT, PermissionTypes::LIVE)->willReturn(false);
+        $this->grant(SnippetAdmin::SECURITY_CONTEXT, PermissionTypes::LIVE);
 
-        $this->assertSame([false], $this->configureSnippetViews([$this->createPublishHandler()]));
+        $this->assertEquals(
+            [PageInterface::class => false, SnippetInterface::class => true, ArticleInterface::class => false],
+            $this->configureViews($this->createPublishHandlers()),
+        );
+    }
+
+    public function testPageNeedsThePermissionInOneWebspace(): void
+    {
+        $this->grant(PageAdmin::getPageSecurityContext('other'), PermissionTypes::LIVE);
+
+        $this->assertTrue($this->configureViews($this->createPublishHandlers())[PageInterface::class]);
     }
 
     public function testEachHandlerNeedsItsOwnPermission(): void
     {
-        $this->securityChecker->hasPermission(SnippetAdmin::SECURITY_CONTEXT, PermissionTypes::LIVE)->willReturn(false);
-        $this->securityChecker->hasPermission(SnippetAdmin::SECURITY_CONTEXT, PermissionTypes::DELETE)->willReturn(true);
+        $this->grant(SnippetAdmin::SECURITY_CONTEXT, PermissionTypes::DELETE);
 
-        $this->assertSame(
-            [true],
-            $this->configureSnippetViews([$this->createPublishHandler(), new RemoveHandler()]),
-        );
+        $flags = $this->configureViews([new SnippetPublishTaskHandler($this->createMessageBus()), new RemoveHandler()]);
+
+        $this->assertTrue($flags[SnippetInterface::class]);
     }
 
     public function testHandlerWithoutPermissionIsAlwaysUsable(): void
     {
-        $this->assertSame([true], $this->configureSnippetViews([new FirstHandler()]));
+        $this->assertTrue($this->configureViews([new FirstHandler()])[SnippetInterface::class]);
     }
 
     public function testNoHandlerAtAll(): void
     {
-        $this->assertSame([false], $this->configureSnippetViews([]));
+        $this->assertEquals(
+            [PageInterface::class => false, SnippetInterface::class => false, ArticleInterface::class => false],
+            $this->configureViews([]),
+        );
+    }
+
+    private function grant(string $securityContext, string $permission): void
+    {
+        $this->securityChecker->hasPermission($securityContext, $permission)->willReturn(true);
+    }
+
+    /**
+     * @return array<object>
+     */
+    private function createPublishHandlers(): array
+    {
+        return [
+            new PagePublishTaskHandler($this->createMessageBus()),
+            new SnippetPublishTaskHandler($this->createMessageBus()),
+            new ArticlePublishTaskHandler($this->createMessageBus()),
+        ];
+    }
+
+    private function createMessageBus(): MessageBusInterface
+    {
+        return $this->prophesize(MessageBusInterface::class)->reveal();
     }
 
     /**
      * @param array<object> $handlers
      *
-     * @return list<bool> the "addable" flag the snippet tab was created with
+     * @return array<string, bool> the "addable" flag per entity class
      */
-    private function configureSnippetViews(array $handlers): array
+    private function configureViews(array $handlers): array
     {
-        $factory = new TaskHandlerFactory(\array_combine(\array_map('get_class', $handlers), $handlers));
+        $webspace = new Webspace();
+        $webspace->setKey('example');
+        $other = new Webspace();
+        $other->setKey('other');
         $webspaceManager = $this->prophesize(WebspaceManagerInterface::class);
-        $webspaceManager->getWebspaceCollection()->willReturn(new WebspaceCollection());
+        $webspaceManager->getWebspaceCollection()->willReturn(new WebspaceCollection(['example' => $webspace, 'other' => $other]));
+
         $groupProvider = $this->prophesize(GroupProviderInterface::class);
-        $groupProvider->getGroups(Argument::cetera())->willReturn([]);
+        $groupProvider->getGroups(Argument::cetera())->willReturn(['blog' => new FormGroup('blog', 'Blog')]);
 
-        $flags = [];
-        $this->automationViewBuilderFactory
-            ->createTaskListViewBuilder(Argument::cetera())
-            ->will(function(array $arguments) use (&$flags) {
-                if (SnippetInterface::class === $arguments[2]) {
-                    $flags[] = $arguments[3];
-                }
+        $recorder = new class(new ViewBuilderFactory()) extends AutomationViewBuilderFactory {
+            /** @var array<string, bool> */
+            public array $flags = [];
 
-                $builder = (new ViewBuilderFactory())->createFormOverlayListViewBuilder($arguments[0], $arguments[1]);
+            public function createTaskListViewBuilder(string $name, string $path, string $entityClass /* , bool $addable = true */): FormOverlayListViewBuilderInterface
+            {
+                $this->flags[$entityClass] = \func_get_arg(3);
 
-                return $builder;
-            });
+                return parent::createTaskListViewBuilder(...\func_get_args());
+            }
+        };
 
         $admin = new AutomationAdmin(
-            $this->automationViewBuilderFactory->reveal(),
+            $recorder,
             $this->securityChecker->reveal(),
             $groupProvider->reveal(),
-            $factory,
+            new TaskHandlerFactory(\array_combine(\array_map('get_class', $handlers), $handlers)),
             $webspaceManager->reveal(),
         );
 
+        $viewBuilderFactory = new ViewBuilderFactory();
         $viewCollection = new ViewCollection();
-        $viewCollection->add((new ViewBuilderFactory())->createFormViewBuilder(SnippetAdmin::EDIT_TABS_VIEW, '/snippets/:id'));
+        $viewCollection->add($viewBuilderFactory->createFormViewBuilder(PageAdmin::EDIT_FORM_VIEW, '/pages/:id'));
+        $viewCollection->add($viewBuilderFactory->createFormViewBuilder(SnippetAdmin::EDIT_TABS_VIEW, '/snippets/:id'));
+        $viewCollection->add($viewBuilderFactory->createFormViewBuilder(ArticleAdmin::EDIT_TABS_VIEW . '_blog', '/articles/:id'));
         $admin->configureViews($viewCollection);
 
-        return $flags;
-    }
-
-    private function createPublishHandler(): SnippetPublishTaskHandler
-    {
-        return new SnippetPublishTaskHandler($this->prophesize(MessageBusInterface::class)->reveal());
+        return $recorder->flags;
     }
 }

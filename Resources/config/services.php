@@ -59,7 +59,7 @@ return static function(ContainerConfigurator $container) {
 
     $services->set('sulu_automation.task_permission_checker', TaskPermissionChecker::class)
         ->args([
-            service('sulu_security.security_checker'),
+            service('sulu_security.security_checker')->nullOnInvalid(),
             service('sulu_security.access_control_manager'),
             service('sulu_security.user_repository'),
             service('sulu_page.page_repository'),

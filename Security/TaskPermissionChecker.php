@@ -37,7 +37,7 @@ use Task\Handler\TaskHandlerFactoryInterface;
 class TaskPermissionChecker
 {
     public function __construct(
-        private SecurityCheckerInterface $securityChecker,
+        private ?SecurityCheckerInterface $securityChecker,
         private AccessControlManagerInterface $accessControlManager,
         private UserRepositoryInterface $userRepository,
         private PageRepositoryInterface $pageRepository,
@@ -47,7 +47,7 @@ class TaskPermissionChecker
 
     public function isCurrentUserAllowed(object $handler, string $entityClass, string $entityId, string $locale): bool
     {
-        if (!$handler instanceof SecuredAutomationTaskHandlerInterface) {
+        if (null === $this->securityChecker || !$handler instanceof SecuredAutomationTaskHandlerInterface) {
             return true;
         }
 
@@ -62,6 +62,10 @@ class TaskPermissionChecker
 
     public function checkCurrentUser(string $handlerClass, string $entityClass, string $entityId, string $locale): void
     {
+        if (null === $this->securityChecker) {
+            return;
+        }
+
         $handler = $this->taskHandlerFactory->create($handlerClass);
         if (!$handler instanceof SecuredAutomationTaskHandlerInterface) {
             return;

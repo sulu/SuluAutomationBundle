@@ -200,6 +200,23 @@ class TaskPermissionCheckerTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
+    public function testCurrentUserChecksAreSkippedWithoutSecurityChecker(): void
+    {
+        $checker = new TaskPermissionChecker(
+            null,
+            $this->accessControlManager->reveal(),
+            $this->userRepository->reveal(),
+            $this->pageRepository->reveal(),
+            $this->taskHandlerFactory->reveal(),
+        );
+
+        $this->assertTrue($checker->isCurrentUserAllowed(new RemoveHandler(), SnippetInterface::class, 'snippet-uuid', 'en'));
+
+        $checker->checkCurrentUser('remove', SnippetInterface::class, 'snippet-uuid', 'en');
+
+        $this->addToAssertionCount(1);
+    }
+
     public function testIsCurrentUserAllowed(): void
     {
         $this->securityChecker->hasPermission(Argument::type(SecurityCondition::class), PermissionTypes::DELETE)
