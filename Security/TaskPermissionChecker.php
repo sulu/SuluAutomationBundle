@@ -84,12 +84,24 @@ class TaskPermissionChecker
 
     public function checkCurrentUserForRemoval(string $handlerClass, string $entityClass, string $entityId, string $locale): void
     {
-        try {
-            $this->checkCurrentUser($handlerClass, $entityClass, $entityId, $locale);
-        } catch (PageNotFoundException|TaskHandlerNotExistsException) {
-            // a leftover task of a deleted page or an unknown handler has nothing to check against, but has to go
+        if (null === $this->securityChecker) {
             return;
         }
+
+        try {
+            $handler = $this->taskHandlerFactory->create($handlerClass);
+            if (!$handler instanceof SecuredAutomationTaskHandlerInterface) {
+                return;
+            }
+
+            $condition = $this->createCondition($handler, $entityClass, $entityId, $locale);
+        } catch (PageNotFoundException|TaskHandlerNotExistsException|\InvalidArgumentException) {
+            // a leftover task of a deleted page, an unknown handler or a handler that does not fit its entity has
+            // nothing to check against, but has to go
+            return;
+        }
+
+        $this->securityChecker->checkPermission($condition, $handler->getPermissionType());
     }
 
     /**

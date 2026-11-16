@@ -190,6 +190,16 @@ class TaskPermissionCheckerTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
+    public function testRemovalOfTaskWithHandlerOfAnotherEntityIsNotChecked(): void
+    {
+        $this->securityChecker->checkPermission(Argument::cetera())->shouldNotBeCalled();
+
+        $this->checker->checkCurrentUserForRemoval('publish', SnippetInterface::class, 'snippet-uuid', 'en');
+        $this->checker->checkCurrentUserForRemoval('remove', \stdClass::class, '1', 'en');
+
+        $this->addToAssertionCount(1);
+    }
+
     public function testRemovalOfTaskOfUnknownHandlerIsNotChecked(): void
     {
         $this->taskHandlerFactory->create('missing')->willThrow(new TaskHandlerNotExistsException('missing'));
