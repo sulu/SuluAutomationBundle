@@ -35,4 +35,26 @@ class AutomationViewBuilderFactoryTest extends TestCase
             );
         }
     }
+
+    public function testCallWithoutAddableIsDeprecated(): void
+    {
+        $factory = new AutomationViewBuilderFactory(new ViewBuilderFactory());
+
+        $deprecations = [];
+        \set_error_handler(static function(int $level, string $message) use (&$deprecations): bool {
+            $deprecations[] = $message;
+
+            return true;
+        }, \E_USER_DEPRECATED);
+
+        try {
+            $view = $factory->createTaskListViewBuilder('view', '/automation', 'Entity')->getView();
+        } finally {
+            \restore_error_handler();
+        }
+
+        $this->assertCount(1, $deprecations);
+        $this->assertStringContainsString('$addable', $deprecations[0]);
+        $this->assertSame(['sulu_admin.add', 'sulu_admin.delete'], \array_map(static fn ($action) => $action->getType(), $view->getOption('toolbarActions')));
+    }
 }

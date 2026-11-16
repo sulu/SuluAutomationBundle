@@ -10,8 +10,9 @@ unchecked until they are scheduled again.
 The `TaskController` has a new required constructor argument, the `TaskPermissionChecker`. Subclasses calling the
 parent constructor have to pass it.
 
-`AutomationViewBuilderFactoryInterface::createTaskListViewBuilder()` got an optional fourth argument `$addable`.
-Implementations of the interface have to add it.
+`AutomationViewBuilderFactoryInterface::createTaskListViewBuilder()` gets the argument `bool $addable = true` in the next
+minor release. Implementations should add it now. Calling the method without it is deprecated, the add action stays
+visible then.
 
 ## 2.2.0
 
