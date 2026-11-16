@@ -48,19 +48,19 @@ class FormMetadataLoaderTest extends TestCase
         $this->loader = new FormMetadataLoader($translator->reveal(), $factory, $this->permissionChecker->reveal());
     }
 
-    public function testOffersOnlyHandlersTheUserMayUse(): void
+    public function testOffersOnlyHandlersTheUserMayUseInTheLocaleOfTheEntity(): void
     {
-        $this->permissionChecker->isCurrentUserAllowed(Argument::type(FirstHandler::class), 'Entity', '1', 'de')->willReturn(true);
-        $this->permissionChecker->isCurrentUserAllowed(Argument::type(RemoveHandler::class), 'Entity', '1', 'de')->willReturn(false);
+        $this->permissionChecker->isCurrentUserAllowed(Argument::type(FirstHandler::class), 'Entity', '1', 'en')->willReturn(true);
+        $this->permissionChecker->isCurrentUserAllowed(Argument::type(RemoveHandler::class), 'Entity', '1', 'en')->willReturn(false);
 
-        $this->assertSame([FirstHandler::class], $this->getOfferedHandlers(['entityClass' => 'Entity', 'entityId' => '1']));
+        $this->assertSame([FirstHandler::class], $this->getOfferedHandlers(['entityClass' => 'Entity', 'entityId' => '1', 'locale' => 'en']));
     }
 
     public function testOffersNoHandlerIfNoneIsAllowed(): void
     {
         $this->permissionChecker->isCurrentUserAllowed(Argument::cetera())->willReturn(false);
 
-        $this->assertSame([], $this->getOfferedHandlers(['entityClass' => 'Entity', 'entityId' => '1']));
+        $this->assertSame([], $this->getOfferedHandlers(['entityClass' => 'Entity', 'entityId' => '1', 'locale' => 'en']));
     }
 
     /**

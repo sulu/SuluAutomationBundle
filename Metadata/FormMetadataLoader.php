@@ -49,7 +49,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
     }
 
     /**
-     * @param array{entityClass?: ?string, entityId?: ?string} $metadataOptions
+     * @param array{entityClass?: ?string, entityId?: ?string, locale?: ?string} $metadataOptions
      */
     public function getMetadata(string $key, string $locale, array $metadataOptions): ?MetadataInterface
     {
@@ -76,7 +76,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
         foreach ($this->taskHandlerFactory->getHandlers() as $handler) {
             if ($handler instanceof AutomationTaskHandlerInterface
                 && isset($metadataOptions['entityClass']) && $handler->supports($metadataOptions['entityClass'])) {
-                if (!$this->isAllowed($handler, $metadataOptions, $locale)) {
+                if (!$this->isAllowed($handler, $metadataOptions)) {
                     continue;
                 }
 
@@ -103,11 +103,11 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
     }
 
     /**
-     * @param array{entityClass?: ?string, entityId?: ?string} $metadataOptions
+     * @param array{entityClass?: ?string, entityId?: ?string, locale?: ?string} $metadataOptions
      */
-    private function isAllowed(AutomationTaskHandlerInterface $handler, array $metadataOptions, string $locale): bool
+    private function isAllowed(AutomationTaskHandlerInterface $handler, array $metadataOptions): bool
     {
-        if (null === $this->permissionChecker || !isset($metadataOptions['entityClass'], $metadataOptions['entityId'])) {
+        if (null === $this->permissionChecker || !isset($metadataOptions['entityClass'], $metadataOptions['entityId'], $metadataOptions['locale'])) {
             return true;
         }
 
@@ -115,7 +115,7 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
             $handler,
             $metadataOptions['entityClass'],
             $metadataOptions['entityId'],
-            $locale,
+            $metadataOptions['locale'],
         );
     }
 }

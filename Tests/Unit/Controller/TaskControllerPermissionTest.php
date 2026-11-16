@@ -82,21 +82,44 @@ class TaskControllerPermissionTest extends TestCase
         ));
     }
 
-    public function testPutWithoutLivePermissionUpdatesNoTask(): void
+    public function testPutChecksTheStoredValuesOfTheTask(): void
     {
-        $task = new Task();
-        $task->setHandlerClass('Handler');
-        $task->setEntityClass('Entity');
-        $task->setEntityId('1');
-        $this->taskManager->findById('task-id')->willReturn($task);
+        $this->taskManager->findById('task-id')->willReturn($this->createTask());
         $this->permissionChecker->checkCurrentUser('Handler', 'Entity', '1', 'de')->willThrow(new AccessDeniedException());
+        $this->permissionChecker->checkCurrentUser('Other', 'Entity', '1', 'en')->shouldNotBeCalled();
         $this->taskManager->update(Argument::any())->shouldNotBeCalled();
 
         $this->expectException(AccessDeniedException::class);
 
         $this->controller->putAction('task-id', new Request(
-            ['locale' => 'de'],
-            ['handlerClass' => 'Handler', 'schedule' => '2030-01-01T10:00:00'],
+            ['locale' => 'en'],
+            ['handlerClass' => 'Other', 'schedule' => '2030-01-01T10:00:00'],
         ));
+    }
+
+    public function testPutChecksTheNewValuesOfTheTask(): void
+    {
+        $this->taskManager->findById('task-id')->willReturn($this->createTask());
+        $this->permissionChecker->checkCurrentUser('Handler', 'Entity', '1', 'de')->shouldBeCalled();
+        $this->permissionChecker->checkCurrentUser('Other', 'Entity', '1', 'en')->willThrow(new AccessDeniedException());
+        $this->taskManager->update(Argument::any())->shouldNotBeCalled();
+
+        $this->expectException(AccessDeniedException::class);
+
+        $this->controller->putAction('task-id', new Request(
+            ['locale' => 'en'],
+            ['handlerClass' => 'Other', 'schedule' => '2030-01-01T10:00:00'],
+        ));
+    }
+
+    private function createTask(): Task
+    {
+        $task = new Task();
+        $task->setHandlerClass('Handler');
+        $task->setEntityClass('Entity');
+        $task->setEntityId('1');
+        $task->setLocale('de');
+
+        return $task;
     }
 }

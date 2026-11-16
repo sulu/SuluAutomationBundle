@@ -15,6 +15,7 @@ namespace Sulu\Bundle\AutomationBundle\Security;
 
 use Sulu\Article\Domain\Model\ArticleInterface;
 use Sulu\Article\Infrastructure\Sulu\Admin\ArticleAdmin;
+use Sulu\Bundle\AdminBundle\Admin\Admin;
 use Sulu\Bundle\AutomationBundle\Exception\TaskPermissionDeniedException;
 use Sulu\Bundle\AutomationBundle\TaskHandler\SecuredAutomationTaskHandlerInterface;
 use Sulu\Component\Security\Authentication\UserInterface;
@@ -125,15 +126,16 @@ class TaskPermissionChecker
                 $locale,
                 Page::class,
                 $entityId,
+                Admin::SULU_ADMIN_SECURITY_SYSTEM,
             );
         }
 
         if (SnippetInterface::class === $entityClass) {
-            return new SecurityCondition(SnippetAdmin::SECURITY_CONTEXT, $locale);
+            return new SecurityCondition(SnippetAdmin::SECURITY_CONTEXT, $locale, null, null, Admin::SULU_ADMIN_SECURITY_SYSTEM);
         }
 
         if (ArticleInterface::class === $entityClass) {
-            return new SecurityCondition(ArticleAdmin::SECURITY_CONTEXT, $locale);
+            return new SecurityCondition(ArticleAdmin::SECURITY_CONTEXT, $locale, null, null, Admin::SULU_ADMIN_SECURITY_SYSTEM);
         }
 
         throw new \InvalidArgumentException(\sprintf('No security context known for "%s".', $entityClass));

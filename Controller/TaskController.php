@@ -257,6 +257,9 @@ class TaskController extends AbstractRestController implements SecuredController
     {
         /** @var Task $task */
         $task = $this->taskManager->findById($id);
+
+        $this->permissionChecker->checkCurrentUser($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale());
+
         $task->setScheme($request->getScheme());
         $task->setHost($request->getHost());
         $task->setLocale((string) $request->query->get('locale'));

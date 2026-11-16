@@ -2,29 +2,16 @@
 
 ## 3.0.2
 
-### Task handlers can require a permission
+### Permission of the task handler
 
-A handler implementing the new `SecuredAutomationTaskHandlerInterface` names the permission a user needs on the entity,
-for example `live` to publish or `delete` to remove. The bundle's own publish and unpublish handlers require `live`.
-Handlers without the interface are not checked, as before.
+Roles without `live` can no longer schedule publish or unpublish tasks. Tasks scheduled before this update run
+unchecked until they are scheduled again.
 
-The permission is needed to create or change a task. The "add" overlay offers only the handlers the user may use.
-The automation tab stays visible. Its add action is removed if the user may use no handler for that entity type in
-any webspace.
+The `TaskController` has a new required constructor argument, the `TaskPermissionChecker`. Subclasses calling the
+parent constructor have to pass it.
 
 `AutomationViewBuilderFactoryInterface::createTaskListViewBuilder()` got an optional fourth argument `$addable`.
 Implementations of the interface have to add it.
-
-The task runs with the user who scheduled it and checks the permission again right before it runs. It fails if that
-user lost the permission, was deactivated or locked.
-
-Roles that could schedule publish tasks without `live` lose that.
-
-Tasks scheduled before this update have no user in their workload. They still run without the check and trigger a
-deprecation. Schedule them again to add the user.
-
-A secured handler is refused for an entity it does not support and for entities of other bundles, because there is no
-known security context to check against. Such handlers should not implement the interface and check themselves.
 
 ## 2.2.0
 

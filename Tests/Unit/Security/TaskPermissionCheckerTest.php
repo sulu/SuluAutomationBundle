@@ -272,6 +272,7 @@ class TaskPermissionCheckerTest extends TestCase
         $user->setEnabled(true);
         $user->setLocked(true);
         $this->userRepository->findUserById(5)->willReturn($user);
+        $this->accessControlManager->getUserPermissions(Argument::cetera())->shouldNotBeCalled();
 
         $this->expectException(TaskPermissionDeniedException::class);
 

@@ -3,3 +3,7 @@ security:
         main:
             pattern: ^/
             lazy: true
+
+sulu_security:
+    checker:
+        enabled: true

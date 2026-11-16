@@ -50,7 +50,7 @@ class AutomationViewBuilderFactory implements AutomationViewBuilderFactoryInterf
             ->addListAdapters(['table'])
             ->addRequestParameters(['entityClass' => $entityClass])
             ->addMetadataRequestParameters(['entityClass' => $entityClass])
-            ->addRouterAttributesToFormMetadata(['id' => 'entityId'])
+            ->addRouterAttributesToFormMetadata(['id' => 'entityId', 'locale' => 'locale'])
             ->addRouterAttributesToFormRequest(['id' => 'entityId'])
             ->addRouterAttributesToListRequest(['id' => 'entityId'])
             ->setOption('itemDisabledCondition', 'status != "planned"');
