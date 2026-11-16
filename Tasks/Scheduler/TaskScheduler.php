@@ -15,7 +15,9 @@ use Sulu\Bundle\AutomationBundle\Exception\TaskExpiredException;
 use Sulu\Bundle\AutomationBundle\Exception\TaskHandlerNotSupportedException;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
+use Sulu\Component\Security\Authentication\UserInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Task\Handler\TaskHandlerFactoryInterface;
 use Task\Scheduler\TaskSchedulerInterface as PHPTaskSchedulerInterface;
 use Task\Storage\TaskExecutionRepositoryInterface;
@@ -54,6 +56,7 @@ class TaskScheduler implements TaskSchedulerInterface
         TaskExecutionRepositoryInterface $phpTaskExecutionRepository,
         TaskHandlerFactoryInterface $taskHandlerFactory,
         PHPTaskSchedulerInterface $taskScheduler,
+        private ?TokenStorageInterface $tokenStorage = null,
     ) {
         $this->taskRepository = $phpTaskRepository;
         $this->taskExecutionRepository = $phpTaskExecutionRepository;
@@ -138,6 +141,12 @@ class TaskScheduler implements TaskSchedulerInterface
                 'locale' => $task->getLocale(),
             ]
         );
+
+        // the task runs without a token later, so the permission of this user is checked again then
+        $user = $this->tokenStorage?->getToken()?->getUser();
+        if ($user instanceof UserInterface) {
+            $optionsResolver->setDefault('userId', $user->getId());
+        }
 
         $handler = $this->taskHandlerFactory->create($task->getHandlerClass());
         if (!$handler instanceof AutomationTaskHandlerInterface) {

@@ -17,6 +17,7 @@ use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\FormMetadataLoaderInterface;
 use Sulu\Bundle\AdminBundle\Metadata\FormMetadata\OptionMetadata;
 use Sulu\Bundle\AdminBundle\Metadata\MetadataInterface;
 use Sulu\Bundle\AdminBundle\Metadata\SchemaMetadata\SchemaMetadata;
+use Sulu\Bundle\AutomationBundle\Security\TaskPermissionChecker;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Task\TaskBundle\Handler\TaskHandlerFactory;
@@ -41,13 +42,14 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
     public function __construct(
         TranslatorInterface $translator,
         TaskHandlerFactory $taskHandlerFactory,
+        private ?TaskPermissionChecker $permissionChecker = null,
     ) {
         $this->translator = $translator;
         $this->taskHandlerFactory = $taskHandlerFactory;
     }
 
     /**
-     * @param array{entityClass: ?string} $metadataOptions
+     * @param array{entityClass?: ?string, entityId?: ?string, locale?: ?string} $metadataOptions
      */
     public function getMetadata(string $key, string $locale, array $metadataOptions): ?MetadataInterface
     {
@@ -70,10 +72,15 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
 
         $valuesOption = new OptionMetadata();
         $valuesOption->setName('values');
+        $valuesOption->setValue([]);
 
         foreach ($this->taskHandlerFactory->getHandlers() as $handler) {
             if ($handler instanceof AutomationTaskHandlerInterface
                 && isset($metadataOptions['entityClass']) && $handler->supports($metadataOptions['entityClass'])) {
+                if (!$this->isAllowed($handler, $metadataOptions)) {
+                    continue;
+                }
+
                 $configuration = $handler->getConfiguration();
 
                 $handlerOption = new OptionMetadata();
@@ -94,5 +101,22 @@ class FormMetadataLoader implements FormMetadataLoaderInterface
         $form->addItem($scheduleField);
 
         return $form;
+    }
+
+    /**
+     * @param array{entityClass?: ?string, entityId?: ?string, locale?: ?string} $metadataOptions
+     */
+    private function isAllowed(AutomationTaskHandlerInterface $handler, array $metadataOptions): bool
+    {
+        if (null === $this->permissionChecker || !isset($metadataOptions['entityClass'], $metadataOptions['entityId'], $metadataOptions['locale'])) {
+            return true;
+        }
+
+        return $this->permissionChecker->isCurrentUserAllowed(
+            $handler,
+            $metadataOptions['entityClass'],
+            $metadataOptions['entityId'],
+            $metadataOptions['locale'],
+        );
     }
 }

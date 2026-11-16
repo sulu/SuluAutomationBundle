@@ -19,6 +19,9 @@ use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Exception\TaskExpiredException;
 use Sulu\Bundle\AutomationBundle\Tasks\Scheduler\TaskScheduler;
 use Sulu\Bundle\AutomationBundle\Tests\Handler\FirstHandler;
+use Sulu\Bundle\SecurityBundle\Entity\User;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Task\Builder\TaskBuilder;
 use Task\Execution\TaskExecution;
 use Task\Handler\TaskHandlerFactoryInterface;
@@ -85,6 +88,35 @@ class TaskSchedulerTest extends TestCase
         $this->taskScheduler->schedule($task);
 
         $this->assertSame($phpTask, $task->getTask());
+    }
+
+    public function testScheduleStoresUserInWorkload(): void
+    {
+        $user = $this->prophesize(User::class);
+        $user->getId()->willReturn(7);
+        $user->getUserIdentifier()->willReturn('admin');
+        $user->getRoles()->willReturn([]);
+        $tokenStorage = new TokenStorage();
+        $tokenStorage->setToken(new UsernamePasswordToken($user->reveal(), 'admin', []));
+
+        $taskScheduler = new TaskScheduler(
+            $this->taskRepository->reveal(),
+            $this->taskExecutionRepository->reveal(),
+            $this->taskHandlerFactory->reveal(),
+            $this->phpTaskScheduler->reveal(),
+            $tokenStorage,
+        );
+
+        $this->taskHandlerFactory->create(FirstHandler::class)->willReturn(new FirstHandler());
+
+        $phpTask = new PHPTask(FirstHandler::class, null, 'test-uuid-123');
+        $this->phpTaskScheduler
+            ->createTask(FirstHandler::class, ['class' => 'TestClass', 'id' => '1', 'locale' => 'de', 'userId' => 7])
+            ->willReturn(new TaskBuilder($phpTask, $this->phpTaskScheduler->reveal()))
+            ->shouldBeCalled();
+        $this->phpTaskScheduler->addTask($phpTask)->shouldBeCalled();
+
+        $taskScheduler->schedule($this->createTask());
     }
 
     public function testRescheduleWithDifferentSchedule(): void

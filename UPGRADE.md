@@ -1,5 +1,19 @@
 # Upgrade
 
+## 3.0.2
+
+### Permission of the task handler
+
+Roles without `live` can no longer schedule publish or unpublish tasks. Tasks scheduled before this update run
+unchecked until they are scheduled again.
+
+The `TaskController` has a new required constructor argument, the `TaskPermissionChecker`. Subclasses calling the
+parent constructor have to pass it.
+
+`AutomationViewBuilderFactoryInterface::createTaskListViewBuilder()` gets the argument `bool $addable = true` in the next
+minor release. Implementations should add it now. Calling the method without it is deprecated, the add action stays
+visible then.
+
 ## 2.2.0
 
 ### Deprecate usage of fos rest routing

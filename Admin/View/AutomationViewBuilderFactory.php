@@ -30,8 +30,14 @@ class AutomationViewBuilderFactory implements AutomationViewBuilderFactoryInterf
         $this->viewBuilderFactory = $viewBuilderFactory;
     }
 
-    public function createTaskListViewBuilder(string $name, string $path, string $entityClass): FormOverlayListViewBuilderInterface
+    public function createTaskListViewBuilder(string $name, string $path, string $entityClass /* , bool $addable = true */): FormOverlayListViewBuilderInterface
     {
+        if (\func_num_args() < 4) {
+            trigger_deprecation('sulu/automation-bundle', '3.0.2', 'Calling "%s()" without the "$addable" argument is deprecated, it will be required in the next minor release.', __METHOD__);
+        }
+
+        $addable = 3 < \func_num_args() ? (bool) \func_get_arg(3) : true;
+
         $taskCountBadge = (new Badge('sulu_automation.get_task_count', '/count', 'value != 0'))
             ->addRequestParameters(['entityClass' => $entityClass])
             ->addRouterAttributesToRequest(['locale' => 'locale', 'id' => 'entityId']);
@@ -42,14 +48,15 @@ class AutomationViewBuilderFactory implements AutomationViewBuilderFactoryInterf
             ->setListKey(Task::RESOURCE_KEY)
             ->setFormKey('task_details')
             ->setTabTitle('sulu_automation.automation')
-            ->addToolbarActions([
-                new ToolbarAction('sulu_admin.add'),
+            ->addToolbarActions(\array_values(\array_filter([
+                $addable ? new ToolbarAction('sulu_admin.add') : null,
                 new ToolbarAction('sulu_admin.delete'),
-            ])
+            ])))
             ->addTabBadges([$taskCountBadge])
             ->addListAdapters(['table'])
             ->addRequestParameters(['entityClass' => $entityClass])
             ->addMetadataRequestParameters(['entityClass' => $entityClass])
+            ->addRouterAttributesToFormMetadata(['id' => 'entityId', 'locale' => 'locale'])
             ->addRouterAttributesToFormRequest(['id' => 'entityId'])
             ->addRouterAttributesToListRequest(['id' => 'entityId'])
             ->setOption('itemDisabledCondition', 'status != "planned"');

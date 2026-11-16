@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Method Sulu\\\\Bundle\\\\AutomationBundle\\\\Admin\\\\View\\\\AutomationViewBuilderFactoryInterface\\:\\:createTaskListViewBuilder\\(\\) invoked with 4 parameters, 3 required\\.$#"
+			count: 3
+			path: Admin/AutomationAdmin.php
+
+		-
 			message: "#^Property Sulu\\\\Bundle\\\\AutomationBundle\\\\Entity\\\\Task\\:\\:\\$task type mapping mismatch\\: property can contain Task\\\\TaskInterface\\|null but database expects Task\\\\TaskBundle\\\\Entity\\\\Task\\|null\\.$#"
 			count: 1
 			path: Entity/Task.php
