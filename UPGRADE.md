@@ -4,7 +4,7 @@
 
 ### Permission of the task handler
 
-Roles without `live` can no longer schedule publish or unpublish tasks. Tasks scheduled before this update run
+Roles without `live` can no longer schedule, change or delete publish or unpublish tasks. Tasks scheduled before this update run
 unchecked until they are scheduled again.
 
 The `TaskController` has a new required constructor argument, the `TaskPermissionChecker`. Subclasses calling the

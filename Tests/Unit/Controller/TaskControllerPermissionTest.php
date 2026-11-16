@@ -21,6 +21,7 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Sulu\Bundle\AutomationBundle\Controller\TaskController;
 use Sulu\Bundle\AutomationBundle\Entity\Task;
+use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
 use Sulu\Bundle\AutomationBundle\Security\TaskPermissionChecker;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface as AutomationTaskRepositoryInterface;
@@ -28,6 +29,7 @@ use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactoryInterface
 use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
 use Sulu\Component\Rest\RestHelperInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -42,6 +44,9 @@ class TaskControllerPermissionTest extends TestCase
     /** @var ObjectProphecy<TaskManagerInterface> */
     private ObjectProphecy $taskManager;
 
+    /** @var ObjectProphecy<ViewHandlerInterface> */
+    private ObjectProphecy $viewHandler;
+
     /** @var ObjectProphecy<TaskPermissionChecker> */
     private ObjectProphecy $permissionChecker;
 
@@ -51,9 +56,11 @@ class TaskControllerPermissionTest extends TestCase
     {
         $this->taskManager = $this->prophesize(TaskManagerInterface::class);
         $this->permissionChecker = $this->prophesize(TaskPermissionChecker::class);
+        $this->viewHandler = $this->prophesize(ViewHandlerInterface::class);
+        $this->viewHandler->handle(Argument::cetera())->willReturn(new Response());
 
         $this->controller = new TaskController(
-            $this->prophesize(ViewHandlerInterface::class)->reveal(),
+            $this->viewHandler->reveal(),
             $this->prophesize(TokenStorageInterface::class)->reveal(),
             $this->prophesize(DoctrineListBuilderFactoryInterface::class)->reveal(),
             $this->prophesize(TaskHandlerFactoryInterface::class)->reveal(),
@@ -110,6 +117,54 @@ class TaskControllerPermissionTest extends TestCase
             ['locale' => 'en'],
             ['handlerClass' => 'Other', 'schedule' => '2030-01-01T10:00:00'],
         ));
+    }
+
+    public function testDeleteWithoutHandlerPermissionRemovesNoTask(): void
+    {
+        $this->taskManager->findById('task-id')->willReturn($this->createTask());
+        $this->permissionChecker->checkCurrentUserForRemoval('Handler', 'Entity', '1', 'de')->willThrow(new AccessDeniedException());
+        $this->taskManager->remove(Argument::any())->shouldNotBeCalled();
+
+        $this->expectException(AccessDeniedException::class);
+
+        $this->controller->deleteAction('task-id');
+    }
+
+    public function testDeleteWithHandlerPermissionRemovesTask(): void
+    {
+        $this->taskManager->findById('task-id')->willReturn($this->createTask());
+        $this->permissionChecker->checkCurrentUserForRemoval('Handler', 'Entity', '1', 'de')->shouldBeCalled();
+        $this->taskManager->remove('task-id')->shouldBeCalled();
+
+        $this->controller->deleteAction('task-id');
+    }
+
+    public function testMultipleDeleteRemovesNothingIfOneTaskDoesNotExist(): void
+    {
+        $this->taskManager->findById('known')->willReturn($this->createTask());
+        $this->taskManager->findById('unknown')->willThrow(new TaskNotFoundException('unknown'));
+        $this->permissionChecker->checkCurrentUserForRemoval('Handler', 'Entity', '1', 'de')->shouldBeCalled();
+        $this->taskManager->remove(Argument::any())->shouldNotBeCalled();
+
+        $this->expectException(TaskNotFoundException::class);
+
+        $this->controller->cdeleteAction(new Request(['ids' => 'known,unknown']));
+    }
+
+    public function testMultipleDeleteRemovesNothingIfOneTaskIsNotAllowed(): void
+    {
+        $allowed = $this->createTask();
+        $denied = $this->createTask();
+        $denied->setEntityId('2');
+        $this->taskManager->findById('allowed')->willReturn($allowed);
+        $this->taskManager->findById('denied')->willReturn($denied);
+        $this->permissionChecker->checkCurrentUserForRemoval('Handler', 'Entity', '1', 'de')->shouldBeCalled();
+        $this->permissionChecker->checkCurrentUserForRemoval('Handler', 'Entity', '2', 'de')->willThrow(new AccessDeniedException());
+        $this->taskManager->remove(Argument::any())->shouldNotBeCalled();
+
+        $this->expectException(AccessDeniedException::class);
+
+        $this->controller->cdeleteAction(new Request(['ids' => 'allowed,denied']));
     }
 
     private function createTask(): Task

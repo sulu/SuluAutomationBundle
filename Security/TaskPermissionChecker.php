@@ -23,6 +23,7 @@ use Sulu\Component\Security\Authentication\UserRepositoryInterface;
 use Sulu\Component\Security\Authorization\AccessControl\AccessControlManagerInterface;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 use Sulu\Component\Security\Authorization\SecurityCondition;
+use Sulu\Page\Domain\Exception\PageNotFoundException;
 use Sulu\Page\Domain\Model\Page;
 use Sulu\Page\Domain\Model\PageInterface;
 use Sulu\Page\Domain\Repository\PageRepositoryInterface;
@@ -30,6 +31,7 @@ use Sulu\Snippet\Domain\Model\SnippetInterface;
 use Sulu\Snippet\Infrastructure\Sulu\Admin\SnippetAdmin;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Task\Handler\TaskHandlerFactoryInterface;
+use Task\Handler\TaskHandlerNotExistsException;
 
 /**
  * Checks the permission the handler of a task names, for the user who schedules and for the user who runs it.
@@ -75,6 +77,28 @@ class TaskPermissionChecker
             $condition = $this->createCondition($handler, $entityClass, $entityId, $locale);
         } catch (\InvalidArgumentException $exception) {
             throw new AccessDeniedException($exception->getMessage(), $exception);
+        }
+
+        $this->securityChecker->checkPermission($condition, $handler->getPermissionType());
+    }
+
+    public function checkCurrentUserForRemoval(string $handlerClass, string $entityClass, string $entityId, string $locale): void
+    {
+        if (null === $this->securityChecker) {
+            return;
+        }
+
+        try {
+            $handler = $this->taskHandlerFactory->create($handlerClass);
+            if (!$handler instanceof SecuredAutomationTaskHandlerInterface) {
+                return;
+            }
+
+            $condition = $this->createCondition($handler, $entityClass, $entityId, $locale);
+        } catch (PageNotFoundException|TaskHandlerNotExistsException|\InvalidArgumentException) {
+            // a leftover task of a deleted page, an unknown handler or a handler that does not fit its entity has
+            // nothing to check against, but has to go
+            return;
         }
 
         $this->securityChecker->checkPermission($condition, $handler->getPermissionType());
