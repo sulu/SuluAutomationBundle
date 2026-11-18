@@ -29,6 +29,7 @@ use Sulu\Bundle\AutomationBundle\TaskHandler\ArticlePublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\ArticleUnpublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\PagePublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\PageUnpublishTaskHandler;
+use Sulu\Bundle\AutomationBundle\TaskHandler\PublishTaskUserGuard;
 use Sulu\Bundle\AutomationBundle\TaskHandler\SnippetPublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\SnippetUnpublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManager;
@@ -138,9 +139,16 @@ return static function(ContainerConfigurator $container) {
         ])
         ->tag('kernel.event_subscriber');
 
+    $services->set('sulu_automation.publish_task_user_guard', PublishTaskUserGuard::class)
+        ->args([
+            service('sulu_content.workflow_transition_admin_authorizer'),
+            service('sulu_security.user_repository'),
+        ]);
+
     $services->set('sulu_automation.page_publish_handler', PagePublishTaskHandler::class)
         ->args([
             service('sulu_message_bus'),
+            service('sulu_automation.publish_task_user_guard'),
         ])
         ->tag('task.handler');
 
@@ -153,6 +161,7 @@ return static function(ContainerConfigurator $container) {
     $services->set('sulu_automation.article_publish_handler', ArticlePublishTaskHandler::class)
         ->args([
             service('sulu_message_bus'),
+            service('sulu_automation.publish_task_user_guard'),
         ])
         ->tag('task.handler');
 
@@ -165,6 +174,7 @@ return static function(ContainerConfigurator $container) {
     $services->set('sulu_automation.snippet_publish_handler', SnippetPublishTaskHandler::class)
         ->args([
             service('sulu_message_bus'),
+            service('sulu_automation.publish_task_user_guard'),
         ])
         ->tag('task.handler');
 
