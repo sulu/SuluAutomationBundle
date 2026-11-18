@@ -141,7 +141,7 @@ return static function(ContainerConfigurator $container) {
 
     $services->set('sulu_automation.publish_task_user_guard', PublishTaskUserGuard::class)
         ->args([
-            service('sulu_content.workflow_transition_admin_authorizer'),
+            service('sulu_content.workflow_transition_admin_authorizer')->nullOnInvalid(),
             service('sulu_security.user_repository'),
         ]);
 

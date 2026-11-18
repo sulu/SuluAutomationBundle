@@ -66,6 +66,15 @@ class PublishTaskUserGuardTest extends TestCase
             ->assertCanPublish('pages', ['id' => 'page-uuid', 'locale' => 'en', 'userId' => 7]);
     }
 
+    public function testDoesNothingWithoutAnAuthorizer(): void
+    {
+        $userRepository = $this->prophesize(UserRepositoryInterface::class);
+        $userRepository->findUserById(Argument::cetera())->shouldNotBeCalled();
+
+        (new PublishTaskUserGuard(null, $userRepository->reveal()))
+            ->assertCanPublish('pages', ['id' => 'page-uuid', 'locale' => 'en', 'userId' => 7]);
+    }
+
     public function testRunsATaskWithoutAUserAsBefore(): void
     {
         $authorizer = $this->prophesize(WorkflowTransitionAdminAuthorizerInterface::class);

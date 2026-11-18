@@ -22,12 +22,15 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
  * the user. The workflow decides with its own rule: the permission `live`, or the permission `edit` while an approved
  * request is open for the content.
  *
+ * The authorizer only exists in the admin context. Without it, as in the website kernel, there is nothing to ask and the
+ * check of the permission of the task handler stays the only one.
+ *
  * @internal
  */
 class PublishTaskUserGuard
 {
     public function __construct(
-        private readonly WorkflowTransitionAdminAuthorizerInterface $authorizer,
+        private readonly ?WorkflowTransitionAdminAuthorizerInterface $authorizer,
         private readonly UserRepositoryInterface $userRepository,
     ) {
     }
@@ -41,7 +44,7 @@ class PublishTaskUserGuard
      */
     public function assertCanPublish(string $resourceKey, array $workload): void
     {
-        if (!isset($workload['userId'])) {
+        if (null === $this->authorizer || !isset($workload['userId'])) {
             return;
         }
 
