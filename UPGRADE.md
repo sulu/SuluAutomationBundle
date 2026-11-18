@@ -1,5 +1,14 @@
 # Upgrade
 
+## 3.1.0
+
+### Publish at in the save dropdown
+
+The save dropdown of pages, articles and snippets gets the entry "Publish at" for users with the permission `live`. It saves
+the content and schedules its publish for the picked date. The entry needs no admin JavaScript of the bundle. It uses the
+form toolbar action `sulu_admin.save_and_create` of Sulu 3.1 and is added through the tag
+`sulu_content.save_toolbar_action_provider`, so it only shows where the bundle is installed.
+
 ## 3.0.2
 
 ### Permission of the task handler

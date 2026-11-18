@@ -8,5 +8,7 @@
   "sulu_automation.list.creator": "Created by",
   "sulu_automation.list.changer": "Changed by",
   "sulu_content.task_handler.publish": "Publish",
-  "sulu_content.task_handler.unpublish": "Unpublish"
+  "sulu_content.task_handler.unpublish": "Unpublish",
+  "sulu_automation.publish_at": "Publish at",
+  "sulu_automation.publish_at_schedule": "Date and time"
 }

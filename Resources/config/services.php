@@ -12,6 +12,7 @@
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
+use Sulu\Bundle\AutomationBundle\Admin\PublishAtSaveToolbarActionProvider;
 use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactory;
 use Sulu\Bundle\AutomationBundle\Admin\View\AutomationViewBuilderFactoryInterface;
 use Sulu\Bundle\AutomationBundle\Controller\TaskController;
@@ -97,6 +98,10 @@ return static function(ContainerConfigurator $container) {
             service('sulu_core.webspace.webspace_manager'),
         ])
         ->tag('sulu.admin')
+        ->tag('sulu.context', ['context' => 'admin']);
+
+    $services->set('sulu_automation.publish_at_save_toolbar_action_provider', PublishAtSaveToolbarActionProvider::class)
+        ->tag('sulu_content.save_toolbar_action_provider')
         ->tag('sulu.context', ['context' => 'admin']);
 
     $services->set('sulu_automation.tasks.manager', TaskManager::class)
