@@ -76,6 +76,11 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
                             __DIR__ . '/../Resources/config/lists',
                         ],
                     ],
+                    'forms' => [
+                        'directories' => [
+                            __DIR__ . '/../Resources/config/forms',
+                        ],
+                    ],
                     'resources' => [
                         'tasks' => [
                             'routes' => [
