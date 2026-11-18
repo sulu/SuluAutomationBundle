@@ -213,7 +213,9 @@ return static function(ContainerConfigurator $container) {
             service('sulu_automation.request_for_publishing.targets'),
             service('sulu.repository.task'),
             service('task.storage.task_execution'),
+            service('sulu_content.workflow_transition_request_status_resolver'),
         ])
+        ->tag('kernel.event_listener', ['event' => WorkflowTransitionRequestActionEvent::class])
         ->tag('kernel.event_listener', ['event' => WorkflowTransitionRequestCancelledEvent::class])
         ->tag('kernel.event_listener', ['event' => WorkflowTransitionRequestSettledEvent::class])
         ->tag('sulu.context', ['context' => 'admin']);
