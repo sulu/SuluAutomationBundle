@@ -19,6 +19,10 @@ use Sulu\Bundle\AutomationBundle\Events\Events;
 use Sulu\Bundle\AutomationBundle\EventSubscriber\PHPTaskEventSubscriber;
 use Sulu\Bundle\AutomationBundle\EventSubscriber\TaskPermissionSubscriber;
 use Sulu\Bundle\AutomationBundle\Metadata\FormMetadataLoader;
+use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtAction;
+use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtScheduler;
+use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtTargets;
+use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtTaskCanceller;
 use Sulu\Bundle\AutomationBundle\Security\TaskPermissionChecker;
 use Sulu\Bundle\AutomationBundle\Serializer\TaskSerializerSubscriber;
 use Sulu\Bundle\AutomationBundle\TaskHandler\ArticlePublishTaskHandler;
@@ -29,6 +33,9 @@ use Sulu\Bundle\AutomationBundle\TaskHandler\SnippetPublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\SnippetUnpublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManager;
 use Sulu\Bundle\AutomationBundle\Tasks\Scheduler\TaskScheduler;
+use Sulu\Content\Application\WorkflowTransitionRequest\Event\WorkflowTransitionRequestActionEvent;
+use Sulu\Content\Application\WorkflowTransitionRequest\Event\WorkflowTransitionRequestCancelledEvent;
+use Sulu\Content\Application\WorkflowTransitionRequest\Event\WorkflowTransitionRequestSettledEvent;
 
 return static function(ContainerConfigurator $container) {
     $services = $container->services();
@@ -166,4 +173,38 @@ return static function(ContainerConfigurator $container) {
             service('sulu_message_bus'),
         ])
         ->tag('task.handler');
+
+    // The bundle does not autoconfigure, so the action and the listeners carry their tags themselves.
+    $services->set('sulu_automation.request_for_publishing.targets', PublishAtTargets::class);
+
+    $services->set('sulu_automation.request_for_publishing.publish_at_action', PublishAtAction::class)
+        ->args([
+            service('sulu_automation.request_for_publishing.targets'),
+            service('sulu_automation.tasks.manager'),
+            service('sulu.repository.task'),
+            service('sulu_automation.task_permission_checker'),
+            service('sulu_content.workflow_transition_request_status_resolver'),
+            service('request_stack'),
+            service('sulu_activity.domain_event_collector'),
+        ])
+        ->tag('sulu_content.workflow_transition_request_action')
+        ->tag('sulu.context', ['context' => 'admin']);
+
+    $services->set('sulu_automation.request_for_publishing.publish_at_scheduler', PublishAtScheduler::class)
+        ->args([
+            service('sulu_automation.request_for_publishing.publish_at_action'),
+            service('security.token_storage'),
+        ])
+        ->tag('kernel.event_listener', ['event' => WorkflowTransitionRequestActionEvent::class])
+        ->tag('sulu.context', ['context' => 'admin']);
+
+    $services->set('sulu_automation.request_for_publishing.publish_at_task_canceller', PublishAtTaskCanceller::class)
+        ->args([
+            service('sulu_automation.request_for_publishing.targets'),
+            service('sulu.repository.task'),
+            service('task.storage.task_execution'),
+        ])
+        ->tag('kernel.event_listener', ['event' => WorkflowTransitionRequestCancelledEvent::class])
+        ->tag('kernel.event_listener', ['event' => WorkflowTransitionRequestSettledEvent::class])
+        ->tag('sulu.context', ['context' => 'admin']);
 };

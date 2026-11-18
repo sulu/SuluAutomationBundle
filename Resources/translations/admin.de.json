@@ -8,5 +8,10 @@
   "sulu_automation.list.creator": "Erstellt von",
   "sulu_automation.list.changer": "Bearbeitet von",
   "sulu_content.task_handler.publish": "Veröffentlichen",
-  "sulu_content.task_handler.unpublish": "Unveröffentlichen"
+  "sulu_content.task_handler.unpublish": "Unveröffentlichen",
+  "sulu_automation.publish_at_date": "Veröffentlichen am",
+  "sulu_automation.publish_at_date_info": "Sobald die Anfrage genehmigt ist, wird der Inhalt zu diesem Zeitpunkt veröffentlicht.",
+  "sulu_automation.publish_on": "Am {date} veröffentlichen",
+  "sulu_automation.publish_automatically": "Automatisch publizieren",
+  "sulu_automation.publish_scheduled": "Veröffentlichung geplant für {date}"
 }
