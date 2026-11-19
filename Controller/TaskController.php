@@ -21,6 +21,7 @@ use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
 use Sulu\Bundle\AutomationBundle\Security\TaskPermissionChecker;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
+use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface as AutomationTaskRepositoryInterface;
 use Sulu\Bundle\SecurityBundle\Entity\User;
 use Sulu\Component\Rest\AbstractRestController;
@@ -38,6 +39,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use Task\Handler\TaskHandlerFactoryInterface;
 use Task\Storage\TaskExecutionRepositoryInterface;
 use Task\Storage\TaskRepositoryInterface;
+use Task\TaskStatus;
 
 /**
  * Provides api for tasks.
@@ -243,11 +245,36 @@ class TaskController extends AbstractRestController implements SecuredController
 
         $this->permissionChecker->checkCurrentUser($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale());
 
+        $replaced = $request->request->getBoolean('replacePlanned')
+            ? $this->automationTaskRepository->findPendingTasks($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale())
+            : [];
+
         $this->taskManager->create($task);
 
         $this->entityManager->flush();
 
+        $this->abortPlanned($replaced);
+
         return $this->handleView($this->view($task));
+    }
+
+    /**
+     * The planned executions stay in the list as aborted, so it is visible that a later task replaced them.
+     *
+     * @param list<TaskInterface> $tasks
+     */
+    private function abortPlanned(array $tasks): void
+    {
+        foreach ($tasks as $task) {
+            foreach ($this->taskExecutionRepository->findByTaskUuid((string) $task->getTask()?->getUuid()) as $execution) {
+                if (TaskStatus::PLANNED !== $execution->getStatus()) {
+                    continue;
+                }
+
+                $execution->setStatus(TaskStatus::ABORTED);
+                $this->taskExecutionRepository->save($execution);
+            }
+        }
     }
 
     /**
