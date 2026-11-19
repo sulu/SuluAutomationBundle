@@ -112,6 +112,7 @@ return static function(ContainerConfigurator $container) {
         ->tag('sulu.context', ['context' => 'admin']);
 
     $services->set('sulu_automation.publish_at_save_toolbar_action_provider', PublishAtSaveToolbarActionProvider::class)
+        ->args([service('sulu_security.security_checker')])
         ->tag('sulu_content.save_toolbar_action_provider')
         ->tag('sulu.context', ['context' => 'admin']);
 
