@@ -31,7 +31,7 @@ class PublishAtSchedulerTest extends TestCase
     {
         $action = $this->prophesize(PublishAtAction::class);
         $action->isAvailable(Argument::type(WorkflowTransitionRequest::class))->willReturn(true);
-        $action->execute(Argument::type(WorkflowTransitionRequest::class), [])->shouldBeCalledOnce();
+        $action->execute(Argument::type(WorkflowTransitionRequest::class))->shouldBeCalledOnce();
 
         $this->createScheduler($action)($this->createEvent(WorkflowTransitionRequestActionEvent::APPROVED));
     }
@@ -40,7 +40,7 @@ class PublishAtSchedulerTest extends TestCase
     {
         $action = $this->prophesize(PublishAtAction::class);
         $action->isAvailable(Argument::type(WorkflowTransitionRequest::class))->willReturn(true);
-        $action->execute(Argument::type(WorkflowTransitionRequest::class), [])->shouldBeCalledOnce();
+        $action->execute(Argument::type(WorkflowTransitionRequest::class))->shouldBeCalledOnce();
 
         $this->createScheduler($action)($this->createEvent(WorkflowTransitionRequestActionEvent::VALIDATED));
     }

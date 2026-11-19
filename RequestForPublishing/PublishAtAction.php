@@ -143,7 +143,7 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
         );
     }
 
-    public function execute(WorkflowTransitionRequest $request, array $data): void
+    public function execute(WorkflowTransitionRequest $request): void
     {
         $publishAt = $this->getPublishAt($request);
         if (null === $publishAt) {

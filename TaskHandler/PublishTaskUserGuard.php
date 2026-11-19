@@ -20,7 +20,8 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
  *
  * A task runs from the console without a token, where the workflow lets every publish pass, so the handler has to name
  * the user. The workflow decides with its own rule: the permission `live`, or the permission `edit` while an approved
- * request is open for the content.
+ * request is open for the content. A disabled or locked user is refused, and so is a publish that an open request has
+ * taken over, which the date of `PublishAtAction` stops doing once it has passed.
  *
  * The authorizer only exists in the admin context. Without it, as in the website kernel, there is nothing to ask and the
  * check of the permission of the task handler stays the only one.

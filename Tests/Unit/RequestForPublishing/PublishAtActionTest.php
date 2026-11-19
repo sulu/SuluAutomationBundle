@@ -108,7 +108,7 @@ class PublishAtActionTest extends TestCase
 
         $this->expectException(BadRequestHttpException::class);
 
-        $this->createAction()->execute($request, []);
+        $this->createAction()->execute($request);
     }
 
     public function testStatusMessageTellsThatThePublishIsScheduled(): void
@@ -201,7 +201,7 @@ class PublishAtActionTest extends TestCase
             permissionChecker: $permissionChecker,
             requestStack: $requestStack,
             domainEventCollector: $collector,
-        )->execute($this->createRequest(), []);
+        )->execute($this->createRequest());
 
         $this->assertInstanceOf(PublishAtScheduledEvent::class, $collected);
         $this->assertSame('publish_scheduled', $collected->getEventType());
@@ -229,7 +229,7 @@ class PublishAtActionTest extends TestCase
         $this->expectException(BadRequestHttpException::class);
 
         $this->createAction(taskManager: $taskManager)
-            ->execute($this->createRequest(data: ['publishAutomatically' => true, 'publishAt' => '2026-11-01T10:00:00+00:00']), []);
+            ->execute($this->createRequest(data: ['publishAutomatically' => true, 'publishAt' => '2026-11-01T10:00:00+00:00']));
     }
 
     public function testExecuteRefusesARequestWithoutADate(): void
@@ -239,7 +239,7 @@ class PublishAtActionTest extends TestCase
 
         $this->expectException(BadRequestHttpException::class);
 
-        $this->createAction(taskManager: $taskManager)->execute($this->createRequest(data: []), []);
+        $this->createAction(taskManager: $taskManager)->execute($this->createRequest(data: []));
     }
 
     /**

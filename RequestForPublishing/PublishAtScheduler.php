@@ -51,9 +51,9 @@ final class PublishAtScheduler
         }
 
         try {
-            $this->action->execute($request, []);
+            $this->action->execute($request);
         } catch (AccessDeniedException) {
-            // the user may not publish, the footer action stays for someone who may
+            // @ignoreException the user may not publish, the footer action stays for someone who may
         }
     }
 }
