@@ -15,28 +15,37 @@ use Sulu\Article\Domain\Model\ArticleInterface;
 use Sulu\Bundle\AdminBundle\Admin\View\ToolbarAction;
 use Sulu\Bundle\AutomationBundle\TaskHandler\ArticlePublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\PagePublishTaskHandler;
-use Sulu\Bundle\AutomationBundle\TaskHandler\SnippetPublishTaskHandler;
 use Sulu\Component\Security\Authorization\PermissionTypes;
+use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 use Sulu\Content\Infrastructure\Sulu\Admin\SaveToolbarActionProviderInterface;
 use Sulu\Page\Domain\Model\PageInterface;
-use Sulu\Snippet\Domain\Model\SnippetInterface;
 
 /**
- * Adds the entry "Publish at" to the save dropdown of pages, articles and snippets, which saves the content and
- * schedules its publish for a date. Only users with the permission `live` see it, and not while a request for
- * publishing is open, because the request decides then. The core drops the entry for users without `live`, because
- * pages deliver no permissions to the visible condition.
+ * Adds the entry "Publish at" to the save dropdown of pages and articles, which saves the content and schedules its
+ * publish for a date. Only users who may add tasks and edit and publish the content see it, and not while a request
+ * for publishing is open, because the request decides then. A later "Publish at" replaces the planned publish of the
+ * content, because the entry sends the marker `replacePlanned` along.
+ *
+ * Snippets are left out. Their edit tabs carry a group suffix, so they have no Automation tab and a task from this
+ * entry could be neither seen nor cancelled.
  */
 final class PublishAtSaveToolbarActionProvider implements SaveToolbarActionProviderInterface
 {
     private const HANDLERS = [
         PageInterface::class => PagePublishTaskHandler::class,
         ArticleInterface::class => ArticlePublishTaskHandler::class,
-        SnippetInterface::class => SnippetPublishTaskHandler::class,
     ];
+
+    public function __construct(private readonly SecurityCheckerInterface $securityChecker)
+    {
+    }
 
     public function getToolbarActions(string $contentRichEntityClass): array
     {
+        if (!$this->securityChecker->hasPermission(AutomationAdmin::SECURITY_CONTEXT, PermissionTypes::ADD)) {
+            return [];
+        }
+
         foreach (self::HANDLERS as $entityInterface => $handlerClass) {
             if (!\is_a($contentRichEntityClass, $entityInterface, true)) {
                 continue;
@@ -50,11 +59,11 @@ final class PublishAtSaveToolbarActionProvider implements SaveToolbarActionProvi
                         'title' => 'sulu_automation.publish_at',
                         'formKey' => 'sulu_automation_publish_at',
                         'resourceKey' => 'tasks',
-                        'data' => ['handlerClass' => $handlerClass],
+                        'data' => ['handlerClass' => $handlerClass, 'replacePlanned' => true],
                         'parameters' => ['entityClass' => $entityInterface],
                         'idParameter' => 'entityId',
                         'permission' => PermissionTypes::LIVE,
-                        'visible_condition' => '(!_permissions || _permissions.live) && !activeWorkflowTransitionRequest',
+                        'visible_condition' => '(!_permissions || _permissions.edit)',
                     ]
                 ),
             ];

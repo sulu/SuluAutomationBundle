@@ -4,10 +4,16 @@
 
 ### Publish at in the save dropdown
 
-The save dropdown of pages, articles and snippets gets the entry "Publish at" for users with the permission `live`. It saves
-the content and schedules its publish for the picked date. The entry needs no admin JavaScript of the bundle. It uses the
-form toolbar action `sulu_admin.save_and_create` of Sulu 3.1 and is added through the tag
+The save dropdown of pages and articles gets the entry "Publish at" for users with the permissions `add` on the tasks and
+`edit` and `live` on the content. It saves the content and schedules its publish for the picked date. A later "Publish at"
+aborts the planned publish task of the content. Snippets have no Automation tab and get no entry.
+The entry needs no admin JavaScript of the bundle. It uses the form toolbar action `sulu_admin.save_and_create` of Sulu 3.1 and is added through the tag
 `sulu_content.save_toolbar_action_provider`, so it only shows where the bundle is installed.
+
+`POST /admin/api/tasks` accepts the flag `replacePlanned`. With it the planned tasks of the same handler, entity and locale are
+aborted after the new task is created.
+
+`TaskRepositoryInterface` gets the method `findPendingTasks()`. Custom implementations have to add it.
 
 ## 3.0.2
 

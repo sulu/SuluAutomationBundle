@@ -12,19 +12,29 @@
 namespace Sulu\Bundle\AutomationBundle\Tests\Unit\Admin;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Sulu\Article\Domain\Model\Article;
 use Sulu\Article\Domain\Model\ArticleInterface;
+use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
 use Sulu\Bundle\AutomationBundle\Admin\PublishAtSaveToolbarActionProvider;
 use Sulu\Bundle\AutomationBundle\TaskHandler\ArticlePublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\PagePublishTaskHandler;
-use Sulu\Bundle\AutomationBundle\TaskHandler\SnippetPublishTaskHandler;
+use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 use Sulu\Page\Domain\Model\Page;
 use Sulu\Page\Domain\Model\PageInterface;
-use Sulu\Snippet\Domain\Model\Snippet;
-use Sulu\Snippet\Domain\Model\SnippetInterface;
 
 class PublishAtSaveToolbarActionProviderTest extends TestCase
 {
+    use ProphecyTrait;
+
+    private function createProvider(bool $mayAdd = true): PublishAtSaveToolbarActionProvider
+    {
+        $securityChecker = $this->prophesize(SecurityCheckerInterface::class);
+        $securityChecker->hasPermission(AutomationAdmin::SECURITY_CONTEXT, 'add')->willReturn($mayAdd);
+
+        return new PublishAtSaveToolbarActionProvider($securityChecker->reveal());
+    }
+
     /**
      * @dataProvider provideContent
      *
@@ -32,7 +42,7 @@ class PublishAtSaveToolbarActionProviderTest extends TestCase
      */
     public function testOffersTheEntryForContentWithAPublishTask(string $contentRichEntityClass, string $entityInterface, string $handlerClass): void
     {
-        $toolbarActions = (new PublishAtSaveToolbarActionProvider())->getToolbarActions($contentRichEntityClass);
+        $toolbarActions = $this->createProvider()->getToolbarActions($contentRichEntityClass);
 
         $this->assertCount(1, $toolbarActions);
         $this->assertSame('sulu_admin.save_and_create', $toolbarActions[0]->getType());
@@ -42,10 +52,8 @@ class PublishAtSaveToolbarActionProviderTest extends TestCase
         $this->assertSame($handlerClass, $toolbarActions[0]->getOptions()['data']['handlerClass']);
         $this->assertSame('live', $toolbarActions[0]->getOptions()['permission']);
         $this->assertSame('sulu_automation_publish_at', $toolbarActions[0]->getOptions()['formKey']);
-        $this->assertSame(
-            '(!_permissions || _permissions.live) && !activeWorkflowTransitionRequest',
-            $toolbarActions[0]->getOptions()['visible_condition'],
-        );
+        $this->assertTrue($toolbarActions[0]->getOptions()['data']['replacePlanned']);
+        $this->assertSame('(!_permissions || _permissions.edit)', $toolbarActions[0]->getOptions()['visible_condition']);
     }
 
     /**
@@ -55,11 +63,20 @@ class PublishAtSaveToolbarActionProviderTest extends TestCase
     {
         yield 'page' => [Page::class, PageInterface::class, PagePublishTaskHandler::class];
         yield 'article' => [Article::class, ArticleInterface::class, ArticlePublishTaskHandler::class];
-        yield 'snippet' => [Snippet::class, SnippetInterface::class, SnippetPublishTaskHandler::class];
     }
 
     public function testOffersNothingForOtherContent(): void
     {
-        $this->assertSame([], (new PublishAtSaveToolbarActionProvider())->getToolbarActions(\stdClass::class));
+        $this->assertSame([], $this->createProvider()->getToolbarActions(\stdClass::class));
+    }
+
+    public function testOffersNothingWithoutThePermissionToAddTasks(): void
+    {
+        $this->assertSame([], $this->createProvider(false)->getToolbarActions(Page::class));
+    }
+
+    public function testOffersNothingForSnippets(): void
+    {
+        $this->assertSame([], $this->createProvider()->getToolbarActions(\Sulu\Snippet\Domain\Model\Snippet::class));
     }
 }
