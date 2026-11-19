@@ -24,6 +24,9 @@ class PublishAtScheduledEvent extends DomainEvent
         private readonly WorkflowTransitionRequest $request,
         private readonly \DateTimeImmutable $publishAt,
         private readonly string $taskId,
+        private readonly ?string $resourceTitle = null,
+        private readonly ?string $resourceWebspaceKey = null,
+        private readonly ?string $resourceSecurityContext = null,
     ) {
         parent::__construct();
     }
@@ -55,6 +58,21 @@ class PublishAtScheduledEvent extends DomainEvent
     public function getResourceLocale(): ?string
     {
         return $this->request->getLocale();
+    }
+
+    public function getResourceTitle(): ?string
+    {
+        return $this->resourceTitle;
+    }
+
+    public function getResourceWebspaceKey(): ?string
+    {
+        return $this->resourceWebspaceKey;
+    }
+
+    public function getResourceSecurityContext(): ?string
+    {
+        return $this->resourceSecurityContext;
     }
 
     public function getPublishAt(): \DateTimeImmutable

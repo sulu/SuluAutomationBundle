@@ -25,6 +25,7 @@ use Task\TaskStatus;
  * content was published by hand first. A rejection after the approval does the same, as long as it takes the approval
  * away: the request is no longer approved, so nothing may publish for it.
  *
+ * Only the task this request scheduled is cancelled, a publish that someone scheduled by hand for the content stays.
  * The task stays in the list as aborted, so it is visible what happened to it. Only tasks that have not started are
  * cancelled. The publish of a task itself settles the request, and that task is running by then.
  */
@@ -49,6 +50,14 @@ final class PublishAtTaskCanceller
             return;
         }
 
+        $data = $event instanceof WorkflowTransitionRequestActionEvent
+            ? $event->getWorkflowTransitionRequest()->getData()
+            : $event->getData();
+        $taskId = $data[PublishAtAction::TASK_ID_KEY] ?? null;
+        if (!\is_string($taskId) || '' === $taskId) {
+            return;
+        }
+
         $tasks = $this->taskRepository->findPendingTasks(
             $this->targets->getHandlerClass($resourceKey),
             $this->targets->getEntityClass($resourceKey),
@@ -57,13 +66,17 @@ final class PublishAtTaskCanceller
         );
 
         foreach ($tasks as $task) {
+            if ($taskId !== $task->getId()) {
+                continue;
+            }
+
             foreach ($this->taskExecutionRepository->findByTaskUuid((string) $task->getTask()?->getUuid()) as $execution) {
                 if (TaskStatus::PLANNED !== $execution->getStatus()) {
                     continue;
                 }
 
+                // not saved: the execution is managed and the workflow flushes it with the marking of the request
                 $execution->setStatus(TaskStatus::ABORTED);
-                $this->taskExecutionRepository->save($execution);
             }
         }
     }

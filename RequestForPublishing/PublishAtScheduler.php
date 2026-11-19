@@ -21,7 +21,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  *
  * The request is approved by the last approval or by the last check to pass, both are reported by an event. The
  * task belongs to the user who is logged in then, because the permission of that user is checked again when it runs.
- * Without a user, or without the permission, nothing is scheduled and the action in the footer stays as the way to do it
+ * Without a user, with a date that has passed, or without the permission, nothing is scheduled and the action in the footer stays as the way to do it
  * by hand. A listener must not fail the approval, so a refusal is not an error here.
  */
 final class PublishAtScheduler

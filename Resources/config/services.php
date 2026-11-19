@@ -20,6 +20,7 @@ use Sulu\Bundle\AutomationBundle\EventSubscriber\PHPTaskEventSubscriber;
 use Sulu\Bundle\AutomationBundle\EventSubscriber\TaskPermissionSubscriber;
 use Sulu\Bundle\AutomationBundle\Metadata\FormMetadataLoader;
 use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtAction;
+use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtResourceResolver;
 use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtScheduler;
 use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtTargets;
 use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtTaskCanceller;
@@ -196,9 +197,17 @@ return static function(ContainerConfigurator $container) {
             service('sulu_content.workflow_transition_request_status_resolver'),
             service('request_stack'),
             service('sulu_activity.domain_event_collector'),
+            service('sulu_automation.request_for_publishing.resource_resolver'),
         ])
         ->tag('sulu_content.workflow_transition_request_action')
         ->tag('sulu.context', ['context' => 'admin']);
+
+    $services->set('sulu_automation.request_for_publishing.resource_resolver', PublishAtResourceResolver::class)
+        ->args([
+            service('sulu_page.page_repository')->nullOnInvalid(),
+            service('sulu_article.article_repository')->nullOnInvalid(),
+            service('sulu_snippet.snippet_repository')->nullOnInvalid(),
+        ]);
 
     $services->set('sulu_automation.request_for_publishing.publish_at_scheduler', PublishAtScheduler::class)
         ->args([

@@ -29,9 +29,11 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  * Publishes an approved request at the date its form names, by scheduling a publish task for the content. The
  * {@see PublishAtScheduler} does that on approval, this action is the way to do it by hand.
  *
- * Not meant to be extended: the scheduler and the tests double it.
- *
  * The task is cancelled again when the request is cancelled or published by hand, see {@see PublishAtTaskCanceller}.
+ *
+ * @internal
+ *
+ * @final
  */
 class PublishAtAction implements WorkflowTransitionRequestActionInterface
 {
@@ -41,6 +43,12 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
 
     public const TOGGLE_KEY = 'publishAutomatically';
 
+    /**
+     * Stored in the data of the request, so the banner and the cancellation look at the task of this request alone.
+     * The form does not know the key, so the card of the review does not show it.
+     */
+    public const TASK_ID_KEY = 'publishAtTaskId';
+
     public function __construct(
         private readonly PublishAtTargets $targets,
         private readonly TaskManagerInterface $taskManager,
@@ -49,6 +57,7 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
         private readonly WorkflowTransitionRequestStatusResolverInterface $statusResolver,
         private readonly RequestStack $requestStack,
         private readonly DomainEventCollectorInterface $domainEventCollector,
+        private readonly PublishAtResourceResolver $resourceResolver,
         private readonly ?\DateTimeImmutable $now = null,
     ) {
     }
@@ -70,9 +79,6 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
         return null === $publishAt ? [] : ['date' => $publishAt->format('d.m.Y H:i')];
     }
 
-    /**
-     * The task publishes without a token later, so the permission to do that is the one of the scheduling user.
-     */
     public function getPermission(): string
     {
         return PermissionTypes::LIVE;
@@ -93,9 +99,6 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
         return null !== $publishAt && $publishAt > ($this->now ?? new \DateTimeImmutable());
     }
 
-    /**
-     * Once the task waits, the banner of the form tells it, because there is nothing left for anyone to click.
-     */
     public function getStatusMessage(WorkflowTransitionRequest $request): ?array
     {
         $publishAt = $this->getPublishAt($request);
@@ -107,7 +110,7 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
             return null;
         }
 
-        if (0 === $this->countPendingTasks($request)) {
+        if (!$this->hasPendingTask($request)) {
             return null;
         }
 
@@ -127,20 +130,41 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
             return false;
         }
 
-        if (null === $this->getPublishAt($request)) {
+        $publishAt = $this->getPublishAt($request);
+
+        // execute() refuses a date that has passed, so offering the action for one would fail the approval
+        if (null === $publishAt || $publishAt <= ($this->now ?? new \DateTimeImmutable())) {
             return false;
         }
 
-        return 0 === $this->countPendingTasks($request);
+        return !$this->hasPendingTask($request);
     }
 
-    private function countPendingTasks(WorkflowTransitionRequest $request): int
+    /**
+     * A publish task of the same content that someone scheduled by hand for another date is no task of this request.
+     */
+    private function hasPendingTask(WorkflowTransitionRequest $request): bool
     {
-        return $this->taskRepository->countPendingTasks(
-            $this->targets->getEntityClass($request->getResourceKey()),
+        $taskId = $request->getData()[self::TASK_ID_KEY] ?? null;
+        if (!\is_string($taskId) || '' === $taskId) {
+            return false;
+        }
+
+        $resourceKey = $request->getResourceKey();
+        $tasks = $this->taskRepository->findPendingTasks(
+            $this->targets->getHandlerClass($resourceKey),
+            $this->targets->getEntityClass($resourceKey),
             $request->getResourceId(),
             $request->getLocale(),
         );
+
+        foreach ($tasks as $task) {
+            if ($taskId === $task->getId()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function execute(WorkflowTransitionRequest $request): void
@@ -176,20 +200,38 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
 
         $task = $this->taskManager->create($task);
 
-        $this->domainEventCollector->collect(new PublishAtScheduledEvent($request, $publishAt, (string) $task->getId()));
+        // flushed with the request, like the rest of the action
+        $request->setData([...$request->getData(), self::TASK_ID_KEY => $task->getId()]);
+
+        $resource = $this->resourceResolver->resolve($resourceKey, $request->getResourceId(), $request->getLocale());
+        $this->domainEventCollector->collect(new PublishAtScheduledEvent(
+            $request,
+            $publishAt,
+            $task->getId(),
+            $resource['title'],
+            $resource['webspaceKey'],
+            $resource['securityContext'],
+        ));
+    }
+
+    private function getPublishAt(WorkflowTransitionRequest $request): ?\DateTimeImmutable
+    {
+        return self::readPublishAt($request->getData());
     }
 
     /**
      * The form keeps the value of a field that is hidden again, so the date counts only while the toggle is on.
      * A date without a zone is read in the default zone of the server, like the other dates of the admin.
+     *
+     * @param array<string, mixed> $data
      */
-    private function getPublishAt(WorkflowTransitionRequest $request): ?\DateTimeImmutable
+    public static function readPublishAt(array $data): ?\DateTimeImmutable
     {
-        if (true !== ($request->getData()[self::TOGGLE_KEY] ?? null)) {
+        if (true !== ($data[self::TOGGLE_KEY] ?? null)) {
             return null;
         }
 
-        $value = $request->getData()[self::DATA_KEY] ?? null;
+        $value = $data[self::DATA_KEY] ?? null;
         if (!\is_string($value) || '' === $value) {
             return null;
         }

@@ -18,6 +18,7 @@ use Sulu\Bundle\ActivityBundle\Application\Collector\DomainEventCollectorInterfa
 use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\RequestForPublishing\Event\PublishAtScheduledEvent;
 use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtAction;
+use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtResourceResolver;
 use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtTargets;
 use Sulu\Bundle\AutomationBundle\Security\TaskPermissionChecker;
 use Sulu\Bundle\AutomationBundle\TaskHandler\PagePublishTaskHandler;
@@ -113,31 +114,43 @@ class PublishAtActionTest extends TestCase
 
     public function testStatusMessageTellsThatThePublishIsScheduled(): void
     {
-        $action = $this->createAction(pendingTasks: 1);
+        $action = $this->createAction(pendingTaskIds: ['task-1']);
 
         $this->assertSame(
             ['message' => 'sulu_automation.publish_scheduled', 'parameters' => ['date' => '01.12.2026 10:00']],
-            $action->getStatusMessage($this->createRequest()),
+            $action->getStatusMessage($this->createRequest(taskId: 'task-1')),
         );
     }
 
     public function testStatusMessageStaysSilentWithoutAScheduledTask(): void
     {
-        $this->assertNull($this->createAction(pendingTasks: 0)->getStatusMessage($this->createRequest()));
+        $this->assertNull($this->createAction()->getStatusMessage($this->createRequest(taskId: 'task-1')));
+        $this->assertNull($this->createAction()->getStatusMessage($this->createRequest()));
+    }
+
+    /**
+     * A publish that someone scheduled by hand for another date is no publish of this request.
+     */
+    public function testStatusMessageIgnoresThePublishTaskOfAnotherDate(): void
+    {
+        $action = $this->createAction(pendingTaskIds: ['manual-task']);
+
+        $this->assertNull($action->getStatusMessage($this->createRequest(taskId: 'task-1')));
+        $this->assertNull($action->getStatusMessage($this->createRequest()));
     }
 
     public function testStatusMessageStaysSilentWhileTheToggleIsOff(): void
     {
         $request = $this->createRequest(data: ['publishAutomatically' => false, 'publishAt' => '2026-12-01T10:00:00+00:00']);
 
-        $this->assertNull($this->createAction(pendingTasks: 1)->getStatusMessage($request));
+        $this->assertNull($this->createAction(pendingTaskIds: ['task-1'])->getStatusMessage($request));
     }
 
     public function testStatusMessageStaysSilentUntilTheRequestIsApproved(): void
     {
-        $action = $this->createAction(status: WorkflowTransitionRequestStatusEnum::PENDING, pendingTasks: 1);
+        $action = $this->createAction(status: WorkflowTransitionRequestStatusEnum::PENDING, pendingTaskIds: ['task-1']);
 
-        $this->assertNull($action->getStatusMessage($this->createRequest()));
+        $this->assertNull($action->getStatusMessage($this->createRequest(taskId: 'task-1')));
     }
 
     public function testIsAvailableForAnApprovedRequestWithAFutureDate(): void
@@ -167,9 +180,30 @@ class PublishAtActionTest extends TestCase
         $this->assertFalse($this->createAction()->isAvailable($this->createRequest(data: ['publishAutomatically' => true, 'publishAt' => 'next week maybe'])));
     }
 
-    public function testIsNotAvailableWhenAPublishIsAlreadyScheduled(): void
+    public function testIsNotAvailableWhenItsPublishIsAlreadyScheduled(): void
     {
-        $this->assertFalse($this->createAction(pendingTasks: 1)->isAvailable($this->createRequest()));
+        $this->assertFalse($this->createAction(pendingTaskIds: ['task-1'])->isAvailable($this->createRequest(taskId: 'task-1')));
+    }
+
+    /**
+     * A manual publish for another date must not hide the action of a request that has no task of its own.
+     */
+    public function testIsAvailableWhileOnlyAPublishOfAnotherDateIsScheduled(): void
+    {
+        $action = $this->createAction(pendingTaskIds: ['manual-task']);
+
+        $this->assertTrue($action->isAvailable($this->createRequest()));
+        $this->assertTrue($action->isAvailable($this->createRequest(taskId: 'task-1')));
+    }
+
+    /**
+     * Approving would fail on a date that has passed, so the action is not offered and the scheduler skips it.
+     */
+    public function testIsNotAvailableWithADateThatHasPassed(): void
+    {
+        $request = $this->createRequest(data: ['publishAutomatically' => true, 'publishAt' => '2026-11-01T10:00:00+00:00']);
+
+        $this->assertFalse($this->createAction()->isAvailable($request));
     }
 
     public function testExecuteSchedulesThePublishOfTheContent(): void
@@ -196,12 +230,20 @@ class PublishAtActionTest extends TestCase
             $collected = $args[0];
         })->shouldBeCalledOnce();
 
+        $request = $this->createRequest();
         $this->createAction(
             taskManager: $taskManager,
             permissionChecker: $permissionChecker,
             requestStack: $requestStack,
             domainEventCollector: $collector,
-        )->execute($this->createRequest());
+        )->execute($request);
+
+        $this->assertSame('task-1', $request->getData()['publishAtTaskId']);
+        $this->assertTrue($request->getData()['publishAutomatically']);
+        $this->assertSame('2026-12-01T10:00:00+00:00', $request->getData()['publishAt']);
+        $this->assertSame('Page title', $collected->getResourceTitle());
+        $this->assertSame('example', $collected->getResourceWebspaceKey());
+        $this->assertSame('sulu.webspaces.example', $collected->getResourceSecurityContext());
 
         $this->assertInstanceOf(PublishAtScheduledEvent::class, $collected);
         $this->assertSame('publish_scheduled', $collected->getEventType());
@@ -245,17 +287,21 @@ class PublishAtActionTest extends TestCase
     /**
      * @param array<string, mixed>|null $data
      */
-    private function createRequest(string $resourceKey = 'pages', ?array $data = null): WorkflowTransitionRequest
+    private function createRequest(string $resourceKey = 'pages', ?array $data = null, ?string $taskId = null): WorkflowTransitionRequest
     {
         $request = new WorkflowTransitionRequest($resourceKey, 'page-uuid', 'en', 'review');
-        $request->setData($data ?? ['publishAutomatically' => true, 'publishAt' => '2026-12-01T10:00:00+00:00']);
+        $data ??= ['publishAutomatically' => true, 'publishAt' => '2026-12-01T10:00:00+00:00'];
+        if (null !== $taskId) {
+            $data['publishAtTaskId'] = $taskId;
+        }
+        $request->setData($data);
 
         return $request;
     }
 
     private function createAction(
         WorkflowTransitionRequestStatusEnum $status = WorkflowTransitionRequestStatusEnum::APPROVED,
-        int $pendingTasks = 0,
+        array $pendingTaskIds = [],
         $taskManager = null,
         $permissionChecker = null,
         ?RequestStack $requestStack = null,
@@ -265,11 +311,25 @@ class PublishAtActionTest extends TestCase
         $statusResolver->resolve(Argument::type(WorkflowTransitionRequest::class))->willReturn($status);
 
         $taskRepository = $this->prophesize(TaskRepositoryInterface::class);
-        $taskRepository->countPendingTasks(Argument::cetera())->willReturn($pendingTasks);
+        $taskRepository->findPendingTasks(Argument::cetera())->willReturn(\array_map(
+            function(string $id): TaskInterface {
+                $task = $this->prophesize(TaskInterface::class);
+                $task->getId()->willReturn($id);
+
+                return $task->reveal();
+            },
+            $pendingTaskIds,
+        ));
 
         $taskManager ??= $this->prophesize(TaskManagerInterface::class);
         $domainEventCollector ??= $this->prophesize(DomainEventCollectorInterface::class);
         $permissionChecker ??= $this->prophesize(TaskPermissionChecker::class);
+        $resourceResolver = $this->prophesize(PublishAtResourceResolver::class);
+        $resourceResolver->resolve('pages', 'page-uuid', 'en')->willReturn([
+            'title' => 'Page title',
+            'webspaceKey' => 'example',
+            'securityContext' => 'sulu.webspaces.example',
+        ]);
 
         return new PublishAtAction(
             new PublishAtTargets(),
@@ -279,6 +339,7 @@ class PublishAtActionTest extends TestCase
             $statusResolver->reveal(),
             $requestStack ?? new RequestStack(),
             $domainEventCollector->reveal(),
+            $resourceResolver->reveal(),
             new \DateTimeImmutable(self::NOW),
         );
     }

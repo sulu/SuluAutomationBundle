@@ -98,6 +98,37 @@ class PublishAtTaskCancellerTest extends TestCase
         $canceller(new WorkflowTransitionRequestSettledEvent($this->createRequest()));
     }
 
+    /**
+     * A request without the switch has no task, and a publish scheduled by hand for the content is not its own.
+     */
+    public function testLeavesTheTaskOfAnotherDateAloneWhenTheRequestHasNone(): void
+    {
+        $taskRepository = $this->prophesize(TaskRepositoryInterface::class);
+        $taskRepository->findPendingTasks(Argument::cetera())->shouldNotBeCalled();
+        $executionRepository = $this->prophesize(TaskExecutionRepositoryInterface::class);
+        $executionRepository->findByTaskUuid(Argument::any())->shouldNotBeCalled();
+
+        $canceller = new PublishAtTaskCanceller(new PublishAtTargets(), $taskRepository->reveal(), $executionRepository->reveal(), $this->createStatusResolver());
+        $canceller(new WorkflowTransitionRequestCancelledEvent($this->createRequest(withTask: false)));
+    }
+
+    /**
+     * Only the task named by the request is aborted, the manual one of the same content stays planned.
+     */
+    public function testAbortsOnlyTheTaskOfTheRequest(): void
+    {
+        $execution = $this->prophesize(TaskExecutionInterface::class);
+        $execution->getStatus()->willReturn(TaskStatus::PLANNED);
+        $execution->setStatus(TaskStatus::ABORTED)->shouldBeCalledOnce();
+
+        $executionRepository = $this->prophesize(TaskExecutionRepositoryInterface::class);
+        $executionRepository->findByTaskUuid('php-task-1')->willReturn([$execution->reveal()]);
+        $executionRepository->findByTaskUuid('php-task-manual')->shouldNotBeCalled();
+
+        $canceller = new PublishAtTaskCanceller(new PublishAtTargets(), $this->createTaskRepository(), $executionRepository->reveal(), $this->createStatusResolver());
+        $canceller(new WorkflowTransitionRequestCancelledEvent($this->createRequest()));
+    }
+
     public function testLeavesContentWithoutAPublishTaskAlone(): void
     {
         $taskRepository = $this->prophesize(TaskRepositoryInterface::class);
@@ -130,7 +161,8 @@ class PublishAtTaskCancellerTest extends TestCase
 
         $executionRepository = $this->prophesize(TaskExecutionRepositoryInterface::class);
         $executionRepository->findByTaskUuid('php-task-1')->willReturn([$execution->reveal()]);
-        $executionRepository->save($execution->reveal())->shouldBeCalledOnce();
+        // the workflow flushes the change with the request, a save would flush the whole entity manager inside it
+        $executionRepository->save(Argument::any())->shouldNotBeCalled();
 
         $canceller = new PublishAtTaskCanceller(new PublishAtTargets(), $this->createTaskRepository(), $executionRepository->reveal(), $this->createStatusResolver($status));
         $canceller($event);
@@ -150,17 +182,27 @@ class PublishAtTaskCancellerTest extends TestCase
         $phpTask->getUuid()->willReturn('php-task-1');
 
         $task = $this->prophesize(TaskInterface::class);
+        $task->getId()->willReturn('task-1');
         $task->getTask()->willReturn($phpTask->reveal());
+
+        $manualPhpTask = $this->prophesize(PHPTaskInterface::class);
+        $manualPhpTask->getUuid()->willReturn('php-task-manual');
+        $manualTask = $this->prophesize(TaskInterface::class);
+        $manualTask->getId()->willReturn('manual-task');
+        $manualTask->getTask()->willReturn($manualPhpTask->reveal());
 
         $taskRepository = $this->prophesize(TaskRepositoryInterface::class);
         $taskRepository->findPendingTasks(PagePublishTaskHandler::class, PageInterface::class, 'page-uuid', 'en')
-            ->willReturn([$task->reveal()]);
+            ->willReturn([$manualTask->reveal(), $task->reveal()]);
 
         return $taskRepository->reveal();
     }
 
-    private function createRequest(string $resourceKey = 'pages'): WorkflowTransitionRequest
+    private function createRequest(string $resourceKey = 'pages', bool $withTask = true): WorkflowTransitionRequest
     {
-        return new WorkflowTransitionRequest($resourceKey, 'page-uuid', 'en', 'review');
+        $request = new WorkflowTransitionRequest($resourceKey, 'page-uuid', 'en', 'review');
+        $request->setData($withTask ? ['publishAutomatically' => true, 'publishAtTaskId' => 'task-1'] : ['publishAutomatically' => false]);
+
+        return $request;
     }
 }

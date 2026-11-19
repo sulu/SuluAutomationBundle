@@ -57,7 +57,7 @@ class PublishAtTaskCancellerTest extends SuluTestCase
         $task = $this->createPublishTask('page-1');
         $this->assertCount(1, $this->findPending('page-1'));
 
-        $this->eventDispatcher->dispatch(new WorkflowTransitionRequestCancelledEvent($this->createRequest('page-1')));
+        $this->eventDispatcher->dispatch(new WorkflowTransitionRequestCancelledEvent($this->createRequest('page-1', $task)));
         $this->entityManager->flush();
         $this->entityManager->clear();
 
@@ -70,7 +70,7 @@ class PublishAtTaskCancellerTest extends SuluTestCase
     {
         $task = $this->createPublishTask('page-1');
 
-        $this->eventDispatcher->dispatch(new WorkflowTransitionRequestSettledEvent($this->createRequest('page-1')));
+        $this->eventDispatcher->dispatch(new WorkflowTransitionRequestSettledEvent($this->createRequest('page-1', $task)));
         $this->entityManager->flush();
         $this->entityManager->clear();
 
@@ -78,12 +78,30 @@ class PublishAtTaskCancellerTest extends SuluTestCase
         $this->assertSame(TaskStatus::ABORTED, $this->getStatus($task));
     }
 
+    /**
+     * A request that publishes by hand has no task of its own, so the task someone scheduled for another date stays.
+     */
+    public function testAManualTaskOfTheSamePageStays(): void
+    {
+        $own = $this->createPublishTask('page-1');
+        $manual = $this->createPublishTask('page-1');
+
+        $this->eventDispatcher->dispatch(new WorkflowTransitionRequestCancelledEvent($this->createRequest('page-1', $own)));
+        $this->eventDispatcher->dispatch(new WorkflowTransitionRequestCancelledEvent($this->createRequest('page-1')));
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        $this->assertSame(TaskStatus::ABORTED, $this->getStatus($own));
+        $this->assertSame(TaskStatus::PLANNED, $this->getStatus($manual));
+        $this->assertCount(1, $this->findPending('page-1'));
+    }
+
     public function testTheTaskOfAnotherPageStays(): void
     {
-        $this->createPublishTask('page-1');
+        $task = $this->createPublishTask('page-1');
         $other = $this->createPublishTask('page-2');
 
-        $this->eventDispatcher->dispatch(new WorkflowTransitionRequestCancelledEvent($this->createRequest('page-1')));
+        $this->eventDispatcher->dispatch(new WorkflowTransitionRequestCancelledEvent($this->createRequest('page-1', $task)));
         $this->entityManager->flush();
         $this->entityManager->clear();
 
@@ -108,7 +126,7 @@ class PublishAtTaskCancellerTest extends SuluTestCase
             ->execute();
         $this->entityManager->clear();
 
-        $this->eventDispatcher->dispatch(new WorkflowTransitionRequestSettledEvent($this->createRequest('page-1')));
+        $this->eventDispatcher->dispatch(new WorkflowTransitionRequestSettledEvent($this->createRequest('page-1', $task)));
         $this->entityManager->flush();
 
         $this->assertSame(TaskStatus::RUNNING, $this->getStatus($task));
@@ -148,8 +166,11 @@ class PublishAtTaskCancellerTest extends SuluTestCase
         return $task;
     }
 
-    private function createRequest(string $pageId): WorkflowTransitionRequest
+    private function createRequest(string $pageId, ?Task $task = null): WorkflowTransitionRequest
     {
-        return new WorkflowTransitionRequest('pages', $pageId, 'en', 'review');
+        $request = new WorkflowTransitionRequest('pages', $pageId, 'en', 'review');
+        $request->setData(null === $task ? ['publishAutomatically' => false] : ['publishAutomatically' => true, 'publishAtTaskId' => $task->getId()]);
+
+        return $request;
     }
 }
