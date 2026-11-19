@@ -5,6 +5,23 @@
 >
     <key>workflow_transition_request_details</key>
 
+    <!-- the date is required while the switch is on, the visible condition alone cannot say that -->
+    <schema>
+        <anyOf>
+            <schema>
+                <properties>
+                    <property name="publishAutomatically" value="false"/>
+                </properties>
+            </schema>
+            <schema>
+                <properties>
+                    <property name="publishAutomatically" value="true"/>
+                    <property name="publishAt" mandatory="true"/>
+                </properties>
+            </schema>
+        </anyOf>
+    </schema>
+
     <properties>
         <property name="publishAutomatically" type="checkbox" colspan="4">
             <params>

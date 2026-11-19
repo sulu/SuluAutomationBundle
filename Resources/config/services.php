@@ -20,6 +20,7 @@ use Sulu\Bundle\AutomationBundle\EventSubscriber\PHPTaskEventSubscriber;
 use Sulu\Bundle\AutomationBundle\EventSubscriber\TaskPermissionSubscriber;
 use Sulu\Bundle\AutomationBundle\Metadata\FormMetadataLoader;
 use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtAction;
+use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtRequestDataValidator;
 use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtResourceResolver;
 use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtScheduler;
 use Sulu\Bundle\AutomationBundle\RequestForPublishing\PublishAtTargets;
@@ -38,6 +39,7 @@ use Sulu\Bundle\AutomationBundle\Tasks\Scheduler\TaskScheduler;
 use Sulu\Content\Application\WorkflowTransitionRequest\Event\WorkflowTransitionRequestActionEvent;
 use Sulu\Content\Application\WorkflowTransitionRequest\Event\WorkflowTransitionRequestCancelledEvent;
 use Sulu\Content\Application\WorkflowTransitionRequest\Event\WorkflowTransitionRequestSettledEvent;
+use Sulu\Content\Domain\Model\WorkflowInterface;
 
 return static function(ContainerConfigurator $container) {
     $services = $container->services();
@@ -208,6 +210,17 @@ return static function(ContainerConfigurator $container) {
             service('sulu_article.article_repository')->nullOnInvalid(),
             service('sulu_snippet.snippet_repository')->nullOnInvalid(),
         ]);
+
+    $services->set('sulu_automation.request_for_publishing.request_data_validator', PublishAtRequestDataValidator::class)
+        ->tag('kernel.event_listener', [
+            'event' => 'workflow.content_workflow.transition.' . WorkflowInterface::WORKFLOW_TRANSITION_REQUEST_FOR_REVIEW,
+            'priority' => 100,
+        ])
+        ->tag('kernel.event_listener', [
+            'event' => 'workflow.content_workflow.transition.' . WorkflowInterface::WORKFLOW_TRANSITION_REQUEST_FOR_REVIEW_DRAFT,
+            'priority' => 100,
+        ])
+        ->tag('sulu.context', ['context' => 'admin']);
 
     $services->set('sulu_automation.request_for_publishing.publish_at_scheduler', PublishAtScheduler::class)
         ->args([
