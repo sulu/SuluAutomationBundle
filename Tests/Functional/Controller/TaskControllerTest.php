@@ -306,6 +306,48 @@ class TaskControllerTest extends SuluTestCase
         $this->assertNotNull($task->getTask()->getWorkload()['userId']);
     }
 
+    public function testPostWithTheMarkerAbortsOnlyThePlannedTasksOfTheSameHandlerEntityAndLocale(): void
+    {
+        $replaced = $this->testPost();
+        $otherLocale = $this->testPost(FirstHandler::class, '+1 day', 'ThisClass', 1, 'en');
+        $otherEntity = $this->testPost(FirstHandler::class, '+1 day', 'ThisClass', 2, 'de');
+
+        $this->client->request(
+            'POST',
+            '/api/tasks?locale=de&entityClass=ThisClass&entityId=1',
+            [
+                'handlerClass' => FirstHandler::class,
+                'schedule' => (new \DateTimeImmutable('+2 days'))->format('Y-m-d\TH:i:s'),
+                'replacePlanned' => true,
+            ]
+        );
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
+        $created = \json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertSame('aborted', $this->getStatus($replaced['id']));
+        $this->assertSame('planned', $this->getStatus($otherLocale['id']));
+        $this->assertSame('planned', $this->getStatus($otherEntity['id']));
+        $this->assertSame('planned', $this->getStatus($created['id']));
+    }
+
+    public function testPostWithoutTheMarkerKeepsThePlannedTasks(): void
+    {
+        $first = $this->testPost();
+        $second = $this->testPost();
+
+        $this->assertSame('planned', $this->getStatus($first['id']));
+        $this->assertSame('planned', $this->getStatus($second['id']));
+    }
+
+    private function getStatus(string $id): string
+    {
+        $this->getContainer()->get('doctrine.orm.entity_manager')->clear();
+        $task = $this->getContainer()->get('sulu_automation.tasks.manager')->findById($id);
+        $executions = $this->getContainer()->get('task.repository.task_execution')->findByTaskUuid($task->getTask()->getUuid());
+
+        return $executions[0]->getStatus();
+    }
+
     public function testPut(
         $handlerClass = FirstHandler::class,
         $schedule = '+2 day',

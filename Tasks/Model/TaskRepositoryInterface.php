@@ -49,6 +49,13 @@ interface TaskRepositoryInterface
     public function countPendingTasks(string $entityClass, string $entityId, ?string $locale = null): int;
 
     /**
+     * Find the tasks of a handler for an entity which have not started yet.
+     *
+     * @return list<TaskInterface>
+     */
+    public function findPendingTasks(string $handlerClass, string $entityClass, string $entityId, string $locale): array;
+
+    /**
      * Revert given task-entity.
      */
     public function revert(TaskInterface $task): TaskInterface;
