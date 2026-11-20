@@ -60,6 +60,9 @@ class TaskControllerPermissionTest extends TestCase
     /** @var ObjectProphecy<TaskExecutionRepositoryInterface> */
     private ObjectProphecy $executionRepository;
 
+    /** @var ObjectProphecy<EntityManagerInterface> */
+    private ObjectProphecy $entityManager;
+
     private TaskController $controller;
 
     protected function setUp(): void
@@ -72,6 +75,8 @@ class TaskControllerPermissionTest extends TestCase
         $this->automationTaskRepository = $this->prophesize(AutomationTaskRepositoryInterface::class);
         $this->executionRepository = $this->prophesize(TaskExecutionRepositoryInterface::class);
 
+        $this->entityManager = $this->prophesize(EntityManagerInterface::class);
+
         $this->controller = new TaskController(
             $this->viewHandler->reveal(),
             $this->prophesize(TokenStorageInterface::class)->reveal(),
@@ -81,7 +86,7 @@ class TaskControllerPermissionTest extends TestCase
             $this->executionRepository->reveal(),
             $this->prophesize(RestHelperInterface::class)->reveal(),
             $this->taskManager->reveal(),
-            $this->prophesize(EntityManagerInterface::class)->reveal(),
+            $this->entityManager->reveal(),
             $this->prophesize(FieldDescriptorFactoryInterface::class)->reveal(),
             $this->automationTaskRepository->reveal(),
             $this->prophesize(TranslatorInterface::class)->reveal(),
@@ -102,11 +107,15 @@ class TaskControllerPermissionTest extends TestCase
         ));
     }
 
-    public function testPostWithTheMarkerAbortsThePlannedTasksAfterTheNewOneIsCreated(): void
+    public function testPostWithTheMarkerAbortsThePlannedTasksInTheFlushOfTheNewTask(): void
     {
+        $events = [];
+
         $planned = $this->prophesize(TaskExecutionInterface::class);
         $planned->getStatus()->willReturn(TaskStatus::PLANNED);
-        $planned->setStatus(TaskStatus::ABORTED)->shouldBeCalled();
+        $planned->setStatus(TaskStatus::ABORTED)->will(function() use (&$events) {
+            $events[] = 'abort';
+        })->shouldBeCalledTimes(1);
         $running = $this->prophesize(TaskExecutionInterface::class);
         $running->getStatus()->willReturn(TaskStatus::RUNNING);
         $running->setStatus(Argument::any())->shouldNotBeCalled();
@@ -116,10 +125,37 @@ class TaskControllerPermissionTest extends TestCase
         $other = $this->prophesize(TaskInterface::class);
         $other->getTask()->willReturn($phpTask->reveal());
 
-        $this->automationTaskRepository->findPendingTasks('Handler', 'Entity', '1', 'de')->willReturn([$other->reveal()]);
+        $this->automationTaskRepository->findPendingTasks('Handler', 'Entity', '1', 'de')->will(function() use (&$events, $other) {
+            $events[] = 'find';
+
+            return [$other->reveal()];
+        });
         $this->executionRepository->findByTaskUuid('uuid-1')->willReturn([$planned->reveal(), $running->reveal()]);
-        $this->executionRepository->save($planned->reveal())->shouldBeCalled();
-        $this->taskManager->create(Argument::type(Task::class))->shouldBeCalled();
+        $this->executionRepository->save(Argument::any())->shouldNotBeCalled();
+        $this->taskManager->create(Argument::type(Task::class))->will(function(array $args) use (&$events) {
+            $events[] = 'create';
+
+            return $args[0];
+        })->shouldBeCalledTimes(1);
+        $this->entityManager->flush()->will(function() use (&$events) {
+            $events[] = 'flush';
+        })->shouldBeCalledTimes(1);
+
+        $this->controller->postAction(new Request(
+            ['entityClass' => 'Entity', 'entityId' => '1', 'locale' => 'de'],
+            ['handlerClass' => 'Handler', 'schedule' => '2030-01-01T10:00:00', 'replacePlanned' => true],
+        ));
+
+        $this->assertSame(['find', 'abort', 'create', 'flush'], $events);
+    }
+
+    public function testPostWithTheMarkerAbortsNothingWhenTheCreationFails(): void
+    {
+        $this->automationTaskRepository->findPendingTasks(Argument::cetera())->willReturn([]);
+        $this->taskManager->create(Argument::type(Task::class))->willThrow(new \RuntimeException());
+        $this->entityManager->flush()->shouldNotBeCalled();
+
+        $this->expectException(\RuntimeException::class);
 
         $this->controller->postAction(new Request(
             ['entityClass' => 'Entity', 'entityId' => '1', 'locale' => 'de'],

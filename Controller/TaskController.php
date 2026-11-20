@@ -249,17 +249,19 @@ class TaskController extends AbstractRestController implements SecuredController
             ? $this->automationTaskRepository->findPendingTasks($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale())
             : [];
 
+        $this->abortPlanned($replaced);
+
         $this->taskManager->create($task);
 
         $this->entityManager->flush();
-
-        $this->abortPlanned($replaced);
 
         return $this->handleView($this->view($task));
     }
 
     /**
      * The planned executions stay in the list as aborted, so it is visible that a later task replaced them.
+     * They are managed entities and are not saved here. The flush after the creation of the new task persists them
+     * together with it, so a failure leaves the old tasks planned.
      *
      * @param list<TaskInterface> $tasks
      */
@@ -272,7 +274,6 @@ class TaskController extends AbstractRestController implements SecuredController
                 }
 
                 $execution->setStatus(TaskStatus::ABORTED);
-                $this->taskExecutionRepository->save($execution);
             }
         }
     }

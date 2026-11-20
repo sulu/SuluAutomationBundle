@@ -11,7 +11,7 @@ The entry needs no admin JavaScript of the bundle. It uses the form toolbar acti
 `sulu_content.save_toolbar_action_provider`, so it only shows where the bundle is installed.
 
 `POST /admin/api/tasks` accepts the flag `replacePlanned`. With it the planned tasks of the same handler, entity and locale are
-aborted after the new task is created.
+aborted in the same flush that stores the new task.
 
 `TaskRepositoryInterface` gets the method `findPendingTasks()`. Custom implementations have to add it.
 
