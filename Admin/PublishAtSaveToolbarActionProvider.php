@@ -12,7 +12,7 @@
 namespace Sulu\Bundle\AutomationBundle\Admin;
 
 use Sulu\Article\Domain\Model\ArticleInterface;
-use Sulu\Bundle\AdminBundle\Admin\View\ToolbarAction;
+use Sulu\Bundle\AdminBundle\Admin\View\SaveAndCreateToolbarAction;
 use Sulu\Bundle\AutomationBundle\TaskHandler\ArticlePublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\PagePublishTaskHandler;
 use Sulu\Component\Security\Authorization\PermissionTypes;
@@ -52,19 +52,16 @@ final class PublishAtSaveToolbarActionProvider implements SaveToolbarActionProvi
             }
 
             return [
-                new ToolbarAction(
-                    'sulu_admin.save_and_create',
-                    [
-                        'label' => 'sulu_automation.publish_at',
-                        'title' => 'sulu_automation.publish_at',
-                        'formKey' => 'sulu_automation_publish_at',
-                        'resourceKey' => 'tasks',
-                        'data' => ['handlerClass' => $handlerClass, 'replacePlanned' => true],
-                        'parameters' => ['entityClass' => $entityInterface],
-                        'idParameter' => 'entityId',
-                        'permission' => PermissionTypes::LIVE,
-                        'visible_condition' => '(!_permissions || _permissions.edit)',
-                    ]
+                new SaveAndCreateToolbarAction(
+                    label: 'sulu_automation.publish_at',
+                    title: 'sulu_automation.publish_at',
+                    formKey: 'sulu_automation_publish_at',
+                    resourceKey: 'tasks',
+                    idParameter: 'entityId',
+                    data: ['handlerClass' => $handlerClass, 'replacePlanned' => true],
+                    parameters: ['entityClass' => $entityInterface],
+                    visibleCondition: '(!_permissions || _permissions.edit)',
+                    permission: PermissionTypes::LIVE,
                 ),
             ];
         }

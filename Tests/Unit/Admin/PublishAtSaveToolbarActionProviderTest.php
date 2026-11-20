@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Sulu\Article\Domain\Model\Article;
 use Sulu\Article\Domain\Model\ArticleInterface;
+use Sulu\Bundle\AdminBundle\Admin\View\SaveAndCreateToolbarAction;
 use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
 use Sulu\Bundle\AutomationBundle\Admin\PublishAtSaveToolbarActionProvider;
 use Sulu\Bundle\AutomationBundle\TaskHandler\ArticlePublishTaskHandler;
@@ -45,7 +46,10 @@ class PublishAtSaveToolbarActionProviderTest extends TestCase
         $toolbarActions = $this->createProvider()->getToolbarActions($contentRichEntityClass);
 
         $this->assertCount(1, $toolbarActions);
+        $this->assertInstanceOf(SaveAndCreateToolbarAction::class, $toolbarActions[0]);
         $this->assertSame('sulu_admin.save_and_create', $toolbarActions[0]->getType());
+        $this->assertSame('sulu_automation.publish_at', $toolbarActions[0]->getOptions()['label']);
+        $this->assertSame('sulu_automation.publish_at', $toolbarActions[0]->getOptions()['title']);
         $this->assertSame('tasks', $toolbarActions[0]->getOptions()['resourceKey']);
         $this->assertSame(['entityClass' => $entityInterface], $toolbarActions[0]->getOptions()['parameters']);
         $this->assertSame('entityId', $toolbarActions[0]->getOptions()['idParameter']);
