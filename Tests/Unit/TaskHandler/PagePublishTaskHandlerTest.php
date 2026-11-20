@@ -18,6 +18,7 @@ use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Sulu\Bundle\AutomationBundle\TaskHandler\PagePublishTaskHandler;
+use Sulu\Bundle\AutomationBundle\TaskHandler\PublishTaskUserGuard;
 use Sulu\Bundle\AutomationBundle\TaskHandler\TaskHandlerConfiguration;
 use Sulu\Content\Domain\Model\WorkflowInterface;
 use Sulu\Messenger\Infrastructure\Symfony\Messenger\FlushMiddleware\EnableFlushStamp;
@@ -26,6 +27,7 @@ use Sulu\Page\Domain\Model\PageInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class PagePublishTaskHandlerTest extends TestCase
 {
@@ -96,5 +98,29 @@ class PagePublishTaskHandlerTest extends TestCase
         )->shouldBeCalledOnce()->willReturn(new Envelope(new \stdClass()));
 
         $this->handler->handle($workload);
+    }
+
+    public function testHandleAsksTheGuardForTheUserOfTheTask(): void
+    {
+        $workload = ['id' => 'uuid-1', 'locale' => 'en', 'userId' => 7];
+
+        $guard = $this->prophesize(PublishTaskUserGuard::class);
+        $guard->assertCanPublish('pages', $workload)->shouldBeCalledOnce();
+        $this->messageBus->dispatch(Argument::cetera())->shouldBeCalledOnce()->willReturn(new Envelope(new \stdClass()));
+
+        (new PagePublishTaskHandler($this->messageBus->reveal(), $guard->reveal()))->handle($workload);
+    }
+
+    public function testHandleDoesNotPublishWhenTheGuardRefuses(): void
+    {
+        $workload = ['id' => 'uuid-1', 'locale' => 'en', 'userId' => 7];
+
+        $guard = $this->prophesize(PublishTaskUserGuard::class);
+        $guard->assertCanPublish('pages', $workload)->willThrow(new AccessDeniedException('no'));
+        $this->messageBus->dispatch(Argument::cetera())->shouldNotBeCalled();
+
+        $this->expectException(AccessDeniedException::class);
+
+        (new PagePublishTaskHandler($this->messageBus->reveal(), $guard->reveal()))->handle($workload);
     }
 }

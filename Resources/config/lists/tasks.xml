@@ -59,6 +59,10 @@
                             <param name="icon" value="su-ban"/>
                             <param name="color" value="#cf3939"/>
                         </param>
+                        <param name="aborted" type="collection">
+                            <param name="icon" value="su-ban"/>
+                            <param name="color" value="#8d8d8d"/>
+                        </param>
                     </param>
                 </params>
             </transformer>

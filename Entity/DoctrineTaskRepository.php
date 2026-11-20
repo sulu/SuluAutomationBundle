@@ -67,6 +67,30 @@ class DoctrineTaskRepository extends EntityRepository implements TaskRepositoryI
         return $result;
     }
 
+    public function findPendingTasks(string $handlerClass, string $entityClass, string $entityId, string $locale): array
+    {
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder()
+            ->select('auTask')
+            ->from(Task::class, 'auTask')
+            ->innerJoin('auTask.task', 'task')
+            ->innerJoin(TaskExecution::class, 'taskExecution', Join::WITH, 'taskExecution.task = task')
+            ->where('auTask.handlerClass = :handlerClass')
+            ->andWhere('auTask.entityClass = :entityClass')
+            ->andWhere('auTask.entityId = :entityId')
+            ->andWhere('auTask.locale = :locale')
+            ->andWhere('taskExecution.status = :status')
+            ->setParameter('handlerClass', $handlerClass)
+            ->setParameter('entityClass', $entityClass)
+            ->setParameter('entityId', $entityId)
+            ->setParameter('locale', $locale)
+            ->setParameter('status', 'planned');
+
+        /** @var list<TaskInterface> $result */
+        $result = $queryBuilder->getQuery()->getResult();
+
+        return $result;
+    }
+
     public function countPendingTasks(string $entityClass, string $entityId, ?string $locale = null): int
     {
         $queryBuilder = $this->getEntityManager()->createQueryBuilder()

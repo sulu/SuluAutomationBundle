@@ -1,5 +1,19 @@
 # Upgrade
 
+## 3.1.0
+
+### Request for publishing
+
+The bundle requires Sulu 3.1. It adds a switch "Publish automatically" and a date to the form of the request. With the switch on,
+the publish task is scheduled for that date as soon as the request is approved, for the user who gives the last approval and
+only if that user has the permission `live`. Until the date has passed, the content can only be published through the task,
+so the plain publish buttons are hidden and the workflow refuses a publish by a user. The banner of the form tells that the
+publish is scheduled. Cancelling the request or publishing the content by hand aborts the task. It stays in the list with
+the status aborted. The action `publish_at` in the footer of the review overlay stays as the way to schedule by hand when
+that did not happen. Scheduling dispatches the domain event `PublishAtScheduledEvent` of the type `publish_scheduled`.
+
+`TaskRepositoryInterface` has the new method `findPendingTasks()`. Custom repositories have to implement it.
+
 ## 3.0.2
 
 ### Permission of the task handler

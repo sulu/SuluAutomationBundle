@@ -66,6 +66,11 @@ class SuluAutomationExtension extends Extension implements PrependExtensionInter
             $container->prependExtensionConfig(
                 'sulu_admin',
                 [
+                    'forms' => [
+                        'directories' => [
+                            __DIR__ . '/../Resources/config/forms',
+                        ],
+                    ],
                     'lists' => [
                         'directories' => [
                             __DIR__ . '/../Resources/config/lists',
