@@ -24,6 +24,7 @@ use Sulu\Bundle\AutomationBundle\Entity\Task;
 use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
 use Sulu\Bundle\AutomationBundle\Security\TaskPermissionChecker;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
+use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface as AutomationTaskRepositoryInterface;
 use Sulu\Component\Rest\ListBuilder\Doctrine\DoctrineListBuilderFactoryInterface;
 use Sulu\Component\Rest\ListBuilder\Metadata\FieldDescriptorFactoryInterface;
@@ -33,9 +34,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Task\Execution\TaskExecutionInterface;
 use Task\Handler\TaskHandlerFactoryInterface;
 use Task\Storage\TaskExecutionRepositoryInterface;
 use Task\Storage\TaskRepositoryInterface;
+use Task\TaskInterface as PHPTaskInterface;
+use Task\TaskStatus;
 
 class TaskControllerPermissionTest extends TestCase
 {
@@ -50,6 +54,15 @@ class TaskControllerPermissionTest extends TestCase
     /** @var ObjectProphecy<TaskPermissionChecker> */
     private ObjectProphecy $permissionChecker;
 
+    /** @var ObjectProphecy<AutomationTaskRepositoryInterface> */
+    private ObjectProphecy $automationTaskRepository;
+
+    /** @var ObjectProphecy<TaskExecutionRepositoryInterface> */
+    private ObjectProphecy $executionRepository;
+
+    /** @var ObjectProphecy<EntityManagerInterface> */
+    private ObjectProphecy $entityManager;
+
     private TaskController $controller;
 
     protected function setUp(): void
@@ -59,18 +72,23 @@ class TaskControllerPermissionTest extends TestCase
         $this->viewHandler = $this->prophesize(ViewHandlerInterface::class);
         $this->viewHandler->handle(Argument::cetera())->willReturn(new Response());
 
+        $this->automationTaskRepository = $this->prophesize(AutomationTaskRepositoryInterface::class);
+        $this->executionRepository = $this->prophesize(TaskExecutionRepositoryInterface::class);
+
+        $this->entityManager = $this->prophesize(EntityManagerInterface::class);
+
         $this->controller = new TaskController(
             $this->viewHandler->reveal(),
             $this->prophesize(TokenStorageInterface::class)->reveal(),
             $this->prophesize(DoctrineListBuilderFactoryInterface::class)->reveal(),
             $this->prophesize(TaskHandlerFactoryInterface::class)->reveal(),
             $this->prophesize(TaskRepositoryInterface::class)->reveal(),
-            $this->prophesize(TaskExecutionRepositoryInterface::class)->reveal(),
+            $this->executionRepository->reveal(),
             $this->prophesize(RestHelperInterface::class)->reveal(),
             $this->taskManager->reveal(),
-            $this->prophesize(EntityManagerInterface::class)->reveal(),
+            $this->entityManager->reveal(),
             $this->prophesize(FieldDescriptorFactoryInterface::class)->reveal(),
-            $this->prophesize(AutomationTaskRepositoryInterface::class)->reveal(),
+            $this->automationTaskRepository->reveal(),
             $this->prophesize(TranslatorInterface::class)->reveal(),
             $this->permissionChecker->reveal(),
         );
@@ -82,6 +100,74 @@ class TaskControllerPermissionTest extends TestCase
         $this->taskManager->create(Argument::any())->shouldNotBeCalled();
 
         $this->expectException(AccessDeniedException::class);
+
+        $this->controller->postAction(new Request(
+            ['entityClass' => 'Entity', 'entityId' => '1', 'locale' => 'de'],
+            ['handlerClass' => 'Handler', 'schedule' => '2030-01-01T10:00:00'],
+        ));
+    }
+
+    public function testPostWithTheMarkerAbortsThePlannedTasksInTheFlushOfTheNewTask(): void
+    {
+        $events = [];
+
+        $planned = $this->prophesize(TaskExecutionInterface::class);
+        $planned->getStatus()->willReturn(TaskStatus::PLANNED);
+        $planned->setStatus(TaskStatus::ABORTED)->will(function() use (&$events) {
+            $events[] = 'abort';
+        })->shouldBeCalledTimes(1);
+        $running = $this->prophesize(TaskExecutionInterface::class);
+        $running->getStatus()->willReturn(TaskStatus::RUNNING);
+        $running->setStatus(Argument::any())->shouldNotBeCalled();
+
+        $phpTask = $this->prophesize(PHPTaskInterface::class);
+        $phpTask->getUuid()->willReturn('uuid-1');
+        $other = $this->prophesize(TaskInterface::class);
+        $other->getTask()->willReturn($phpTask->reveal());
+
+        $this->automationTaskRepository->findPendingTasks('Handler', 'Entity', '1', 'de')->will(function() use (&$events, $other) {
+            $events[] = 'find';
+
+            return [$other->reveal()];
+        });
+        $this->executionRepository->findByTaskUuid('uuid-1')->willReturn([$planned->reveal(), $running->reveal()]);
+        $this->executionRepository->save(Argument::any())->shouldNotBeCalled();
+        $this->taskManager->create(Argument::type(Task::class))->will(function(array $args) use (&$events) {
+            $events[] = 'create';
+
+            return $args[0];
+        })->shouldBeCalledTimes(1);
+        $this->entityManager->flush()->will(function() use (&$events) {
+            $events[] = 'flush';
+        })->shouldBeCalledTimes(1);
+
+        $this->controller->postAction(new Request(
+            ['entityClass' => 'Entity', 'entityId' => '1', 'locale' => 'de'],
+            ['handlerClass' => 'Handler', 'schedule' => '2030-01-01T10:00:00', 'replacePlanned' => true],
+        ));
+
+        $this->assertSame(['find', 'abort', 'create', 'flush'], $events);
+    }
+
+    public function testPostWithTheMarkerAbortsNothingWhenTheCreationFails(): void
+    {
+        $this->automationTaskRepository->findPendingTasks(Argument::cetera())->willReturn([]);
+        $this->taskManager->create(Argument::type(Task::class))->willThrow(new \RuntimeException());
+        $this->entityManager->flush()->shouldNotBeCalled();
+
+        $this->expectException(\RuntimeException::class);
+
+        $this->controller->postAction(new Request(
+            ['entityClass' => 'Entity', 'entityId' => '1', 'locale' => 'de'],
+            ['handlerClass' => 'Handler', 'schedule' => '2030-01-01T10:00:00', 'replacePlanned' => true],
+        ));
+    }
+
+    public function testPostWithoutTheMarkerKeepsThePlannedTasks(): void
+    {
+        $this->automationTaskRepository->findPendingTasks(Argument::cetera())->shouldNotBeCalled();
+        $this->executionRepository->save(Argument::any())->shouldNotBeCalled();
+        $this->taskManager->create(Argument::type(Task::class))->shouldBeCalled();
 
         $this->controller->postAction(new Request(
             ['entityClass' => 'Entity', 'entityId' => '1', 'locale' => 'de'],
