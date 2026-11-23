@@ -21,9 +21,6 @@ use Symfony\Component\Workflow\Event\TransitionEvent;
  */
 final class PublishAtRequestDataValidator
 {
-    /**
-     * @param TransitionEvent<object> $event
-     */
     public function __invoke(TransitionEvent $event): void
     {
         /** @var mixed $data */
