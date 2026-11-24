@@ -330,6 +330,31 @@ class TaskControllerTest extends SuluTestCase
         $this->assertSame('planned', $this->getStatus($created['id']));
     }
 
+    public function testPostWithTheMarkerRefusesADateInThePastAndKeepsThePlannedTasks(): void
+    {
+        $planned = $this->testPost();
+
+        $this->client->request(
+            'POST',
+            '/api/tasks?locale=de&entityClass=ThisClass&entityId=1',
+            [
+                'handlerClass' => FirstHandler::class,
+                'schedule' => (new \DateTimeImmutable('-1 hour'))->format('Y-m-d\TH:i:s'),
+                'replacePlanned' => true,
+            ]
+        );
+
+        $this->assertHttpStatusCode(400, $this->client->getResponse());
+        $this->assertSame('planned', $this->getStatus($planned['id']));
+    }
+
+    public function testPostWithoutTheMarkerStillTakesADateInThePast(): void
+    {
+        $this->testPost(FirstHandler::class, '-1 hour');
+
+        $this->assertHttpStatusCode(200, $this->client->getResponse());
+    }
+
     public function testPostWithoutTheMarkerKeepsThePlannedTasks(): void
     {
         $first = $this->testPost();

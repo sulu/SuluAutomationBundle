@@ -34,6 +34,7 @@ use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Component\Security\SecuredControllerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Task\Handler\TaskHandlerFactoryInterface;
@@ -244,6 +245,11 @@ class TaskController extends AbstractRestController implements SecuredController
         $task->setSchedule(new \DateTimeImmutable((string) $request->request->get('schedule')));
 
         $this->permissionChecker->checkCurrentUser($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale());
+
+        // A task that replaces the planned ones would run at once and publish what nobody scheduled.
+        if ($request->request->getBoolean('replacePlanned') && $task->getSchedule() <= new \DateTimeImmutable()) {
+            throw new BadRequestHttpException('Choose a date in the future.');
+        }
 
         $replaced = $request->request->getBoolean('replacePlanned')
             ? $this->automationTaskRepository->findPendingTasks($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale())
