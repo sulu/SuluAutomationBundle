@@ -52,7 +52,34 @@ class PublishAtRequestDataValidatorTest extends TestCase
 
     public function testAcceptsTheSwitchWithADate(): void
     {
-        (new PublishAtRequestDataValidator())($this->createEvent(['publishAutomatically' => true, 'publishAt' => '2026-12-01T10:00:00+00:00']));
+        $validator = new PublishAtRequestDataValidator(new \DateTimeImmutable('2026-11-24T09:00:00+00:00'));
+
+        $validator($this->createEvent(['publishAutomatically' => true, 'publishAt' => '2026-12-01T10:00:00+00:00']));
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function testRefusesADateInThePast(): void
+    {
+        $this->expectException(BadRequestHttpException::class);
+        $this->expectExceptionMessage('Choose a date in the future');
+
+        $validator = new PublishAtRequestDataValidator(new \DateTimeImmutable('2026-12-02T09:00:00+00:00'));
+        $validator($this->createEvent(['publishAutomatically' => true, 'publishAt' => '2026-12-01T10:00:00+00:00']));
+    }
+
+    public function testRefusesTheMomentThatIsNow(): void
+    {
+        $this->expectException(BadRequestHttpException::class);
+
+        $validator = new PublishAtRequestDataValidator(new \DateTimeImmutable('2026-12-01T10:00:00+00:00'));
+        $validator($this->createEvent(['publishAutomatically' => true, 'publishAt' => '2026-12-01T10:00:00+00:00']));
+    }
+
+    public function testIgnoresAPastDateWhileTheSwitchIsOff(): void
+    {
+        $validator = new PublishAtRequestDataValidator(new \DateTimeImmutable('2026-12-02T09:00:00+00:00'));
+        $validator($this->createEvent(['publishAutomatically' => false, 'publishAt' => '2026-12-01T10:00:00+00:00']));
 
         $this->addToAssertionCount(1);
     }
