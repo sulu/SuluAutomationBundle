@@ -13,5 +13,8 @@
   "sulu_automation.publish_at_date_info": "Sobald die Anfrage genehmigt ist, wird der Inhalt zu diesem Zeitpunkt veröffentlicht.",
   "sulu_automation.publish_on": "Am {date} veröffentlichen",
   "sulu_automation.publish_automatically": "Automatisch publizieren",
-  "sulu_automation.publish_scheduled": "Veröffentlichung geplant für {date}"
+  "sulu_automation.publish_scheduled": "Veröffentlichung geplant für {date}",
+  "sulu_activity.description.pages.publish_scheduled": "{userFullName} hat die Veröffentlichung der Seite \"{resourceTitle}\" geplant",
+  "sulu_activity.description.articles.publish_scheduled": "{userFullName} hat die Veröffentlichung des Artikels \"{resourceTitle}\" geplant",
+  "sulu_activity.description.snippets.publish_scheduled": "{userFullName} hat die Veröffentlichung des Snippets \"{resourceTitle}\" geplant"
 }
