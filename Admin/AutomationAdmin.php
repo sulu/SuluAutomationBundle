@@ -82,7 +82,6 @@ class AutomationAdmin extends Admin
             return;
         }
 
-        // Sulu 3.0 registers one unsuffixed edit view, Sulu 3.1 one view per group.
         $automationViewNames = [SnippetAdmin::EDIT_TABS_VIEW => SnippetAdmin::EDIT_TABS_VIEW . '.automation'];
         foreach ($this->groupProvider->getGroups(SnippetInterface::TEMPLATE_TYPE) as $group) {
             $automationViewNames[SnippetAdmin::EDIT_TABS_VIEW . '_' . $group->identifier] = SnippetAdmin::EDIT_TABS_VIEW . '.automation_' . $group->identifier;
