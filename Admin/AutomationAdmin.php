@@ -78,18 +78,30 @@ class AutomationAdmin extends Admin
 
     private function configureSnippetView(ViewCollection $viewCollection): void
     {
-        if ($viewCollection->has(SnippetAdmin::EDIT_TABS_VIEW)
-            && $this->securityChecker->hasPermission(static::SECURITY_CONTEXT, PermissionTypes::EDIT)
-        ) {
+        if (!$this->securityChecker->hasPermission(static::SECURITY_CONTEXT, PermissionTypes::EDIT)) {
+            return;
+        }
+
+        // Sulu 3.0 registers one unsuffixed edit view, Sulu 3.1 one view per group.
+        $automationViewNames = [SnippetAdmin::EDIT_TABS_VIEW => SnippetAdmin::EDIT_TABS_VIEW . '.automation'];
+        foreach ($this->groupProvider->getGroups(SnippetInterface::TEMPLATE_TYPE) as $group) {
+            $automationViewNames[SnippetAdmin::EDIT_TABS_VIEW . '_' . $group->identifier] = SnippetAdmin::EDIT_TABS_VIEW . '.automation_' . $group->identifier;
+        }
+
+        foreach ($automationViewNames as $parentViewName => $automationViewName) {
+            if (!$viewCollection->has($parentViewName)) {
+                continue;
+            }
+
             $viewCollection->add(
                 $this->automationViewBuilderFactory->createTaskListViewBuilder(
-                    SnippetAdmin::EDIT_TABS_VIEW . '.automation',
+                    $automationViewName,
                     '/automation',
                     SnippetInterface::class,
                     $this->hasUsableHandler(SnippetInterface::class, [SnippetAdmin::SECURITY_CONTEXT]),
                 )
                     ->setTabOrder(4096)
-                    ->setParent(SnippetAdmin::EDIT_TABS_VIEW),
+                    ->setParent($parentViewName),
             );
         }
     }
