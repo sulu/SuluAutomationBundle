@@ -50,6 +50,8 @@ class AutomationAdminTest extends TestCase
     /** @var ObjectProphecy<SecurityCheckerInterface> */
     private ObjectProphecy $securityChecker;
 
+    private ViewCollection $viewCollection;
+
     protected function setUp(): void
     {
         $this->securityChecker = $this->prophesize(SecurityCheckerInterface::class);
@@ -108,6 +110,44 @@ class AutomationAdminTest extends TestCase
         );
     }
 
+    public function testSnippetTabIsAddedToTheUnsuffixedEditViewOfSulu30(): void
+    {
+        $this->configureViews($this->createPublishHandlers());
+
+        $this->assertSame(
+            SnippetAdmin::EDIT_TABS_VIEW,
+            $this->viewCollection->get(SnippetAdmin::EDIT_TABS_VIEW . '.automation')->getView()->getParent(),
+        );
+    }
+
+    public function testSnippetTabIsAddedToEveryGroupEditViewOfSulu31(): void
+    {
+        $this->configureViews(
+            $this->createPublishHandlers(),
+            [SnippetAdmin::EDIT_TABS_VIEW . '_blog', SnippetAdmin::EDIT_TABS_VIEW . '_news'],
+            ['blog' => new FormGroup('blog', 'Blog'), 'news' => new FormGroup('news', 'News')],
+        );
+
+        $this->assertFalse($this->viewCollection->has(SnippetAdmin::EDIT_TABS_VIEW . '.automation'));
+        $this->assertSame(
+            SnippetAdmin::EDIT_TABS_VIEW . '_blog',
+            $this->viewCollection->get(SnippetAdmin::EDIT_TABS_VIEW . '.automation_blog')->getView()->getParent(),
+        );
+        $this->assertSame(
+            SnippetAdmin::EDIT_TABS_VIEW . '_news',
+            $this->viewCollection->get(SnippetAdmin::EDIT_TABS_VIEW . '.automation_news')->getView()->getParent(),
+        );
+    }
+
+    public function testNoSnippetTabWithoutEditPermission(): void
+    {
+        $this->securityChecker->hasPermission(AutomationAdmin::SECURITY_CONTEXT, PermissionTypes::EDIT)->willReturn(false);
+
+        $this->configureViews($this->createPublishHandlers());
+
+        $this->assertFalse($this->viewCollection->has(SnippetAdmin::EDIT_TABS_VIEW . '.automation'));
+    }
+
     private function grant(string $securityContext, string $permission): void
     {
         $this->securityChecker->hasPermission($securityContext, $permission)->willReturn(true);
@@ -132,11 +172,16 @@ class AutomationAdminTest extends TestCase
 
     /**
      * @param array<object> $handlers
+     * @param string[] $snippetEditViews
+     * @param array<string, FormGroup> $snippetGroups
      *
      * @return array<string, bool> the "addable" flag per entity class
      */
-    private function configureViews(array $handlers): array
-    {
+    private function configureViews(
+        array $handlers,
+        array $snippetEditViews = [SnippetAdmin::EDIT_TABS_VIEW],
+        array $snippetGroups = ['default' => new FormGroup('default', 'Default')],
+    ): array {
         $webspace = new Webspace();
         $webspace->setKey('example');
         $other = new Webspace();
@@ -145,7 +190,8 @@ class AutomationAdminTest extends TestCase
         $webspaceManager->getWebspaceCollection()->willReturn(new WebspaceCollection(['example' => $webspace, 'other' => $other]));
 
         $groupProvider = $this->prophesize(GroupProviderInterface::class);
-        $groupProvider->getGroups(Argument::cetera())->willReturn(['blog' => new FormGroup('blog', 'Blog')]);
+        $groupProvider->getGroups(ArticleInterface::TEMPLATE_TYPE)->willReturn(['blog' => new FormGroup('blog', 'Blog')]);
+        $groupProvider->getGroups(SnippetInterface::TEMPLATE_TYPE)->willReturn($snippetGroups);
 
         $recorder = new class(new ViewBuilderFactory()) extends AutomationViewBuilderFactory {
             /** @var array<string, bool> */
@@ -168,11 +214,13 @@ class AutomationAdminTest extends TestCase
         );
 
         $viewBuilderFactory = new ViewBuilderFactory();
-        $viewCollection = new ViewCollection();
-        $viewCollection->add($viewBuilderFactory->createFormViewBuilder(PageAdmin::EDIT_FORM_VIEW, '/pages/:id'));
-        $viewCollection->add($viewBuilderFactory->createFormViewBuilder(SnippetAdmin::EDIT_TABS_VIEW, '/snippets/:id'));
-        $viewCollection->add($viewBuilderFactory->createFormViewBuilder(ArticleAdmin::EDIT_TABS_VIEW . '_blog', '/articles/:id'));
-        $admin->configureViews($viewCollection);
+        $this->viewCollection = new ViewCollection();
+        $this->viewCollection->add($viewBuilderFactory->createFormViewBuilder(PageAdmin::EDIT_FORM_VIEW, '/pages/:id'));
+        foreach ($snippetEditViews as $snippetEditView) {
+            $this->viewCollection->add($viewBuilderFactory->createFormViewBuilder($snippetEditView, '/snippets/' . $snippetEditView . '/:id'));
+        }
+        $this->viewCollection->add($viewBuilderFactory->createFormViewBuilder(ArticleAdmin::EDIT_TABS_VIEW . '_blog', '/articles/:id'));
+        $admin->configureViews($this->viewCollection);
 
         return $recorder->flags;
     }
