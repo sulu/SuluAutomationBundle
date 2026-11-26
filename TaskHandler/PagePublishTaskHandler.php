@@ -29,7 +29,7 @@ class PagePublishTaskHandler implements SecuredAutomationTaskHandlerInterface
 
     private MessageBusInterface $messageBus;
 
-    public function __construct(MessageBusInterface $messageBus)
+    public function __construct(MessageBusInterface $messageBus, private readonly ?PublishTaskUserGuard $userGuard = null)
     {
         $this->messageBus = $messageBus;
     }
@@ -59,10 +59,12 @@ class PagePublishTaskHandler implements SecuredAutomationTaskHandlerInterface
     }
 
     /**
-     * @param array{id: string, locale: string} $workload
+     * @param array{id: string, locale: string, userId?: int|string} $workload
      */
     public function handle($workload)
     {
+        $this->userGuard?->assertCanPublish('pages', $workload);
+
         $this->messageBus->dispatch(
             new ApplyWorkflowTransitionPageMessage(
                 identifier: ['uuid' => $workload['id']],

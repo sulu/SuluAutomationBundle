@@ -29,7 +29,7 @@ class SnippetPublishTaskHandler implements SecuredAutomationTaskHandlerInterface
 
     private MessageBusInterface $messageBus;
 
-    public function __construct(MessageBusInterface $messageBus)
+    public function __construct(MessageBusInterface $messageBus, private readonly ?PublishTaskUserGuard $userGuard = null)
     {
         $this->messageBus = $messageBus;
     }
@@ -59,10 +59,12 @@ class SnippetPublishTaskHandler implements SecuredAutomationTaskHandlerInterface
     }
 
     /**
-     * @param array{id: string, locale: string} $workload
+     * @param array{id: string, locale: string, userId?: int|string} $workload
      */
     public function handle($workload)
     {
+        $this->userGuard?->assertCanPublish('snippets', $workload);
+
         $this->messageBus->dispatch(
             new ApplyWorkflowTransitionSnippetMessage(
                 identifier: ['uuid' => $workload['id']],

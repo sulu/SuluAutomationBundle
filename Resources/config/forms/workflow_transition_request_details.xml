@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<form xmlns="http://schemas.sulu.io/template/template"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://schemas.sulu.io/template/template http://schemas.sulu.io/template/form-1.0.xsd"
+>
+    <key>workflow_transition_request_details</key>
+
+    <!-- the date is required while the switch is on, the visible condition alone cannot say that -->
+    <schema>
+        <anyOf>
+            <schema>
+                <properties>
+                    <property name="publishAutomatically" value="false"/>
+                </properties>
+            </schema>
+            <schema>
+                <properties>
+                    <property name="publishAutomatically" value="true"/>
+                    <property name="publishAt" mandatory="true"/>
+                </properties>
+            </schema>
+        </anyOf>
+    </schema>
+
+    <properties>
+        <property name="publishAutomatically" type="checkbox" colspan="4">
+            <params>
+                <param name="type" value="toggler"/>
+                <param name="default_value" value="false"/>
+            </params>
+
+            <meta>
+                <title>sulu_automation.publish_automatically</title>
+            </meta>
+        </property>
+
+        <property name="publishAt" type="datetime" colspan="8" visibleCondition="publishAutomatically == true">
+            <meta>
+                <title>sulu_automation.publish_at_date</title>
+                <info_text>sulu_automation.publish_at_date_info</info_text>
+            </meta>
+        </property>
+    </properties>
+</form>

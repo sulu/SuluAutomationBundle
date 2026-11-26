@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
+use Sulu\Bundle\AutomationBundle\TaskHandler\PublishTaskUserGuard;
 use Sulu\Bundle\AutomationBundle\TaskHandler\SnippetPublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\TaskHandlerConfiguration;
 use Sulu\Content\Domain\Model\WorkflowInterface;
@@ -26,6 +27,7 @@ use Sulu\Snippet\Domain\Model\SnippetInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class SnippetPublishTaskHandlerTest extends TestCase
 {
@@ -96,5 +98,29 @@ class SnippetPublishTaskHandlerTest extends TestCase
         )->shouldBeCalledOnce()->willReturn(new Envelope(new \stdClass()));
 
         $this->handler->handle($workload);
+    }
+
+    public function testHandleAsksTheGuardForTheUserOfTheTask(): void
+    {
+        $workload = ['id' => 'uuid-1', 'locale' => 'en', 'userId' => 7];
+
+        $guard = $this->prophesize(PublishTaskUserGuard::class);
+        $guard->assertCanPublish('snippets', $workload)->shouldBeCalledOnce();
+        $this->messageBus->dispatch(Argument::cetera())->shouldBeCalledOnce()->willReturn(new Envelope(new \stdClass()));
+
+        (new SnippetPublishTaskHandler($this->messageBus->reveal(), $guard->reveal()))->handle($workload);
+    }
+
+    public function testHandleDoesNotPublishWhenTheGuardRefuses(): void
+    {
+        $workload = ['id' => 'uuid-1', 'locale' => 'en', 'userId' => 7];
+
+        $guard = $this->prophesize(PublishTaskUserGuard::class);
+        $guard->assertCanPublish('snippets', $workload)->willThrow(new AccessDeniedException('no'));
+        $this->messageBus->dispatch(Argument::cetera())->shouldNotBeCalled();
+
+        $this->expectException(AccessDeniedException::class);
+
+        (new SnippetPublishTaskHandler($this->messageBus->reveal(), $guard->reveal()))->handle($workload);
     }
 }
