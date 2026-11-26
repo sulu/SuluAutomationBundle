@@ -15,25 +15,25 @@ use Sulu\Article\Domain\Model\ArticleInterface;
 use Sulu\Bundle\AdminBundle\Admin\View\SaveAndCreateToolbarAction;
 use Sulu\Bundle\AutomationBundle\TaskHandler\ArticlePublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\PagePublishTaskHandler;
+use Sulu\Bundle\AutomationBundle\TaskHandler\SnippetPublishTaskHandler;
 use Sulu\Component\Security\Authorization\PermissionTypes;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 use Sulu\Content\Infrastructure\Sulu\Admin\SaveToolbarActionProviderInterface;
 use Sulu\Page\Domain\Model\PageInterface;
+use Sulu\Snippet\Domain\Model\SnippetInterface;
 
 /**
- * Adds the entry "Publish at" to the save dropdown of pages and articles, which saves the content and schedules its
- * publish for a date. Only users who may add tasks and edit and publish the content see it, and not while a request
- * for publishing is open, because the request decides then. A later "Publish at" replaces the planned publish of the
- * content, because the entry sends the marker `replacePlanned` along.
- *
- * Snippets are left out. Their edit tabs carry a group suffix, so they have no Automation tab and a task from this
- * entry could be neither seen nor cancelled.
+ * Adds the entry "Publish at" to the save dropdown of pages, articles and snippets, which saves the content and
+ * schedules its publish for a date. Only users who may add tasks and edit and publish the content see it, and not
+ * while a request for publishing is open, because the request decides then. A later "Publish at" replaces the planned
+ * publish of the content, because the entry sends the marker `replacePlanned` along.
  */
 final class PublishAtSaveToolbarActionProvider implements SaveToolbarActionProviderInterface
 {
     private const HANDLERS = [
         PageInterface::class => PagePublishTaskHandler::class,
         ArticleInterface::class => ArticlePublishTaskHandler::class,
+        SnippetInterface::class => SnippetPublishTaskHandler::class,
     ];
 
     public function __construct(private readonly SecurityCheckerInterface $securityChecker)

@@ -20,9 +20,11 @@ use Sulu\Bundle\AutomationBundle\Admin\AutomationAdmin;
 use Sulu\Bundle\AutomationBundle\Admin\PublishAtSaveToolbarActionProvider;
 use Sulu\Bundle\AutomationBundle\TaskHandler\ArticlePublishTaskHandler;
 use Sulu\Bundle\AutomationBundle\TaskHandler\PagePublishTaskHandler;
+use Sulu\Bundle\AutomationBundle\TaskHandler\SnippetPublishTaskHandler;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 use Sulu\Page\Domain\Model\Page;
 use Sulu\Page\Domain\Model\PageInterface;
+use Sulu\Snippet\Domain\Model\SnippetInterface;
 
 class PublishAtSaveToolbarActionProviderTest extends TestCase
 {
@@ -67,6 +69,7 @@ class PublishAtSaveToolbarActionProviderTest extends TestCase
     {
         yield 'page' => [Page::class, PageInterface::class, PagePublishTaskHandler::class];
         yield 'article' => [Article::class, ArticleInterface::class, ArticlePublishTaskHandler::class];
+        yield 'snippet' => [SnippetInterface::class, SnippetInterface::class, SnippetPublishTaskHandler::class];
     }
 
     public function testOffersNothingForOtherContent(): void
@@ -77,10 +80,5 @@ class PublishAtSaveToolbarActionProviderTest extends TestCase
     public function testOffersNothingWithoutThePermissionToAddTasks(): void
     {
         $this->assertSame([], $this->createProvider(false)->getToolbarActions(Page::class));
-    }
-
-    public function testOffersNothingForSnippets(): void
-    {
-        $this->assertSame([], $this->createProvider()->getToolbarActions(\Sulu\Snippet\Domain\Model\Snippet::class));
     }
 }
