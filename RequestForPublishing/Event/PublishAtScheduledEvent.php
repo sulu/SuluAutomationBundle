@@ -15,8 +15,7 @@ use Sulu\Bundle\ActivityBundle\Domain\Event\DomainEvent;
 use Sulu\Content\Domain\Model\WorkflowTransitionRequest\WorkflowTransitionRequest;
 
 /**
- * The publish of the content was scheduled for the date its approved request names, so the activity log and
- * anything listening to domain events, like a notifier, can tell who is waiting for what.
+ * A publish was scheduled for the date of an approved request, for the activity log and other domain event listeners.
  */
 class PublishAtScheduledEvent extends DomainEvent
 {

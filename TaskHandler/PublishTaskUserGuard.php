@@ -16,15 +16,11 @@ use Sulu\Content\Application\Security\WorkflowTransitionAdminAuthorizerInterface
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
- * Asks the content workflow whether the user of a publish task may still publish the content when the task runs.
+ * Checks when a publish task runs whether its user may still publish. The console has no token, where the workflow
+ * lets every publish pass, so the user is named. It then requires `live`, or `edit` with an approved request, and
+ * refuses disabled or locked users and content an open request has taken over (see `PublishAtAction`).
  *
- * A task runs from the console without a token, where the workflow lets every publish pass, so the handler has to name
- * the user. The workflow decides with its own rule: the permission `live`, or the permission `edit` while an approved
- * request is open for the content. A disabled or locked user is refused, and so is a publish that an open request has
- * taken over, which the date of `PublishAtAction` stops doing once it has passed.
- *
- * The authorizer only exists in the admin context. Without it, as in the website kernel, there is nothing to ask and the
- * check of the permission of the task handler stays the only one.
+ * The authorizer exists only in the admin context. Without it, only the permission check of the task handler remains.
  *
  * @internal
  */
@@ -37,7 +33,7 @@ class PublishTaskUserGuard
     }
 
     /**
-     * A task without a user was scheduled before the tasks carried one, and runs as it did then.
+     * A task without a user predates the user in the workload and runs as before.
      *
      * @param array{id: string, locale: string, userId?: int|string} $workload
      *

@@ -17,12 +17,9 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * Schedules the publish task as soon as a request is approved, so the requester has nothing left to click.
- *
- * The request is approved by the last approval or by the last check to pass, both are reported by an event. The
- * task belongs to the user who is logged in then, because the permission of that user is checked again when it runs.
- * Without a user, with a date that has passed, or without the permission, nothing is scheduled and the action in
- * the footer stays as the way to do it by hand. A listener must not fail the approval, so a refusal is not an error.
+ * Schedules the publish task once the last approval or check approves a request. The task belongs to the logged-in
+ * user, whose permission is checked again when it runs. Without a user, a future date or the permission, nothing is
+ * scheduled and the footer action remains. A listener must not fail the approval, so a refusal is no error.
  */
 final class PublishAtScheduler
 {

@@ -26,10 +26,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
- * Publishes an approved request at the date its form names, by scheduling a publish task for the content. The
- * {@see PublishAtScheduler} does that on approval, this action is the way to do it by hand.
- *
- * The task is cancelled again when the request is cancelled or published by hand, see {@see PublishAtTaskCanceller}.
+ * Schedules the publish of an approved request for the date its form names. {@see PublishAtScheduler} does this on
+ * approval, the action is the way to do it by hand. {@see PublishAtTaskCanceller} cancels the task.
  *
  * @internal
  *
@@ -44,8 +42,7 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
     public const TOGGLE_KEY = 'publishAutomatically';
 
     /**
-     * Stored in the data of the request, so the banner and the cancellation look at the task of this request alone.
-     * The form does not know the key, so the card of the review does not show it.
+     * Ties the task to this request. The form does not know the key, so the review card does not show it.
      */
     public const TASK_ID_KEY = 'publishAtTaskId';
 
@@ -85,8 +82,7 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
     }
 
     /**
-     * With a date ahead the content is published at that date and not before. Once the date has passed, the action
-     * refuses it, so the plain publish has to be possible again.
+     * No other publish until the date. After it the action refuses the date, so the plain publish has to work again.
      */
     public function replacesPublish(WorkflowTransitionRequest $request): bool
     {
@@ -132,7 +128,7 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
 
         $publishAt = $this->getPublishAt($request);
 
-        // execute() refuses a date that has passed, so offering the action for one would fail the approval
+        // execute() refuses a past date, so offering the action would fail the approval
         if (null === $publishAt || $publishAt <= ($this->now ?? new \DateTimeImmutable())) {
             return false;
         }
@@ -141,7 +137,7 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
     }
 
     /**
-     * A publish task of the same content that someone scheduled by hand for another date is no task of this request.
+     * A task someone scheduled by hand for the same content is not the task of this request.
      */
     private function hasPendingTask(WorkflowTransitionRequest $request): bool
     {
@@ -190,7 +186,7 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
         $task->setScheme($httpRequest?->getScheme() ?? 'https');
         $task->setHost($httpRequest?->getHost() ?? 'localhost');
 
-        // the same check as the admin applies when a task is scheduled by hand
+        // same check as for a task scheduled by hand
         $this->permissionChecker->checkCurrentUser(
             $task->getHandlerClass(),
             $task->getEntityClass(),
@@ -220,8 +216,8 @@ class PublishAtAction implements WorkflowTransitionRequestActionInterface
     }
 
     /**
-     * The form keeps the value of a field that is hidden again, so the date counts only while the toggle is on.
-     * A date without a zone is read in the default zone of the server, like the other dates of the admin.
+     * The form keeps a hidden field's value, so the date counts only while the toggle is on.
+     * A date without a zone is read in the server's default zone.
      *
      * @param array<string, mixed> $data
      */

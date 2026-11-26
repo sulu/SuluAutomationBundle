@@ -21,13 +21,9 @@ use Task\Storage\TaskExecutionRepositoryInterface;
 use Task\TaskStatus;
 
 /**
- * Cancels the publish task of a request when the request ends without it, because it was cancelled or because the
- * content was published by hand first. A rejection after the approval does the same, as long as it takes the approval
- * away: the request is no longer approved, so nothing may publish for it.
- *
- * Only the task this request scheduled is cancelled, a publish that someone scheduled by hand for the content stays.
- * The task stays in the list as aborted, so it is visible what happened to it. Only tasks that have not started are
- * cancelled. The publish of a task itself settles the request, and that task is running by then.
+ * Aborts the task of a request that is cancelled, published by hand, or loses its approval through a rejection.
+ * Manually scheduled tasks stay. Aborted tasks remain listed. A started task is left alone, because its own publish
+ * settles the request while it runs.
  */
 final class PublishAtTaskCanceller
 {
@@ -75,7 +71,7 @@ final class PublishAtTaskCanceller
                     continue;
                 }
 
-                // not saved: the execution is managed and the workflow flushes it with the marking of the request
+                // not saved: the workflow flushes the managed execution with the marking of the request
                 $execution->setStatus(TaskStatus::ABORTED);
             }
         }

@@ -16,9 +16,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Workflow\Event\TransitionEvent;
 
 /**
- * Refuses a request that switches "Publish automatically" on without a date or with a date that has passed,
- * because nothing would be scheduled and the requester would not learn it.
- * It runs before the listener of the core that stores the request, so a refused request leaves nothing behind.
+ * Refuses "Publish automatically" without a future date, because nothing would be scheduled and nobody would notice.
+ * Runs before the core stores the request, so a refused request leaves nothing behind.
  */
 final class PublishAtRequestDataValidator
 {
