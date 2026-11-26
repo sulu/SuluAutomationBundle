@@ -26,8 +26,6 @@ The entry needs no admin JavaScript of the bundle. It uses the toolbar action `S
 `POST /admin/api/tasks` accepts the flag `replacePlanned`. With it the planned tasks of the same handler, entity and locale are
 aborted in the same flush that stores the new task. A date in the past is refused with the status 400 then.
 
-`TaskRepositoryInterface` gets the method `findPendingTasks()`. Custom implementations have to add it.
-
 ## 3.0.2
 
 ### Permission of the task handler
