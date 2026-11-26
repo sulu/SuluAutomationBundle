@@ -21,6 +21,7 @@ use Sulu\Bundle\AutomationBundle\Exception\TaskNotFoundException;
 use Sulu\Bundle\AutomationBundle\Security\TaskPermissionChecker;
 use Sulu\Bundle\AutomationBundle\TaskHandler\AutomationTaskHandlerInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Manager\TaskManagerInterface;
+use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskInterface;
 use Sulu\Bundle\AutomationBundle\Tasks\Model\TaskRepositoryInterface as AutomationTaskRepositoryInterface;
 use Sulu\Bundle\SecurityBundle\Entity\User;
 use Sulu\Component\Rest\AbstractRestController;
@@ -33,11 +34,13 @@ use Sulu\Component\Rest\RestHelperInterface;
 use Sulu\Component\Security\SecuredControllerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Task\Handler\TaskHandlerFactoryInterface;
 use Task\Storage\TaskExecutionRepositoryInterface;
 use Task\Storage\TaskRepositoryInterface;
+use Task\TaskStatus;
 
 /**
  * Provides api for tasks.
@@ -243,11 +246,41 @@ class TaskController extends AbstractRestController implements SecuredController
 
         $this->permissionChecker->checkCurrentUser($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale());
 
+        // A past date would abort the planned publish and publish at once.
+        if ($request->request->getBoolean('replacePlanned') && $task->getSchedule() <= new \DateTimeImmutable()) {
+            throw new BadRequestHttpException('Choose a date in the future.');
+        }
+
+        $replaced = $request->request->getBoolean('replacePlanned')
+            ? $this->automationTaskRepository->findPendingTasks($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale())
+            : [];
+
+        $this->abortPlanned($replaced);
+
         $this->taskManager->create($task);
 
         $this->entityManager->flush();
 
         return $this->handleView($this->view($task));
+    }
+
+    /**
+     * Not saved here: the flush of the new task stores them, so a failure leaves the old tasks planned.
+     * They stay listed as aborted.
+     *
+     * @param list<TaskInterface> $tasks
+     */
+    private function abortPlanned(array $tasks): void
+    {
+        foreach ($tasks as $task) {
+            foreach ($this->taskExecutionRepository->findByTaskUuid((string) $task->getTask()?->getUuid()) as $execution) {
+                if (TaskStatus::PLANNED !== $execution->getStatus()) {
+                    continue;
+                }
+
+                $execution->setStatus(TaskStatus::ABORTED);
+            }
+        }
     }
 
     /**

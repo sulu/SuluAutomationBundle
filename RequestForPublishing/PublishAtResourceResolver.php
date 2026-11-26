@@ -26,10 +26,8 @@ use Sulu\Snippet\Domain\Repository\SnippetRepositoryInterface;
 use Sulu\Snippet\Infrastructure\Sulu\Admin\SnippetAdmin;
 
 /**
- * Reads what the activity log needs to show and to protect an entry: the title, the webspace and the security context
- * of the content, as the events of the workflow transition requests in the core do.
- *
- * A repository of a bundle that is not installed is null, and its content resolves to nothing.
+ * Reads title, webspace and security context of the content for the activity log, like the core's request events.
+ * The repository of a bundle that is not installed is null, and its content resolves to nothing.
  *
  * @internal
  *

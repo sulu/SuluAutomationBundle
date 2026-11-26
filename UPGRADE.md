@@ -15,6 +15,17 @@ that did not happen. Scheduling dispatches the domain event `PublishAtScheduledE
 
 `TaskRepositoryInterface` has the new method `findPendingTasks()`. Custom repositories have to implement it.
 
+### Publish at in the save dropdown
+
+The save dropdown of pages, articles and snippets gets the entry "Publish at" for users with the permissions `add` on the
+tasks and `edit` and `live` on the content. It saves the content and schedules its publish for the picked date. A later
+"Publish at" aborts the planned publish task of the content.
+The entry needs no admin JavaScript of the bundle. It uses the toolbar action `SaveAndCreateToolbarAction` (`sulu_admin.save_and_create`) of Sulu 3.1 and is added through the tag
+`sulu_content.save_toolbar_action_provider`, so it only shows where the bundle is installed.
+
+`POST /admin/api/tasks` accepts the flag `replacePlanned`. With it the planned tasks of the same handler, entity and locale are
+aborted in the same flush that stores the new task. A date in the past is refused with the status 400 then.
+
 ## 3.0.2
 
 ### Permission of the task handler

@@ -16,5 +16,7 @@
   "sulu_automation.publish_scheduled": "Veröffentlichung geplant für {date}",
   "sulu_activity.description.pages.publish_scheduled": "{userFullName} hat die Veröffentlichung der Seite \"{resourceTitle}\" geplant",
   "sulu_activity.description.articles.publish_scheduled": "{userFullName} hat die Veröffentlichung des Artikels \"{resourceTitle}\" geplant",
-  "sulu_activity.description.snippets.publish_scheduled": "{userFullName} hat die Veröffentlichung des Snippets \"{resourceTitle}\" geplant"
+  "sulu_activity.description.snippets.publish_scheduled": "{userFullName} hat die Veröffentlichung des Snippets \"{resourceTitle}\" geplant",
+  "sulu_automation.publish_at": "Veröffentlichen am",
+  "sulu_automation.publish_at_schedule": "Datum und Uhrzeit"
 }
