@@ -23,10 +23,8 @@ use Sulu\Page\Domain\Model\PageInterface;
 use Sulu\Snippet\Domain\Model\SnippetInterface;
 
 /**
- * Adds the entry "Publish at" to the save dropdown of pages, articles and snippets, which saves the content and
- * schedules its publish for a date. Only users who may add tasks and edit and publish the content see it, and not
- * while a request for publishing is open, because the request decides then. A later "Publish at" replaces the planned
- * publish of the content, because the entry sends the marker `replacePlanned` along.
+ * Adds "Publish at" to the save dropdown, which saves the content and schedules its publish, replacing a planned one.
+ * The core hides it while a request for publishing is open.
  */
 final class PublishAtSaveToolbarActionProvider implements SaveToolbarActionProviderInterface
 {

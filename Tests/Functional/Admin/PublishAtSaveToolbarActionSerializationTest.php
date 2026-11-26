@@ -18,10 +18,7 @@ use Sulu\Bundle\TestBundle\Testing\SuluTestCase;
 use Sulu\Component\Security\Authorization\SecurityCheckerInterface;
 use Sulu\Page\Domain\Model\Page;
 
-/**
- * The core translates label and title of the toolbar action while serializing, so the keys of the bundle
- * must resolve in the admin domain.
- */
+/** The core translates label and title while serializing, so the keys must be in the admin domain. */
 class PublishAtSaveToolbarActionSerializationTest extends SuluTestCase
 {
     public function testLabelAndTitleAreTranslatedOnSerialization(): void

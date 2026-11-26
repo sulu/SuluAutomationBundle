@@ -246,7 +246,7 @@ class TaskController extends AbstractRestController implements SecuredController
 
         $this->permissionChecker->checkCurrentUser($task->getHandlerClass(), $task->getEntityClass(), $task->getEntityId(), $task->getLocale());
 
-        // A task that replaces the planned ones would run at once and publish what nobody scheduled.
+        // A past date would abort the planned publish and publish at once.
         if ($request->request->getBoolean('replacePlanned') && $task->getSchedule() <= new \DateTimeImmutable()) {
             throw new BadRequestHttpException('Choose a date in the future.');
         }
@@ -265,9 +265,8 @@ class TaskController extends AbstractRestController implements SecuredController
     }
 
     /**
-     * The planned executions stay in the list as aborted, so it is visible that a later task replaced them.
-     * They are managed entities and are not saved here. The flush after the creation of the new task persists them
-     * together with it, so a failure leaves the old tasks planned.
+     * Not saved here: the flush of the new task stores them, so a failure leaves the old tasks planned.
+     * They stay listed as aborted.
      *
      * @param list<TaskInterface> $tasks
      */
